@@ -1,24 +1,19 @@
+# app/main.py (альтернативный запуск, если не через run.py)
 import asyncio
 import uvicorn
+from threading import Thread
 
-from sqlalchemy import text
+from app.bot.bot import dp, bot
+from app.handlers.start import router
 
-from app.database.session import engine
-from app.database.base import Base
+async def run_bot():
+    dp.include_router(router)
+    print("🤖 Бот запущен...")
+    await dp.start_polling(bot)
 
-# IMPORT MODELS
-from app.models.user import User
-
-
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def run_api():
+    uvicorn.run("app.api.app:app", host="127.0.0.1", port=8000, reload=False)
 
 if __name__ == "__main__":
-    # asyncio.run(create_tables())
-    uvicorn.run(
-        "app.api.app:app",
-        host="127.0.0.1",
-        port=8000,
-        reload=True
-    )
+    Thread(target=run_api, daemon=True).start()
+    asyncio.run(run_bot())
