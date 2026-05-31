@@ -6,3 +6,4 @@ asyncpg
 alembic
 redis
 pydantic-settings
+psycopg2-binary
