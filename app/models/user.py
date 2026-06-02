@@ -24,6 +24,13 @@ class User(Base):
         nullable=True
     )
 
+    market_name: Mapped[str | None] = mapped_column(String, nullable=True) 
+
+    market_created_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow

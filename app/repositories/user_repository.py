@@ -25,12 +25,15 @@ class UserRepository:
     async def create(
         self,
         telegram_id: int,
-        username: str | None
+        username: str | None,
+        market_name: str | None = None, 
     ) -> User:
 
         user = User(
             telegram_id=telegram_id,
-            username=username
+            username=username,
+            market_name=market_name,
+            market_created_at=datetime.utcnow()
         )
 
         self.session.add(user)
