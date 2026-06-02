@@ -18,7 +18,7 @@ from datetime import datetime
 router = Router()
 
 # URL твоего мини-аппа (замени на свой)
-MINI_APP_URL = "https://marketplace--sergeyvip911.replit.app/"
+MINI_APP_URL = "https://plentora-gs.com"
 
 
 @router.message(CommandStart())
