@@ -1,8 +1,8 @@
-# app/bot/bot.py
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from app.core.config import settings
+
 
 # Создаём хранилище для состояний (FSM)
 storage = MemoryStorage()

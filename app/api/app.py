@@ -250,9 +250,9 @@ async def home():
                 // Автоматическое обновление при открытии страницы
                 loadBusinessData();
 
-                // Автообновление каждые 30 секунд (опционально)
-                setInterval(() => loadBusinessData(true), 30000);
-            </script>
-        </body>
-    </html>
-    """
+                    // Автообновление каждые 30 секунд (опционально)
+                    setInterval(() => loadBusinessData(true), 30000);
+                </script>
+            </body>
+        </html>
+        """
