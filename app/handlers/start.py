@@ -7,6 +7,9 @@ from aiogram.types import (
     WebAppInfo,
     ReplyKeyboardMarkup,
     KeyboardButton,
+    MenuButtonWebApp,
+    MenuButtonDefault,
+    ReplyKeyboardRemove
 )
 from aiogram.fsm.context import FSMContext
 
@@ -31,6 +34,15 @@ async def start_handler(message: Message, state: FSMContext):
 
         if user and user.market_name:
             # Уже есть бизнес
+
+            await message.bot.set_chat_menu_button(
+                chat_id=message.from_user.id,
+                menu_button=MenuButtonWebApp(
+                    text="🏪 Мой бизнес",
+                    web_app=WebAppInfo(url=MINI_APP_URL)
+                )
+            )
+
             keyboard = InlineKeyboardMarkup(
                 inline_keyboard=[
                     [InlineKeyboardButton(
@@ -46,6 +58,11 @@ async def start_handler(message: Message, state: FSMContext):
             )
         else:
             # НОВЫЙ ПОЛЬЗОВАТЕЛЬ - ПОКАЗЫВАЕМ КНОПКУ
+            await message.bot.set_chat_menu_button(
+                chat_id=message.from_user.id,
+                menu_button=MenuButtonDefault()
+            )
+
             keyboard = ReplyKeyboardMarkup(
                 keyboard=[[KeyboardButton(text="📝 Создать маркет")]],
                 resize_keyboard=True,
@@ -110,6 +127,13 @@ async def process_market_name(message: Message, state: FSMContext):
                 market_name=market_name,
             )
 
+    await message.bot.set_chat_menu_button(
+        chat_id=message.from_user.id,
+        menu_button=MenuButtonWebApp(
+            text="🏪 Мой бизнес",
+            web_app=WebAppInfo(url=MINI_APP_URL)
+        )
+    )
     # Очищаем состояние
     await state.clear()
 
@@ -125,10 +149,16 @@ async def process_market_name(message: Message, state: FSMContext):
         ]
     )
 
+
     await message.answer(
         f"✅ **Отлично!**\n\n"
         f"Ваш бизнес **«{market_name}»** успешно создан!\n\n"
         f"Теперь нажмите на кнопку, чтобы открыть админку.",
-        reply_markup=keyboard,
+        reply_markup=ReplyKeyboardRemove(),
         parse_mode="Markdown",
+    )
+
+    await message.answer(
+        "🚀 Открыть панель управления:",
+        reply_markup=keyboard
     )
