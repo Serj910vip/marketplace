@@ -844,6 +844,207 @@ async def main_app():
     """
 
 
+# @app.get("/service/create", response_class=HTMLResponse)
+# async def create_service_page():
+#     return f"""
+#     <html>
+#     <head>
+#         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+#         <script src="https://telegram.org/js/telegram-web-app.js"></script>
+#         <style>{COMMON_STYLES}</style>
+#         <title>Создание услуги</title>
+#     </head>
+#     <body>
+#         <div class="app">
+#             <div class="content">
+#                 <button class="back-link" onclick="window.location.href='/'">← Назад</button>
+#                 <div class="page-title">Создание услуги</div>
+
+#                 <div class="form-card" style="text-align:center">
+#                     <div class="field-label">Добавить фото</div>
+#                     <div class="photo-upload-box lg" id="svc-photo-box" onclick="document.getElementById('svc-photo-input').click()">📷</div>
+#                     <input type="file" id="svc-photo-input" accept="image/*" onchange="onSvcPhotoSelect(this)">
+#                 </div>
+
+#                 <div class="field-group">
+#                     <div class="field-label">Название услуги *</div>
+#                     <input type="text" id="svc-title" maxlength="100" placeholder="Например: Персональная тренировка">
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Описание</div>
+#                     <textarea id="svc-desc" placeholder="Опишите услугу"></textarea>
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Категория</div>
+#                     <select id="svc-category"></select>
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Цена услуги (₽)</div>
+#                     <input type="number" id="svc-price" min="0" placeholder="1500">
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Время тренировки</div>
+#                     <select id="svc-duration" onchange="onDurationChange()"></select>
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Формат брони</div>
+#                     <div class="format-toggle">
+#                         <button type="button" class="format-btn active" id="fmt-online" onclick="setFormat('online')">🌐 Онлайн</button>
+#                         <button type="button" class="format-btn" id="fmt-offline" onclick="setFormat('offline')">🏢 Офлайн</button>
+#                     </div>
+#                 </div>
+#                 <div class="field-group">
+#                     <div class="field-label">Рабочие дни</div>
+#                     <div class="days-row" id="days-row"></div>
+#                     <div id="schedule-area"></div>
+#                 </div>
+
+#                 <button class="btn" onclick="createService()">Создать</button>
+#             </div>
+#         </div>
+#         <script>
+#         {WEBAPP_INIT}
+#         {SERVICE_HELPERS_JS}
+
+#         let svcPhoto = null;
+#         let bookingFormat = 'online';
+#         let activeDays = {{}};
+#         let selectedDuration = 60;
+
+#         function onSvcPhotoSelect(input) {{
+#             readPhotoFile(input, dataUrl => {{
+#                 svcPhoto = dataUrl;
+#                 document.getElementById('svc-photo-box').innerHTML =
+#                     `<img src="${{dataUrl}}" style="width:100%;height:100%;object-fit:cover">`;
+#             }});
+#         }}
+
+#         function setFormat(fmt) {{
+#             bookingFormat = fmt;
+#             document.getElementById('fmt-online').classList.toggle('active', fmt === 'online');
+#             document.getElementById('fmt-offline').classList.toggle('active', fmt === 'offline');
+#         }}
+
+#         function renderDays() {{
+#             document.getElementById('days-row').innerHTML = DAYS.map(d => `
+#                 <button type="button" class="day-btn ${{activeDays[d.key] ? 'active' : ''}}"
+#                     onclick="toggleDay('${{d.key}}')">${{d.label}}</button>
+#             `).join('');
+#             renderSchedule();
+#         }}
+
+#         function toggleDay(key) {{
+#             if (activeDays[key]) delete activeDays[key];
+#             else activeDays[key] = [];
+#             renderDays();
+#         }}
+
+#         function toggleTime(dayKey, time) {{
+#             if (!activeDays[dayKey]) return;
+#             const arr = activeDays[dayKey];
+#             const idx = arr.indexOf(time);
+#             if (idx >= 0) arr.splice(idx, 1);
+#             else arr.push(time);
+#             arr.sort();
+#             renderSchedule();
+#         }}
+
+#         function onDurationChange() {{
+#             selectedDuration = parseInt(document.getElementById('svc-duration').value) || 60;
+#             for (const key of Object.keys(activeDays)) activeDays[key] = [];
+#             renderSchedule();
+#         }}
+
+#         function renderSchedule() {{
+#             const duration = selectedDuration;
+#             const slots = generateTimeSlots(duration);
+#             const html = Object.keys(activeDays).map(key => `
+#                 <div class="day-schedule">
+#                     <div class="day-name">${{DAY_FULL[key]}}</div>
+#                     <div class="time-slots">
+#                         ${{slots.map(t => `
+#                             <button type="button" class="time-chip ${{(activeDays[key]||[]).includes(t)?'active':''}}"
+#                                 onclick="toggleTime('${{key}}','${{t}}')">${{t}}</button>
+#                         `).join('')}}
+#                     </div>
+#                 </div>
+#             `).join('');
+#             document.getElementById('schedule-area').innerHTML = html;
+#         }}
+
+#         async function createService() {{
+#             const title = document.getElementById('svc-title').value.trim();
+#             if (!title) {{ tg.showAlert('Введите название услуги'); return; }}
+#             const category = document.getElementById('svc-category').value;
+#             const description = document.getElementById('svc-desc').value.trim();
+#             const priceVal = document.getElementById('svc-price').value;
+#             const price = priceVal ? parseFloat(priceVal) : null;
+#             const training_duration = selectedDuration;
+
+#             const schedule = {{}};
+#             for (const [day, times] of Object.entries(activeDays)) {{
+#                 if (times.length) schedule[day] = times;
+#             }}
+#             if (!Object.keys(schedule).length) {{
+#                 tg.showAlert('Выберите рабочие дни и время занятий');
+#                 return;
+#             }}
+
+#             try {{
+#                 const res = await fetch(`/api/services/${{tgUser.id}}`, {{
+#                     method: 'POST',
+#                     headers: {{'Content-Type':'application/json'}},
+#                     body: JSON.stringify({{
+#                         title, description: description || null, photo_url: svcPhoto,
+#                         category, price, training_duration,
+#                         booking_format: bookingFormat,
+#                         working_schedule: schedule,
+#                     }}),
+#                 }});
+#                 if (!res.ok) throw new Error('Ошибка сохранения');
+#                 tg.showAlert('Услуга создана!', () => {{ window.location.href = '/'; }});
+#             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
+#         }}
+
+#         function init() {{
+#             if (!tgUser) return;
+#             fillSelect(document.getElementById('svc-category'),
+#                 FITNESS_CATEGORIES, 'Выберите категорию', '');
+#             const durEl = document.getElementById('svc-duration');
+#             durEl.innerHTML = '<option value="">Выберите длительность</option>' +
+#                 DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
+#             selectedDuration = 60;
+#             renderDays();
+#         }}
+#         init();
+
+#         function fillSelect(el, items, placeholder, selected) {{
+#             if (!el) return;
+#             el.innerHTML = `<option value="">${{placehol{{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
+
+#             // Устанавливаем начальную длительность
+#             selectedDuration = 60;
+
+#             // Добавляем обработчик изменения длительности
+#             durEl.onchange = function() {{
+#                 selectedDuration = parseInt(this.value) || 60;
+#                 // Очищаем выбранные времена для всех дней (так как слоты изменятся)
+#                 for (const key of Object.keys(activeDays)) {{
+#                     activeDays[key] = [];
+#                 }}
+#                 renderSchedule(); // Перерисовываем расписание с новыми слотами
+#                 renderDays();     // Обновляем отображение дней
+#             }};
+
+#             // Отрисовываем дни и расписание
+#             renderDays();
+#         }}
+#         init();
+#         </script>
+#     </body>
+#     </html>
+#     """
+
 @app.get("/service/create", response_class=HTMLResponse)
 async def create_service_page():
     return f"""
@@ -884,7 +1085,7 @@ async def create_service_page():
                 </div>
                 <div class="field-group">
                     <div class="field-label">Время тренировки</div>
-                    <select id="svc-duration" onchange="onDurationChange()"></select>
+                    <select id="svc-duration"></select>
                 </div>
                 <div class="field-group">
                     <div class="field-label">Формат брони</div>
@@ -926,7 +1127,9 @@ async def create_service_page():
         }}
 
         function renderDays() {{
-            document.getElementById('days-row').innerHTML = DAYS.map(d => `
+            const container = document.getElementById('days-row');
+            if (!container) return;
+            container.innerHTML = DAYS.map(d => `
                 <button type="button" class="day-btn ${{activeDays[d.key] ? 'active' : ''}}"
                     onclick="toggleDay('${{d.key}}')">${{d.label}}</button>
             `).join('');
@@ -949,27 +1152,23 @@ async def create_service_page():
             renderSchedule();
         }}
 
-        function onDurationChange() {{
-            selectedDuration = parseInt(document.getElementById('svc-duration').value) || 60;
-            for (const key of Object.keys(activeDays)) activeDays[key] = [];
-            renderSchedule();
-        }}
-
         function renderSchedule() {{
             const duration = selectedDuration;
             const slots = generateTimeSlots(duration);
+            const container = document.getElementById('schedule-area');
+            if (!container) return;
             const html = Object.keys(activeDays).map(key => `
                 <div class="day-schedule">
                     <div class="day-name">${{DAY_FULL[key]}}</div>
                     <div class="time-slots">
                         ${{slots.map(t => `
-                            <button type="button" class="time-chip ${{(activeDays[key]||[]).includes(t)?'active':''}}"
+                            <button type="button" class="time-chip ${{(activeDays[key]||[]).includes(t) ? 'active' : ''}}"
                                 onclick="toggleTime('${{key}}','${{t}}')">${{t}}</button>
                         `).join('')}}
                     </div>
                 </div>
             `).join('');
-            document.getElementById('schedule-area').innerHTML = html;
+            container.innerHTML = html;
         }}
 
         async function createService() {{
@@ -1008,42 +1207,40 @@ async def create_service_page():
 
         function init() {{
             if (!tgUser) return;
-            fillSelect(document.getElementById('svc-category'),
-                FITNESS_CATEGORIES, 'Выберите категорию', '');
+
+            // Заполняем категории
+            const catSelect = document.getElementById('svc-category');
+            if (catSelect) {{
+                catSelect.innerHTML = '<option value="">Выберите категорию</option>' +
+                    FITNESS_CATEGORIES.map(c => `<option value="${{c}}">${{c}}</option>`).join('');
+            }}
+
+            // Заполняем длительности
             const durEl = document.getElementById('svc-duration');
-            durEl.innerHTML = '<option value="">Выберите длительность</option>' +
-                DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
-            selectedDuration = 60;
+            if (durEl) {{
+                durEl.innerHTML = '<option value="">Выберите длительность</option>' +
+                    DURATIONS.map(d => `<option value="${{d}}" ${{d === 60 ? 'selected' : ''}}>${{d}} мин</option>`).join('');
+                
+                durEl.onchange = function() {{
+                    selectedDuration = parseInt(this.value) || 60;
+                    for (const key of Object.keys(activeDays)) {{
+                        activeDays[key] = [];
+                    }}
+                    renderSchedule();
+                    renderDays();
+                }};
+            }}
+
             renderDays();
         }}
-        init();
 
-        function fillSelect(el, items, placeholder, selected) {{
-            if (!el) return;
-            el.innerHTML = `<option value="">${{placehol{{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
-
-            // Устанавливаем начальную длительность
-            selectedDuration = 60;
-
-            // Добавляем обработчик изменения длительности
-            durEl.onchange = function() {{
-                selectedDuration = parseInt(this.value) || 60;
-                // Очищаем выбранные времена для всех дней (так как слоты изменятся)
-                for (const key of Object.keys(activeDays)) {{
-                    activeDays[key] = [];
-                }}
-                renderSchedule(); // Перерисовываем расписание с новыми слотами
-                renderDays();     // Обновляем отображение дней
-            }};
-
-            // Отрисовываем дни и расписание
-            renderDays();
-        }}
         init();
         </script>
     </body>
     </html>
     """
+
+
 
 
 @app.get("/profile", response_class=HTMLResponse)
