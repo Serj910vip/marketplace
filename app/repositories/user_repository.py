@@ -65,17 +65,22 @@ class UserRepository:
         profile_type: str,
         country: str | None = None,
         region: str | None = None,
+        city: str | None = None,
     ) -> User:
         if profile_type == "business":
             if country is not None:
                 user.business_country = country
             if region is not None:
                 user.business_region = region
+            if city is not None:
+                user.business_city = city
         elif profile_type == "personal":
             if country is not None:
                 user.personal_country = country
             if region is not None:
                 user.personal_region = region
+            if city is not None:
+                user.personal_city = city
 
         await self.session.commit()
         await self.session.refresh(user)
