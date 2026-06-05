@@ -3,6 +3,7 @@ import asyncio
 from app.database.session import engine
 from app.database.base import Base
 from app.models.user import User
+from app.models.service import Service
 
 async def reset_database():
     async with engine.begin() as conn:

@@ -43,9 +43,13 @@ class User(Base):
 
     business_region: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    business_city: Mapped[str | None] = mapped_column(String, nullable=True)
+
     personal_country: Mapped[str | None] = mapped_column(String, nullable=True)
 
     personal_region: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    personal_city: Mapped[str | None] = mapped_column(String, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
