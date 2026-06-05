@@ -9,7 +9,6 @@ from aiogram.types import (
     KeyboardButton,
     MenuButtonWebApp,
     MenuButtonDefault,
-    ReplyKeyboardRemove
 )
 from aiogram.fsm.context import FSMContext
 
@@ -20,8 +19,32 @@ from datetime import datetime
 
 router = Router()
 
-# URL твоего мини-аппа (замени на свой)
 MINI_APP_URL = "https://plentora-gs.com"
+
+CONTROL_PANEL_BTN = "🏪 Панель управления"
+
+
+def get_control_panel_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[[
+            KeyboardButton(
+                text=CONTROL_PANEL_BTN,
+                web_app=WebAppInfo(url=MINI_APP_URL),
+            )
+        ]],
+        resize_keyboard=True,
+        is_persistent=True,
+    )
+
+
+async def _set_business_menu_button(message: Message):
+    await message.bot.set_chat_menu_button(
+        chat_id=message.from_user.id,
+        menu_button=MenuButtonWebApp(
+            text="🏪 Мой бизнес",
+            web_app=WebAppInfo(url=MINI_APP_URL),
+        ),
+    )
 
 
 @router.message(CommandStart())
@@ -33,34 +56,18 @@ async def start_handler(message: Message, state: FSMContext):
         user = await repo.get_by_telegram_id(user_id)
 
         if user and user.market_name:
-            # Уже есть бизнес
+            await _set_business_menu_button(message)
 
-            await message.bot.set_chat_menu_button(
-                chat_id=message.from_user.id,
-                menu_button=MenuButtonWebApp(
-                    text="🏪 Мой бизнес",
-                    web_app=WebAppInfo(url=MINI_APP_URL)
-                )
-            )
-
-            keyboard = InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [InlineKeyboardButton(
-                        text="🏪 Открыть панель управления",
-                        web_app=WebAppInfo(url=MINI_APP_URL),
-                    )],
-                ]
-            )
             await message.answer(
-                f"🏢 С возвращением! Ваш бизнес **{user.market_name}** активен.",
-                reply_markup=keyboard,
+                f"🏢 С возвращением! Ваш бизнес **{user.market_name}** активен.\n\n"
+                f"Используйте кнопку **«{CONTROL_PANEL_BTN}»** внизу для входа в админку.",
+                reply_markup=get_control_panel_keyboard(),
                 parse_mode="Markdown",
             )
         else:
-            # НОВЫЙ ПОЛЬЗОВАТЕЛЬ - ПОКАЗЫВАЕМ КНОПКУ
             await message.bot.set_chat_menu_button(
                 chat_id=message.from_user.id,
-                menu_button=MenuButtonDefault()
+                menu_button=MenuButtonDefault(),
             )
 
             keyboard = ReplyKeyboardMarkup(
@@ -79,15 +86,13 @@ async def start_handler(message: Message, state: FSMContext):
             )
 
 
-# Обработчик кнопки "📝 Создать маркет"
 @router.message(F.text == "📝 Создать маркет")
 async def create_market_btn_handler(message: Message, state: FSMContext):
-    """Обработчик кнопки 'Создать маркет'"""
     await message.answer(
         "✨ **Отлично!**\n\n"
         "Введите **название вашего бизнеса**:\n"
         "Например: «Парикмахерская Наталья» или «Кофе с собой»",
-        parse_mode="Markdown"
+        parse_mode="Markdown",
     )
     await state.set_state(MarketCreation.waiting_for_market_name)
 
@@ -96,7 +101,6 @@ async def create_market_btn_handler(message: Message, state: FSMContext):
 async def process_market_name(message: Message, state: FSMContext):
     market_name = message.text.strip()
 
-    # Валидация
     if len(market_name) < 3:
         await message.answer(
             "❌ Название слишком короткое (минимум 3 символа). Попробуйте еще раз:"
@@ -109,56 +113,45 @@ async def process_market_name(message: Message, state: FSMContext):
         )
         return
 
-    # Сохраняем в БД
     async with async_session() as session:
         repo = UserRepository(session)
         user = await repo.get_by_telegram_id(message.from_user.id)
 
         if user:
-            # Обновляем существующего
             user.market_name = market_name
             user.market_created_at = datetime.utcnow()
             await session.commit()
         else:
-            # Создаем нового
-            user = await repo.create(
+            await repo.create(
                 telegram_id=message.from_user.id,
                 username=message.from_user.username,
                 market_name=market_name,
             )
 
-    await message.bot.set_chat_menu_button(
-        chat_id=message.from_user.id,
-        menu_button=MenuButtonWebApp(
-            text="🏪 Мой бизнес",
-            web_app=WebAppInfo(url=MINI_APP_URL)
-        )
-    )
-    # Очищаем состояние
+    await _set_business_menu_button(message)
     await state.clear()
-
-    # Показываем кнопку с мини-аппом
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="🚀 Открыть панель управления",
-                    web_app=WebAppInfo(url=MINI_APP_URL),
-                )
-            ]
-        ]
-    )
-
 
     await message.answer(
         f"✅ **Отлично!**\n\n"
         f"Ваш бизнес **«{market_name}»** успешно создан!\n\n"
-        f"Теперь нажмите на кнопку, чтобы открыть админку.",
-        reply_markup=ReplyKeyboardRemove(),
+        f"Кнопка **«{CONTROL_PANEL_BTN}»** теперь всегда доступна внизу экрана.",
+        reply_markup=get_control_panel_keyboard(),
         parse_mode="Markdown",
     )
 
+
+@router.message(F.text == CONTROL_PANEL_BTN)
+async def control_panel_fallback(message: Message):
+    """Запасной обработчик, если WebApp-кнопка не сработала на устройстве."""
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[
+            InlineKeyboardButton(
+                text="🚀 Открыть админ панель",
+                web_app=WebAppInfo(url=MINI_APP_URL),
+            )
+        ]]
+    )
     await message.answer(
-        "🚀 Открыть панель управления:",
-        reply_markup=keyboard
+        "Нажмите кнопку ниже, чтобы открыть админ панель:",
+        reply_markup=keyboard,
     )

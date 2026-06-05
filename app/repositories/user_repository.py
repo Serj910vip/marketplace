@@ -57,3 +57,27 @@ class UserRepository:
         await self.session.refresh(user)
 
         return user
+
+    async def update_profile(
+        self,
+        user: User,
+        *,
+        profile_type: str,
+        country: str | None = None,
+        region: str | None = None,
+    ) -> User:
+        if profile_type == "business":
+            if country is not None:
+                user.business_country = country
+            if region is not None:
+                user.business_region = region
+        elif profile_type == "personal":
+            if country is not None:
+                user.personal_country = country
+            if region is not None:
+                user.personal_region = region
+
+        await self.session.commit()
+        await self.session.refresh(user)
+
+        return user
