@@ -1010,7 +1010,7 @@ async def create_service_page():
                 FITNESS_CATEGORIES, 'Выберите категорию', '');
             const durEl = document.getElementById('svc-duration');
             durEl.innerHTML = '<option value="">Выберите длительность</option>' +
-                DURATIONS.map(d => `<option value="${d}" ${d===60?'selected':''}>${d} мин</option>`).join('');
+                DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
             selectedDuration = 60;
             renderDays();
         }}
