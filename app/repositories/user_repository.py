@@ -86,3 +86,37 @@ class UserRepository:
         await self.session.refresh(user)
 
         return user
+
+    async def update_business(
+        self,
+        user: User,
+        *,
+        market_name: str | None = None,
+        business_photo_url: str | None = None,
+    ) -> User:
+        if market_name is not None:
+            user.market_name = market_name
+        if business_photo_url is not None:
+            user.business_photo_url = business_photo_url
+
+        await self.session.commit()
+        await self.session.refresh(user)
+
+        return user
+
+    async def update_business(
+        self,
+        user: User,
+        *,
+        market_name: str | None = None,
+        business_photo_url: str | None = None,
+    ) -> User:
+        if market_name is not None:
+            user.market_name = market_name
+        if business_photo_url is not None:
+            user.business_photo_url = business_photo_url
+
+        await self.session.commit()
+        await self.session.refresh(user)
+
+        return user

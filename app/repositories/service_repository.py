@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,13 +25,23 @@ class ServiceRepository:
         user_id: int,
         title: str,
         description: str | None = None,
+        photo_url: str | None = None,
+        category: str | None = None,
         price: float | None = None,
+        training_duration: int | None = None,
+        booking_format: str | None = None,
+        working_schedule: dict | None = None,
     ) -> Service:
         service = Service(
             user_id=user_id,
             title=title,
             description=description,
+            photo_url=photo_url,
+            category=category,
             price=price,
+            training_duration=training_duration,
+            booking_format=booking_format,
+            working_schedule=json.dumps(working_schedule or {}, ensure_ascii=False),
         )
         self.session.add(service)
         await self.session.commit()
