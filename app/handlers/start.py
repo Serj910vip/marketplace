@@ -29,7 +29,7 @@ def get_control_panel_keyboard() -> ReplyKeyboardMarkup:
         keyboard=[[
             KeyboardButton(
                 text=CONTROL_PANEL_BTN,
-                web_app=WebAppInfo(url=MINI_APP_URL),
+                # web_app=WebAppInfo(url=MINI_APP_URL),
             )
         ]],
         resize_keyboard=True,
