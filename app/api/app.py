@@ -507,12 +507,34 @@ COMMON_STYLES = """
     input[type="file"] { display: none; }
 """
 
+# WEBAPP_INIT = """
+#     const tg = window.Telegram.WebApp;
+#     tg.ready();
+#     tg.expand();
+#     const tgUser = tg.initDataUnsafe.user;
+# """
+
 WEBAPP_INIT = """
     const tg = window.Telegram.WebApp;
+
     tg.ready();
     tg.expand();
+
+    document.body.innerHTML = `
+    <pre style="padding:20px;font-size:12px;white-space:pre-wrap;">
+platform: ${tg.platform}
+
+initData:
+${tg.initData}
+
+user:
+${JSON.stringify(tg.initDataUnsafe?.user, null, 2)}
+    </pre>`;
+
     const tgUser = tg.initDataUnsafe.user;
 """
+
+
 
 LOCATION_DATA_JS = """
     const COUNTRIES = ['Россия','Беларусь','Казахстан','Украина','Узбекистан','Армения','Грузия'];
