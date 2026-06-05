@@ -514,26 +514,6 @@ WEBAPP_INIT = """
     const tgUser = tg.initDataUnsafe.user;
 """
 
-# WEBAPP_INIT = """
-#     const tg = window.Telegram.WebApp;
-
-#     tg.ready();
-#     tg.expand();
-
-#     document.body.innerHTML = `
-#     <pre style="padding:20px;font-size:12px;white-space:pre-wrap;">
-# platform: ${tg.platform}
-
-# initData:
-# ${tg.initData}
-
-# user:
-# ${JSON.stringify(tg.initDataUnsafe?.user, null, 2)}
-#     </pre>`;
-
-#     const tgUser = tg.initDataUnsafe.user;
-# """
-
 
 
 LOCATION_DATA_JS = """
@@ -1034,6 +1014,37 @@ async def create_service_page():
             durEl.innerHTML = '<option value="">Выберите длительность</option>' +
                 DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
             selectedDuration = 60;
+            renderDays();
+        }}
+        init();
+
+        function init() {{
+            if (!tgUser) return;
+        
+            // Заполняем категории
+            fillSelect(document.getElementById('svc-category'),
+                FITNESS_CATEGORIES, 'Выберите категорию', '');
+            
+            // Заполняем длительности
+            const durEl = document.getElementById('svc-duration');
+            durEl.innerHTML = '<option value="">Выберите длительность</option>' +
+                DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
+            
+            // Устанавливаем начальную длительность
+            selectedDuration = 60;
+            
+            // Добавляем обработчик изменения длительности
+            durEl.onchange = function() {{
+                selectedDuration = parseInt(this.value) || 60;
+                // Очищаем выбранные времена для всех дней (так как слоты изменятся)
+                for (const key of Object.keys(activeDays)) {{
+                    activeDays[key] = [];
+                }}
+                renderSchedule(); // Перерисовываем расписание с новыми слотами
+                renderDays();     // Обновляем отображение дней
+            }};
+            
+            // Отрисовываем дни и расписание
             renderDays();
         }}
         init();
