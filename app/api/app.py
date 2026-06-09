@@ -314,6 +314,29 @@ COMMON_STYLES = """
     .content { flex: 1; padding: 16px 16px 88px; overflow-y: auto; }
     .hidden { display: none !important; }
 
+    /* НОВЫЕ СТИЛИ ДЛЯ МЕНЮ */
+    .bottom-nav {
+        position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+        width: 100%; max-width: 480px; display: flex; gap: 8px;
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-top: 1px solid rgba(0,0,0,0.08); z-index: 100;
+        padding: 8px 12px env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+        flex: 1; display: flex; align-items: center; justify-content: center;
+        gap: 8px; padding: 10px 12px; border: none; background: transparent;
+        border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 500;
+        color: var(--tg-theme-hint-color, #8e8e93);
+    }
+    .nav-item .nav-icon { font-size: 22px; }
+    .nav-item .nav-label { font-size: 14px; font-weight: 500; }
+    .nav-item.active {
+        background: var(--tg-theme-button-text-color, #ffffff);
+        color: var(--tg-theme-button-color, #007aff);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    /* КОНЕЦ НОВЫХ СТИЛЕЙ */
+
     .market-title { text-align: center; font-size: 20px; font-weight: 800; color: var(--tg-theme-button-color, #2481cc); margin-bottom: 6px; }
     .user-name { text-align: center; font-size: 15px; color: var(--tg-theme-hint-color, #707579); margin-bottom: 16px; }
 
@@ -615,24 +638,25 @@ async def main_app():
     <body>
         <div class="app">
             <div class="content" id="main-content"></div>
-            <nav class="bottom-nav" id="bottom-nav">
-                <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
-                    <span class="nav-icon">🏠</span>Home
-                </button>
-                <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
-                    <span class="nav-icon">📊</span>Статистика
-                </button>
-                <button class="nav-item" data-tab="services" onclick="switchTab('services')">
-                    <span class="nav-icon">🛠️</span>Услуги
-                </button>
-                <button class="nav-item" data-tab="bookings" onclick="switchTab('bookings')">
-                    <span class="nav-icon">📋</span>Заявки
-                </button>
-                <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
-                    <span class="nav-icon">👤</span>Профиль
-                </button>
-            </nav>
-        </div>
+                <nav class="bottom-nav" id="bottom-nav">
+                    <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-label">Главная</span>
+                    </button>
+                    <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Статистика</span>
+                    </button>
+                    <button class="nav-item" data-tab="bookings" onclick="switchTab('bookings')">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-label">Заявки</span>
+                    </button>
+                    <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-label">Профиль</span>
+                    </button>
+                </nav>
+            </div>
         <script>
         {WEBAPP_INIT}
         {SERVICE_HELPERS_JS}
@@ -806,7 +830,6 @@ async def main_app():
                 el.classList.toggle('active', el.dataset.tab === tab));
             if (tab === 'home') renderHome();
             else if (tab === 'stats') renderStats();
-            else if (tab === 'services') renderServices();
             else if (tab === 'bookings') renderBookings();
             else if (tab === 'profile') renderProfile();
         }}
