@@ -363,8 +363,27 @@ COMMON_STYLES = """
     }
     /* КОНЕЦ НОВЫХ СТИЛЕЙ */
 
-    .market-title { text-align: center; font-size: 20px; font-weight: 800; color: var(--tg-theme-button-color, #2481cc); margin-bottom: 6px; }
-    .user-name { text-align: center; font-size: 15px; color: var(--tg-theme-hint-color, #707579); margin-bottom: 16px; }
+    .user-header {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .user-role {
+        font-size: 14px;
+        color: var(--tg-theme-button-color, #2481cc);
+        font-weight: 500;
+    }
+    .user-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--tg-theme-text-color, #1a1a1a);
+    }
 
     .business-card {
         background: var(--tg-theme-secondary-bg-color, #fff);
@@ -696,8 +715,11 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
 
             document.getElementById('main-content').innerHTML = `
-                <div class="market-title">${{MARKETPLACE}}</div>
-                <div class="user-name">${{name}}</div>
+                <div class="user-header">
+                    <div class="user-role">Основатель</div>
+                    <div class="user-name">${{name}}</div>
+                </div>
+
                 <div class="business-card">
                     ${{photo}}
                     <div class="name">${{businessData.business_name}}</div>
