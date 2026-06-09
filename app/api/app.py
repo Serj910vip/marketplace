@@ -321,20 +321,45 @@ COMMON_STYLES = """
         background: var(--tg-theme-secondary-bg-color, #fff);
         border-top: 1px solid rgba(0,0,0,0.08); z-index: 100;
         padding: 8px 12px env(safe-area-inset-bottom, 0);
+        justify-content: space-around;
     }
+
     .nav-item {
-        flex: 1; display: flex; align-items: center; justify-content: center;
-        gap: 8px; padding: 10px 12px; border: none; background: transparent;
-        border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 500;
+        flex: 0 1 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
         color: var(--tg-theme-hint-color, #8e8e93);
+        min-width: 60px;
     }
-    .nav-item .nav-icon { font-size: 22px; }
-    .nav-item .nav-label { font-size: 14px; font-weight: 500; }
+
+    .nav-item .nav-icon {
+        font-size: 24px;
+    }
+
+    .nav-item .nav-label {
+        display: none;  /* По умолчанию текст скрыт */
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 8px;
+    }
+
+    /* Активный пункт - показываем иконку и текст, с белым фоном */
     .nav-item.active {
         background: var(--tg-theme-button-text-color, #ffffff);
         color: var(--tg-theme-button-color, #007aff);
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-radius: 12px;
+        padding: 10px 16px;
+    }
+
+    .nav-item.active .nav-label {
+        display: inline;  /* Показываем текст только у активного */
     }
     /* КОНЕЦ НОВЫХ СТИЛЕЙ */
 
