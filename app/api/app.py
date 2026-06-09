@@ -767,12 +767,11 @@ async def main_app():
                     <div class="rating">${{renderStars(businessData.business_rating)}}</div>
                     <div class="address">📍 ${{businessData.business_address}}</div>
                 </div>
-                <div class="section-title">Главное меню</div>
+                <div class="section-title">Создать:</div>
                 
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
-                            <span class="icon">🛠️</span>
                             <span class="label">Услуги</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-service">▶</span>
@@ -786,7 +785,6 @@ async def main_app():
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('product')">
                         <div class="left">
-                            <span class="icon">📦</span>
                             <span class="label">Товары</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-product">▶</span>
@@ -799,7 +797,6 @@ async def main_app():
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('rent')">
                         <div class="left">
-                            <span class="icon">🏠</span>
                             <span class="label">Аренда</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-rent">▶</span>
@@ -812,7 +809,6 @@ async def main_app():
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('event')">
                         <div class="left">
-                            <span class="icon">📅</span>
                             <span class="label">События</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-event">▶</span>
@@ -825,7 +821,6 @@ async def main_app():
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
                         <div class="left">
-                            <span class="icon">📢</span>
                             <span class="label">Объявления</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-ad">▶</span>
@@ -844,6 +839,19 @@ async def main_app():
                 }} else {{
                     servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
                 }}
+            }}
+        }}
+
+        // Функция для открытия/закрытия аккордеона
+        function toggleAccordion(id) {{
+            const content = document.getElementById('content-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (content.style.display === 'block') {{
+                content.style.display = 'none';
+                arrow.innerHTML = '▶';
+            }} else {{
+                content.style.display = 'block';
+                arrow.innerHTML = '▼';
             }}
         }}
 
