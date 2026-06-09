@@ -422,6 +422,47 @@ COMMON_STYLES = """
     .menu-card .left { display: flex; align-items: center; gap: 10px; }
     .menu-card .icon { font-size: 22px; }
     .menu-card .label { font-size: 15px; font-weight: 600; }
+
+    /* Стили для аккордеона */
+    .accordion-header {
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .accordion-header:hover {
+        background: var(--tg-theme-bg-color, #f0f0f0);
+    }
+
+    .accordion-arrow {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+        transition: transform 0.2s ease;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 12px 16px 16px 40px;
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 12px;
+        margin-top: -8px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .accordion-btn {
+        margin-top: 0;
+        width: auto;
+        background: var(--tg-theme-button-color, #2481cc);
+    }
+
+    .services-list {
+        margin-top: 12px;
+    }
+
+    .services-list .service-card {
+        margin-bottom: 8px;
+    }
+
     .badge {
         font-size: 11px; padding: 4px 8px; border-radius: 8px;
         background: #fff3cd; color: #856404; font-weight: 600; white-space: nowrap;
@@ -727,28 +768,96 @@ async def main_app():
                     <div class="address">📍 ${{businessData.business_address}}</div>
                 </div>
                 <div class="section-title">Главное меню</div>
-                <div class="menu-card">
-                    <div class="left"><span class="icon">🛠️</span><span class="label">Услуга</span></div>
-                    <button class="btn-sm" onclick="goCreateService()">+ Создать</button>
+                
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
+                        <div class="left">
+                            <span class="icon">🛠️</span>
+                            <span class="label">Услуга</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-service">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-service">
+                        <button class="btn-sm accordion-btn" onclick="goCreateService()">+ Создать услугу</button>
+                        <div id="services-list" class="services-list"></div>
+                    </div>
                 </div>
-                <div id="home-services">${{servicesList.length ? servicesList.slice(0,3).map(serviceCardHtml).join('') : '<div class="empty">Услуги пока не созданы</div>'}}</div>
-                <div class="menu-card">
-                    <div class="left"><span class="icon">📦</span><span class="label">Товар</span></div>
-                    <span class="badge">Функция временно не работает</span>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('product')">
+                        <div class="left">
+                            <span class="icon">📦</span>
+                            <span class="label">Товар</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-product">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-product">
+                        <div class="empty">Функция временно не работает</div>
+                    </div>
                 </div>
-                <div class="menu-card">
-                    <div class="left"><span class="icon">📅</span><span class="label">Событие</span></div>
-                    <button class="btn-sm" onclick="tg.showAlert('Скоро будет доступно')">+ Создать</button>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('event')">
+                        <div class="left">
+                            <span class="icon">📅</span>
+                            <span class="label">Событие</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-event">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-event">
+                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
+                    </div>
                 </div>
-                <div class="menu-card">
-                    <div class="left"><span class="icon">📢</span><span class="label">Объявление</span></div>
-                    <button class="btn-sm" onclick="tg.showAlert('Скоро будет доступно')">+ Создать</button>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
+                        <div class="left">
+                            <span class="icon">📢</span>
+                            <span class="label">Объявление</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-ad">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-ad">
+                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
+                    </div>
                 </div>
-                <div class="menu-card">
-                    <div class="left"><span class="icon">🏠</span><span class="label">Аренда</span></div>
-                    <span class="badge">Функция временно не работает</span>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('rent')">
+                        <div class="left">
+                            <span class="icon">🏠</span>
+                            <span class="label">Аренда</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-rent">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-rent">
+                        <div class="empty">Функция временно не работает</div>
+                    </div>
                 </div>
             `;
+            
+            // Отображаем услуги в списке
+            const servicesContainer = document.getElementById('services-list');
+            if (servicesContainer) {{
+                if (servicesList.length) {{
+                    servicesContainer.innerHTML = servicesList.map(serviceCardHtml).join('');
+                }} else {{
+                    servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
+                }}
+            }}
+        }}
+
+        // Функция для открытия/закрытия аккордеона
+        function toggleAccordion(id) {{
+            const content = document.getElementById('content-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (content.style.display === 'block') {{
+                content.style.display = 'none';
+                arrow.innerHTML = '▶';
+            }} else {{
+                content.style.display = 'block';
+                arrow.innerHTML = '▼';
+            }}
         }}
 
         function renderStats() {{
