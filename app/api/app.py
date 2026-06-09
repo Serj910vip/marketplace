@@ -334,6 +334,7 @@ COMMON_STYLES = """
         background: var(--tg-theme-button-text-color, #ffffff);
         color: var(--tg-theme-button-color, #007aff);
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 12px;
     }
     /* КОНЕЦ НОВЫХ СТИЛЕЙ */
 
@@ -439,20 +440,6 @@ COMMON_STYLES = """
     .stat-card.success .number { color: #4caf50; }
     .stat-card.cancel .number { color: #f44336; }
 
-    .bottom-nav {
-        position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-        width: 100%; max-width: 480px; display: flex;
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        border-top: 1px solid rgba(0,0,0,0.08); z-index: 100;
-        padding: 4px 0 env(safe-area-inset-bottom, 0);
-    }
-    .nav-item {
-        flex: 1; display: flex; flex-direction: column; align-items: center;
-        gap: 1px; padding: 6px 2px; border: none; background: none; cursor: pointer;
-        color: var(--tg-theme-hint-color, #999); font-size: 9px; font-weight: 600;
-    }
-    .nav-item .nav-icon { font-size: 20px; }
-    .nav-item.active { color: var(--tg-theme-button-color, #2481cc); }
 
     .page-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
