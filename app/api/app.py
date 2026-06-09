@@ -773,7 +773,7 @@ async def main_app():
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
                             <span class="icon">🛠️</span>
-                            <span class="label">Услуга</span>
+                            <span class="label">Услуги</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-service">▶</span>
                     </div>
@@ -787,38 +787,12 @@ async def main_app():
                     <div class="menu-card accordion-header" onclick="toggleAccordion('product')">
                         <div class="left">
                             <span class="icon">📦</span>
-                            <span class="label">Товар</span>
+                            <span class="label">Товары</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-product">▶</span>
                     </div>
                     <div class="accordion-content" id="content-product">
                         <div class="empty">Функция временно не работает</div>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <div class="menu-card accordion-header" onclick="toggleAccordion('event')">
-                        <div class="left">
-                            <span class="icon">📅</span>
-                            <span class="label">Событие</span>
-                        </div>
-                        <span class="accordion-arrow" id="arrow-event">▶</span>
-                    </div>
-                    <div class="accordion-content" id="content-event">
-                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
-                        <div class="left">
-                            <span class="icon">📢</span>
-                            <span class="label">Объявление</span>
-                        </div>
-                        <span class="accordion-arrow" id="arrow-ad">▶</span>
-                    </div>
-                    <div class="accordion-content" id="content-ad">
-                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
                     </div>
                 </div>
 
@@ -834,6 +808,32 @@ async def main_app():
                         <div class="empty">Функция временно не работает</div>
                     </div>
                 </div>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('event')">
+                        <div class="left">
+                            <span class="icon">📅</span>
+                            <span class="label">События</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-event">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-event">
+                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
+                        <div class="left">
+                            <span class="icon">📢</span>
+                            <span class="label">Объявления</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-ad">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-ad">
+                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
+                    </div>
+                </div>
             `;
             
             // Отображаем услуги в списке
@@ -844,6 +844,19 @@ async def main_app():
                 }} else {{
                     servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
                 }}
+            }}
+        }}
+
+        // Функция для открытия/закрытия аккордеона
+        function toggleAccordion(id) {{
+            const content = document.getElementById('content-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (content.style.display === 'block') {{
+                content.style.display = 'none';
+                arrow.innerHTML = '▶';
+            }} else {{
+                content.style.display = 'block';
+                arrow.innerHTML = '▼';
             }}
         }}
 
