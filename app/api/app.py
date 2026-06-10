@@ -997,7 +997,62 @@ async def main_app():
                     
                     <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">✏️ Редактировать профиль</button>
                 </div>
+
+                <div class="profile-menu-section">
+                    <div class="section-title">Меню</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Кошелек в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Кошелёк</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Подписка в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Подписка</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Клиентская база в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Клиентская база</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Дополнительные сервисы в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Дополнительные сервисы</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Настройки в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Настройки</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Политика и конфиденциальность')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">Политика и конфиденциальность</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-delete-market" onclick="deleteMarket()">🗑️ Удалить маркет</button>
             `;
+        }}
+
+        // Функция для удаления маркета
+        function deleteMarket() {{
+            tg.showAlert('Вы уверены, что хотите удалить маркет?', () => {{
+                tg.showAlert('Функция в разработке');
+            }});
         }}
 
         let pendingBizPhoto = null;
