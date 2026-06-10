@@ -555,6 +555,54 @@ COMMON_STYLES = """
     .profile-info .row { margin-bottom: 8px; font-size: 14px; }
     .profile-info .row strong { color: var(--tg-theme-hint-color, #707579); }
 
+    /* Стили для профиля */
+    .profile-card {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .profile-photo-section {
+        margin-bottom: 20px;
+    }
+
+    .profile-info-section {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .profile-business-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--tg-theme-text-color, #1a1a1a);
+        margin-bottom: 6px;
+    }
+
+    .profile-business-address {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+    }
+
+    .profile-divider {
+        height: 1px;
+        background: var(--tg-theme-hint-color, #e0e0e0);
+        margin: 16px 0;
+    }
+
+    .btn-edit-profile {
+        background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+        color: var(--tg-theme-button-color, #2481cc);
+        border: 1px solid var(--tg-theme-button-color, #2481cc);
+        margin-top: 0;
+    }
+
+    .btn-edit-profile:hover {
+        background: var(--tg-theme-button-color, #2481cc);
+        color: var(--tg-theme-button-text-color, #fff);
+    }
+
     .format-toggle { display: flex; gap: 8px; }
     .format-btn {
         flex: 1; padding: 12px; border: 2px solid var(--tg-theme-hint-color, #ccc);
@@ -930,24 +978,25 @@ async def main_app():
 
             document.getElementById('main-content').innerHTML = `
                 <div class="page-title">👤 Профиль</div>
-                <div class="form-card" style="text-align:center">
-                    <div class="field-label">Главная фотография бизнеса</div>
-                    <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer">
-                        ${{b.business_photo_url ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">` : `<div class="photo-upload-box" id="profile-photo-box">📷</div>`}}
+                <div class="profile-card">
+                    <div class="profile-photo-section">
+                        <div class="field-label">Главная фотография профиля</div>
+                        <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
+                            ${{photo}}
+                        </div>
+                        <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
+                        <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
                     </div>
-                    <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
-                    <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px">Нажмите, чтобы загрузить фото</div>
+                    
+                    <div class="profile-info-section">
+                        <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
+                        <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
+                    </div>
+                    
+                    <div class="profile-divider"></div>
+                    
+                    <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">✏️ Редактировать профиль</button>
                 </div>
-                <div class="form-card">
-                    <div class="field-label">Название бизнеса</div>
-                    <input type="text" id="biz-name" value="${{b.business_name || ''}}" maxlength="50" placeholder="Название бизнеса">
-                </div>
-                <div class="profile-info">
-                    <div class="row"><strong>Адрес бизнеса:</strong> ${{b.business_address || '—'}}</div>
-                    <div class="row"><strong>Личный адрес:</strong> ${{b.personal_address || '—'}}</div>
-                </div>
-                <button class="btn" onclick="saveBusinessSettings()">💾 Сохранить изменения</button>
-                <button class="btn btn-secondary" onclick="window.location.href='/profile'">📝 Заполнить адрес профиля</button>
             `;
         }}
 
