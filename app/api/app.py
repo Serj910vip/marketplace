@@ -816,6 +816,35 @@ COMMON_STYLES = """
         border-color: var(--tg-theme-button-color, #2481cc);
     }
 
+    
+    /* Стили для детальной статистики */
+    .stats-detail {
+        padding: 8px 0;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+    }
+
+    .stats-row:last-child {
+        border-bottom: none;
+    }
+
+    .stats-row span:first-child {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+    }
+
+    .stats-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--tg-theme-button-color, #2481cc);
+    }
+
 
     input[type="file"] { display: none; }
 """
@@ -1101,7 +1130,123 @@ async def main_app():
                 <div class="stat-card"><div class="number">${{s.total_requests}}</div><div class="label">Заявки</div></div>
                 <div class="stat-card success"><div class="number">${{s.successful_requests}}</div><div class="label">Успешные заявки</div></div>
                 <div class="stat-card cancel"><div class="number">${{s.cancelled_requests}}</div><div class="label">Отменённые заявки</div></div>
+                
+                <div class="section-title">Детальная статистика</div>
+                
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('revenue')">
+                        <div class="left">
+                            <span class="label">Выручка</span>
+                        </div>
+                        <span class="accordion-arrow" id="stats-arrow-revenue">▶</span>
+                    </div>
+                    <div class="accordion-content" id="stats-content-revenue">
+                        <div class="stats-detail">
+                            <div class="stats-row">
+                                <span>За сегодня:</span>
+                                <span class="stats-value">0 ₽</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За неделю:</span>
+                                <span class="stats-value">0 ₽</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За месяц:</span>
+                                <span class="stats-value">0 ₽</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За всё время:</span>
+                                <span class="stats-value">0 ₽</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('bookings')">
+                        <div class="left">
+                            <span class="label">Бронирования</span>
+                        </div>
+                        <span class="accordion-arrow" id="stats-arrow-bookings">▶</span>
+                    </div>
+                    <div class="accordion-content" id="stats-content-bookings">
+                        <div class="stats-detail">
+                            <div class="stats-row">
+                                <span>За сегодня:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За неделю:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За месяц:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За всё время:</span>
+                                <span class="stats-value">${{s.total_requests}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('clients')">
+                        <div class="left">
+                            <span class="label">Клиенты</span>
+                        </div>
+                        <span class="accordion-arrow" id="stats-arrow-clients">▶</span>
+                    </div>
+                    <div class="accordion-content" id="stats-content-clients">
+                        <div class="stats-detail">
+                            <div class="stats-row">
+                                <span>Новых за сегодня:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За неделю:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>За месяц:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>Всего клиентов:</span>
+                                <span class="stats-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('popular')">
+                        <div class="left">
+                            <span class="label">Популярные услуги</span>
+                        </div>
+                        <span class="accordion-arrow" id="stats-arrow-popular">▶</span>
+                    </div>
+                    <div class="accordion-content" id="stats-content-popular">
+                        <div class="stats-detail">
+                            <div class="empty">Нет данных</div>
+                        </div>
+                    </div>
+                </div>
             `;
+        }}
+
+        // Функция для открытия/закрытия аккордеона в статистике
+        function toggleStatsAccordion(id) {{
+            const content = document.getElementById('stats-content-' + id);
+            const arrow = document.getElementById('stats-arrow-' + id);
+            if (content.style.display === 'block') {{
+                content.style.display = 'none';
+                arrow.innerHTML = '▶';
+            }} else {{
+                content.style.display = 'block';
+                arrow.innerHTML = '▼';
+            }}
         }}
 
         function renderServices() {{
