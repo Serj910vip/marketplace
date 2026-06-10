@@ -1048,6 +1048,24 @@ async def main_app():
             return `<span class="status-badge status-${{status}}">${{labels[status] || status}}</span>`;
         }}
 
+        // Вспомогательная функция
+        function generateBookingsList() {
+            if (bookingsList && bookingsList.length) {
+                return bookingsList.map(b => `
+                    <div class="booking-card">
+                        <div class="bk-title">${b.service_title}</div>
+                        <div class="bk-meta">
+                            👤 ${b.client_name}<br>
+                            📅 ${b.booking_day_label}, ${b.booking_time}
+                        </div>
+                        ${statusBadge(b.status)}
+                    </div>
+                `).join('');
+            } else {
+                return '<div class="empty">Бронирований пока нет</div>';
+            }
+        }
+
         
         function renderBookings() {{
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
@@ -1090,22 +1108,7 @@ async def main_app():
                 
                 <div class="page-title">📋 Заявки</div>
                 <div id="bookings-list-container">
-                    ${(() => {{
-                        if (bookingsList && bookingsList.length) {{
-                            return bookingsList.map(b => `
-                                <div class="booking-card">
-                                    <div class="bk-title">${b.service_title}</div>
-                                    <div class="bk-meta">
-                                        👤 ${b.client_name}<br>
-                                        📅 ${b.booking_day_label}, ${b.booking_time}
-                                    </div>
-                                    ${statusBadge(b.status)}
-                                </div>
-                            `).join('');
-                        }} else {{
-                            return '<div class="empty">Бронирований пока нет</div>';
-                        }}
-                    }})()}
+                    ${generateBookingsList()}
                 </div>
             `;
         }}
