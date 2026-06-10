@@ -647,6 +647,59 @@ COMMON_STYLES = """
         background: var(--tg-theme-secondary-bg-color, #fff);
         border-radius: 14px; padding: 16px; margin-bottom: 16px;
     }
+
+    /* Стили для меню профиля */
+    .profile-menu-section {
+        margin-bottom: 20px;
+    }
+
+    .profile-menu-item {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .profile-menu-item:hover {
+        background: var(--tg-theme-bg-color, #f0f0f0);
+    }
+
+    .profile-menu-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+
+
+    .profile-menu-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+    }
+
+    .profile-menu-arrow {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+    }
+
+    .btn-delete-market {
+        background: transparent;
+        color: #ff3b30;
+        border: 1px solid #ff3b30;
+        margin-top: 10px;
+    }
+
+    .btn-delete-market:hover {
+        background: #ff3b30;
+        color: #fff;
+    }
     input[type="file"] { display: none; }
 """
 
