@@ -525,6 +525,58 @@ COMMON_STYLES = """
     .stat-card.success .number { color: #4caf50; }
     .stat-card.cancel .number { color: #f44336; }
 
+    /* Стили для карты баланса */
+    .balance-card {
+        width: 360px;
+        height: 165px;
+        margin: 0 auto 20px auto;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+    }
+
+    .balance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .balance-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+        opacity: 0.8;
+    }
+
+    .balance-amount {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--tg-theme-button-color, #2481cc);
+    }
+
+    .account-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--tg-theme-text-color, #1a1a1a);
+        opacity: 0.6;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .account-number {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+        letter-spacing: 0.5px;
+        word-break: break-all;
+    }
+
 
     .page-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
@@ -1023,7 +1075,28 @@ async def main_app():
 
         function renderStats() {{
             const s = statsData || {{ total_requests:0, successful_requests:0, cancelled_requests:0 }};
+            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
+            const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            
             document.getElementById('main-content').innerHTML = `
+                <div class="user-header">
+                    <div class="user-role">Основатель</div>
+                    <div class="user-name">${{name}}</div>
+                </div>
+                
+                <div class="balance-card">
+                    <div class="balance-row">
+                        <span class="balance-label">Баланс:</span>
+                        <span class="balance-amount">2000.0 ₽</span>
+                    </div>
+                    <div class="account-row">
+                        <span class="account-label">Номер аккаунта:</span>
+                    </div>
+                    <div class="account-number">
+                        ${{accountNumber}}
+                    </div>
+                </div>
+                
                 <div class="page-title">📊 Статистика</div>
                 <div class="stat-card"><div class="number">${{s.total_requests}}</div><div class="label">Заявки</div></div>
                 <div class="stat-card success"><div class="number">${{s.successful_requests}}</div><div class="label">Успешные заявки</div></div>
