@@ -1125,9 +1125,8 @@ async def main_app():
         function renderProfile() {{
             const b = businessData || {{}};
             const photo = b.business_photo_url
-                ? `<img src="${{b.business_photo_url}}{" id="profile-photo-preview" class="photo-preview" alt="">`
+                ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
-
             document.getElementById('main-content').innerHTML = `
                 <div class="page-title">👤 Профиль</div>
                 <div class="profile-card">
@@ -1141,8 +1140,8 @@ async def main_app():
                     </div>
                     
                     <div class="profile-info-section">
-                        <div class="profile-business-name">${b.business_name || 'Не указано'}</div>
-                        <div class="profile-business-address">📍 ${b.business_address || 'Адрес не указан'}</div>
+                        <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
+                        <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
                     </div>
                     
                     <div class="profile-divider"></div>
