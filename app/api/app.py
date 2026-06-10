@@ -700,6 +700,75 @@ COMMON_STYLES = """
         background: #ff3b30;
         color: #fff;
     }
+
+    
+    /* Стили для верхнего блока заявки */
+    /* Стили для страницы заявок */
+    .bookings-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .bookings-menu-item {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 15px;
+        padding: 12px 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .bookings-menu-item:hover {
+        background: var(--tg-theme-bg-color, #f0f0f0);
+        transform: scale(0.98);
+    }
+
+    .bookings-menu-icon {
+        font-size: 24px;
+    }
+
+    .bookings-menu-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+    }
+
+    .bookings-filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .booking-filter-btn {
+        width: 160px;
+        height: 41px;
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        color: var(--tg-theme-text-color, #1a1a1a);
+        border: 1px solid var(--tg-theme-hint-color, #ccc);
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .booking-filter-btn:hover {
+        background: var(--tg-theme-button-color, #2481cc);
+        color: var(--tg-theme-button-text-color, #fff);
+        border-color: var(--tg-theme-button-color, #2481cc);
+    }
+
+
     input[type="file"] { display: none; }
 """
 
@@ -956,32 +1025,6 @@ async def main_app():
             }}
         }}
 
-        // Функция для открытия/закрытия аккордеона
-        function toggleAccordion(id) {{
-            const content = document.getElementById('content-' + id);
-            const arrow = document.getElementById('arrow-' + id);
-            if (content.style.display === 'block') {{
-                content.style.display = 'none';
-                arrow.innerHTML = '▶';
-            }} else {{
-                content.style.display = 'block';
-                arrow.innerHTML = '▼';
-            }}
-        }}
-
-        // Функция для открытия/закрытия аккордеона
-        function toggleAccordion(id) {{
-            const content = document.getElementById('content-' + id);
-            const arrow = document.getElementById('arrow-' + id);
-            if (content.style.display === 'block') {{
-                content.style.display = 'none';
-                arrow.innerHTML = '▶';
-            }} else {{
-                content.style.display = 'block';
-                arrow.innerHTML = '▼';
-            }}
-        }}
-
         function renderStats() {{
             const s = statsData || {{ total_requests:0, successful_requests:0, cancelled_requests:0 }};
             document.getElementById('main-content').innerHTML = `
@@ -1006,21 +1049,71 @@ async def main_app():
         }}
 
         function renderBookings() {{
+            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
+            
+            document.getElementById('main-content').innerHTML = `
+                <div class="user-header">
+                    <div class="user-role">Основатель</div>
+                    <div class="user-name">${name}</div>
+                </div>
+                
+                <div class="bookings-menu-grid">
+                    <div class="bookings-menu-item" onclick="filterBookings('all')">
+                        <span class="bookings-menu-icon">🛠️</span>
+                        <span class="bookings-menu-label">Услуги</span>
+                    </div>
+                    <div class="bookings-menu-item" onclick="filterBookings('products')">
+                        <span class="bookings-menu-icon">📦</span>
+                        <span class="bookings-menu-label">Товары</span>
+                    </div>
+                    <div class="bookings-menu-item" onclick="filterBookings('rent')">
+                        <span class="bookings-menu-icon">🏠</span>
+                        <span class="bookings-menu-label">Аренда</span>
+                    </div>
+                    <div class="bookings-menu-item" onclick="filterBookings('events')">
+                        <span class="bookings-menu-icon">📅</span>
+                        <span class="bookings-menu-label">События</span>
+                    </div>
+                    <div class="bookings-menu-item" onclick="filterBookings('ads')">
+                        <span class="bookings-menu-icon">📢</span>
+                        <span class="bookings-menu-label">Объявления</span>
+                    </div>
+                </div>
+                
+                <div class="bookings-filter-buttons">
+                    <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
+                    <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
+                    <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
+                    <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
+                </div>
+                
+                <div class="page-title">📋 Заявки</div>
+                <div id="bookings-list">
+                    ${renderBookingsList()}
+                </div>
+            `;
+        }}
+
+        function renderBookingsList() {{
             const html = bookingsList.length ? bookingsList.map(b => `
                 <div class="booking-card">
-                    <div class="bk-title">${{b.service_title}}</div>
+                    <div class="bk-title">${b.service_title}</div>
                     <div class="bk-meta">
-                        👤 ${{b.client_name}}<br>
-                        📅 ${{b.booking_day_label}}, ${{b.booking_time}}
+                        👤 ${b.client_name}<br>
+                        📅 ${b.booking_day_label}, ${b.booking_time}
                     </div>
-                    ${{statusBadge(b.status)}}
+                    ${statusBadge(b.status)}
                 </div>
             `).join('') : '<div class="empty">Бронирований пока нет</div>';
+            return html;
+        }}
 
-            document.getElementById('main-content').innerHTML = `
-                <div class="page-title">📋 Заявки</div>
-                ${{html}}
-            `;
+        function filterBookings(category) {{
+            tg.showAlert(`Фильтр по категории: ${category} в разработке`);
+        }}
+
+        function filterByStatus(status) {{
+            tg.showAlert(`Фильтр по статусу: ${status} в разработке`);
         }}
 
         function renderProfile() {{
