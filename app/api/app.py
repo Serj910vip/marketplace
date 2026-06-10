@@ -1048,6 +1048,7 @@ async def main_app():
             return `<span class="status-badge status-${{status}}">${{labels[status] || status}}</span>`;
         }}
 
+        
         function renderBookings() {{
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             
@@ -1088,26 +1089,28 @@ async def main_app():
                 </div>
                 
                 <div class="page-title">📋 Заявки</div>
-                <div id="bookings-list">
-                    ${renderBookingsList()}
+                <div id="bookings-list-container">
+                    ${(() => {{
+                        if (bookingsList && bookingsList.length) {{
+                            return bookingsList.map(b => `
+                                <div class="booking-card">
+                                    <div class="bk-title">${b.service_title}</div>
+                                    <div class="bk-meta">
+                                        👤 ${b.client_name}<br>
+                                        📅 ${b.booking_day_label}, ${b.booking_time}
+                                    </div>
+                                    ${statusBadge(b.status)}
+                                </div>
+                            `).join('');
+                        }} else {{
+                            return '<div class="empty">Бронирований пока нет</div>';
+                        }}
+                    }})()}
                 </div>
             `;
         }}
 
-        function renderBookingsList() {{
-            const html = bookingsList.length ? bookingsList.map(b => `
-                <div class="booking-card">
-                    <div class="bk-title">${b.service_title}</div>
-                    <div class="bk-meta">
-                        👤 ${b.client_name}<br>
-                        📅 ${b.booking_day_label}, ${b.booking_time}
-                    </div>
-                    ${statusBadge(b.status)}
-                </div>
-            `).join('') : '<div class="empty">Бронирований пока нет</div>';
-            return html;
-        }}
-
+        // Функции для фильтрации (только один раз!)
         function filterBookings(category) {{
             tg.showAlert(`Фильтр по категории: ${category} в разработке`);
         }}
@@ -1119,7 +1122,7 @@ async def main_app():
         function renderProfile() {{
             const b = businessData || {{}};
             const photo = b.business_photo_url
-                ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">`
+                ? `<img src="${b.business_photo_url}" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
 
             document.getElementById('main-content').innerHTML = `
@@ -1128,15 +1131,15 @@ async def main_app():
                     <div class="profile-photo-section">
                         <div class="field-label">Главная фотография профиля</div>
                         <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
-                            ${{photo}}
+                            ${photo}
                         </div>
                         <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
                         <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
                     </div>
                     
                     <div class="profile-info-section">
-                        <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
-                        <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
+                        <div class="profile-business-name">${b.business_name || 'Не указано'}</div>
+                        <div class="profile-business-address">📍 ${b.business_address || 'Адрес не указан'}</div>
                     </div>
                     
                     <div class="profile-divider"></div>
@@ -1200,6 +1203,13 @@ async def main_app():
                 tg.showAlert('Функция в разработке');
             }});
         }}
+
+
+
+
+ 
+
+
 
         let pendingBizPhoto = null;
 
