@@ -1049,22 +1049,22 @@ async def main_app():
         }}
 
         // Вспомогательная функция
-        function generateBookingsList() {
-            if (bookingsList && bookingsList.length) {
+        function generateBookingsList() {{
+            if (bookingsList && bookingsList.length) {{
                 return bookingsList.map(b => `
                     <div class="booking-card">
-                        <div class="bk-title">${b.service_title}</div>
+                        <div class="bk-title">${{b.service_title}}</div>
                         <div class="bk-meta">
-                            👤 ${b.client_name}<br>
-                            📅 ${b.booking_day_label}, ${b.booking_time}
+                            👤 ${{b.client_name}}<br>
+                            📅 ${{b.booking_day_label}}, ${{b.booking_time}}
                         </div>
-                        ${statusBadge(b.status)}
+                        ${{statusBadge(b.status)}}
                     </div>
                 `).join('');
-            } else {
+            }} else {{
                 return '<div class="empty">Бронирований пока нет</div>';
-            }
-        }
+            }}
+        }}
 
         
         function renderBookings() {{
@@ -1073,7 +1073,7 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <div class="user-header">
                     <div class="user-role">Основатель</div>
-                    <div class="user-name">${name}</div>
+                    <div class="user-name">${{name}}</div>
                 </div>
                 
                 <div class="bookings-menu-grid">
@@ -1108,24 +1108,24 @@ async def main_app():
                 
                 <div class="page-title">📋 Заявки</div>
                 <div id="bookings-list-container">
-                    ${generateBookingsList()}
+                    ${{generateBookingsList()}}
                 </div>
             `;
         }}
 
         // Функции для фильтрации (только один раз!)
         function filterBookings(category) {{
-            tg.showAlert(`Фильтр по категории: ${category} в разработке`);
+            tg.showAlert(`Фильтр по категории: ${{category}} в разработке`);
         }}
 
         function filterByStatus(status) {{
-            tg.showAlert(`Фильтр по статусу: ${status} в разработке`);
+            tg.showAlert(`Фильтр по статусу: ${{status}} в разработке`);
         }}
 
         function renderProfile() {{
             const b = businessData || {{}};
             const photo = b.business_photo_url
-                ? `<img src="${b.business_photo_url}" id="profile-photo-preview" class="photo-preview" alt="">`
+                ? `<img src="${{b.business_photo_url}}{" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
 
             document.getElementById('main-content').innerHTML = `
@@ -1134,7 +1134,7 @@ async def main_app():
                     <div class="profile-photo-section">
                         <div class="field-label">Главная фотография профиля</div>
                         <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
-                            ${photo}
+                            ${{photo}}
                         </div>
                         <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
                         <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
