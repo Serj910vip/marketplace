@@ -730,10 +730,6 @@ COMMON_STYLES = """
         transform: scale(0.98);
     }
 
-    .bookings-menu-icon {
-        font-size: 24px;
-    }
-
     .bookings-menu-label {
         font-size: 11px;
         font-weight: 600;
@@ -1078,23 +1074,18 @@ async def main_app():
                 
                 <div class="bookings-menu-grid">
                     <div class="bookings-menu-item" onclick="filterBookings('all')">
-                        <span class="bookings-menu-icon">🛠️</span>
                         <span class="bookings-menu-label">Услуги</span>
                     </div>
                     <div class="bookings-menu-item" onclick="filterBookings('products')">
-                        <span class="bookings-menu-icon">📦</span>
                         <span class="bookings-menu-label">Товары</span>
                     </div>
                     <div class="bookings-menu-item" onclick="filterBookings('rent')">
-                        <span class="bookings-menu-icon">🏠</span>
                         <span class="bookings-menu-label">Аренда</span>
                     </div>
                     <div class="bookings-menu-item" onclick="filterBookings('events')">
-                        <span class="bookings-menu-icon">📅</span>
                         <span class="bookings-menu-label">События</span>
                     </div>
                     <div class="bookings-menu-item" onclick="filterBookings('ads')">
-                        <span class="bookings-menu-icon">📢</span>
                         <span class="bookings-menu-label">Объявления</span>
                     </div>
                 </div>
