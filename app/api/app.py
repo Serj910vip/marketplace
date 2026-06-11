@@ -845,6 +845,60 @@ COMMON_STYLES = """
         color: var(--tg-theme-button-color, #2481cc);
     }
 
+    /* Стили для нового блока статистики */
+    .stats-main-block {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card-mini {
+        text-align: center;
+        padding: 12px;
+        background: var(--tg-theme-bg-color, #f8f8f8);
+        border-radius: 12px;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--tg-theme-button-color, #2481cc);
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: var(--tg-theme-hint-color, #707579);
+        margin-top: 6px;
+    }
+
+    .stat-earnings {
+        text-align: center;
+        padding-top: 16px;
+        border-top: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+    }
+
+    .earnings-label {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .earnings-amount {
+        font-size: 24px;
+        font-weight: 800;
+        color: #4caf50;
+    }
 
     input[type="file"] { display: none; }
 """
@@ -1107,6 +1161,13 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
+            // Данные для заглушек (потом замените на реальные переменные)
+            const servicesCount = 2;           // Количество услуг
+            const bookingsCount = 218;         // Количество заявок
+            const confirmedBookings = 198;     // Подтверждённые заявки
+            const cancelledBookings = 20;      // Отменённые заявки
+            const earnedMoney = 25680;         // Заработано денег (в рублях)
+            
             document.getElementById('main-content').innerHTML = `
                 <div class="user-header">
                     <div class="user-role">Основатель</div>
@@ -1126,10 +1187,31 @@ async def main_app():
                     </div>
                 </div>
                 
-                <div class="page-title">📊 Статистика</div>
-                <div class="stat-card"><div class="number">${{s.total_requests}}</div><div class="label">Заявки</div></div>
-                <div class="stat-card success"><div class="number">${{s.successful_requests}}</div><div class="label">Успешные заявки</div></div>
-                <div class="stat-card cancel"><div class="number">${{s.cancelled_requests}}</div><div class="label">Отменённые заявки</div></div>
+                <!-- Блок с основной статистикой -->
+                <div class="stats-main-block">
+                    <div class="stats-grid">
+                        <div class="stat-card-mini">
+                            <div class="stat-number">${{servicesCount}}</div>
+                            <div class="stat-label">Услуг</div>
+                        </div>
+                        <div class="stat-card-mini">
+                            <div class="stat-number">${{bookingsCount}}</div>
+                            <div class="stat-label">Заявок</div>
+                        </div>
+                        <div class="stat-card-mini">
+                            <div class="stat-number">${{confirmedBookings}}</div>
+                            <div class="stat-label">Подтверждённые</div>
+                        </div>
+                        <div class="stat-card-mini">
+                            <div class="stat-number">${{cancelledBookings}}</div>
+                            <div class="stat-label">Отменённые</div>
+                        </div>
+                    </div>
+                    <div class="stat-earnings">
+                        <span class="earnings-label">💰 Заработано денег:</span>
+                        <span class="earnings-amount">${{earnedMoney.toLocaleString()}} ₽</span>
+                    </div>
+                </div>
                 
                 <div class="section-title">Детальная статистика</div>
                 
@@ -1156,7 +1238,7 @@ async def main_app():
                             </div>
                             <div class="stats-row">
                                 <span>За всё время:</span>
-                                <span class="stats-value">0 ₽</span>
+                                <span class="stats-value">${{earnedMoney.toLocaleString()}} ₽</span>
                             </div>
                         </div>
                     </div>
@@ -1185,7 +1267,7 @@ async def main_app():
                             </div>
                             <div class="stats-row">
                                 <span>За всё время:</span>
-                                <span class="stats-value">${{s.total_requests}}</span>
+                                <span class="stats-value">${{bookingsCount}}</span>
                             </div>
                         </div>
                     </div>
