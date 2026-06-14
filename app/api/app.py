@@ -861,60 +861,6 @@ COMMON_STYLES = """
         color: var(--tg-theme-button-color, #2481cc);
     }
 
-    /* Стили для нового блока статистики */
-    .stats-main-block {
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .stat-card-mini {
-        text-align: center;
-        padding: 12px;
-        background: var(--tg-theme-bg-color, #f8f8f8);
-        border-radius: 12px;
-    }
-
-    .stat-number {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--tg-theme-button-color, #2481cc);
-        line-height: 1.2;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: var(--tg-theme-hint-color, #707579);
-        margin-top: 6px;
-    }
-
-    .stat-earnings {
-        text-align: center;
-        padding-top: 16px;
-        border-top: 1px solid var(--tg-theme-hint-color, #e0e0e0);
-    }
-
-    .earnings-label {
-        font-size: 14px;
-        color: var(--tg-theme-hint-color, #707579);
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    .earnings-amount {
-        font-size: 24px;
-        font-weight: 800;
-        color: #4caf50;
-    }
 
     /* Стили для единого блока статистики */
     .stats-header-block {
@@ -923,7 +869,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 0 20px;
-        margin-bottom: 20px;
+        margin-bottom: 0;  /* Убираем отступ снизу */
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -990,6 +936,24 @@ COMMON_STYLES = """
         color: #FFFFFF;
         letter-spacing: 0.5px;
         word-break: break-all;
+    }
+
+    /* Наезжание блоков на синий блок */
+    .accordion-item {
+        position: relative;
+        margin-top: -15px;
+        z-index: 2;
+    }
+
+    /* Первый аккордеон (Услуги) - отступ от карты баланса 35px */
+    .accordion-item:first-of-type {
+        margin-top: 35px;
+    }
+
+    /* Остальные аккордеоны */
+    .accordion-item:not(:first-of-type) {
+        margin-top: 0;
+        margin-bottom: 10px;
     }
 
     input[type="file"] { display: none; }
@@ -1327,34 +1291,7 @@ async def main_app():
                         </div>
                     </div>
                 </div>
-                
-                <!-- Блок с основной статистикой -->
-                <div class="stats-main-block">
-                    <div class="stats-grid">
-                        <div class="stat-card-mini">
-                            <div class="stat-number">${{servicesCount}}</div>
-                            <div class="stat-label">Услуг</div>
-                        </div>
-                        <div class="stat-card-mini">
-                            <div class="stat-number">${{bookingsCount}}</div>
-                            <div class="stat-label">Заявок</div>
-                        </div>
-                        <div class="stat-card-mini">
-                            <div class="stat-number">${{confirmedBookings}}</div>
-                            <div class="stat-label">Подтверждённые</div>
-                        </div>
-                        <div class="stat-card-mini">
-                            <div class="stat-number">${{cancelledBookings}}</div>
-                            <div class="stat-label">Отменённые</div>
-                        </div>
-                    </div>
-                    <div class="stat-earnings">
-                        <span class="earnings-label">Заработано денег:</span>
-                        <span class="earnings-amount">${{earnedMoney.toLocaleString()}} ₽</span>
-                    </div>
-                </div>
-                
-                <div class="section-title">Детальная статистика</div>
+        
                 
                 <!-- Услуги -->
                 <div class="accordion-item">
