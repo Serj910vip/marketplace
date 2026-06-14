@@ -937,15 +937,17 @@ COMMON_STYLES = """
 
     .user-header-inline .user-name {
         color: #FFFFFF;
-        font-size: 22px;
+        font-size: 18px;
         font-weight: 700;
     }
 
     .balance-card-flat {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
         border-radius: 20px;
-        padding: 18px 20px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         margin-top: 10px;
     }
 
@@ -953,17 +955,18 @@ COMMON_STYLES = """
         display: flex;
         justify-content: space-between;
         align-items: baseline;
+        margin-top: 20px;
         margin-bottom: 20px;
     }
 
     .balance-label-flat {
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
         color: rgba(255, 255, 255, 0.8);
     }
 
     .balance-amount-flat {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 800;
         color: #FFFFFF;
     }
@@ -972,12 +975,12 @@ COMMON_STYLES = """
         font-size: 12px;
         font-weight: 500;
         color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         display: block;
     }
 
     .account-number-flat {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 600;
         color: #FFFFFF;
         letter-spacing: 0.5px;
