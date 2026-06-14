@@ -1491,44 +1491,62 @@ async def main_app():
         
         function renderBookings() {{
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
+            const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
             document.getElementById('main-content').innerHTML = `
-                <div class="user-header">
-                    <div class="user-role">Основатель</div>
-                    <div class="user-name">${{name}}</div>
-                </div>
-                
-                <div class="bookings-menu-grid">
-                    <div class="bookings-menu-item" onclick="filterBookings('all')">
-                        <span class="bookings-menu-label">Услуги</span>
+                <!-- Синий блок с содержимым внутри -->
+                <div class="stats-header-block">
+                    <div class="user-header-inline">
+                        <div class="user-role">Основатель</div>
+                        <div class="user-name">${{name}}</div>
                     </div>
-                    <div class="bookings-menu-item" onclick="filterBookings('products')">
-                        <span class="bookings-menu-label">Товары</span>
+                    
+                    <div class="balance-card-flat">
+                        <div class="balance-row-flat">
+                            <span class="balance-label-flat">Баланс:</span>
+                            <span class="balance-amount-flat">2000.0 ₽</span>
+                        </div>
+                        <div class="account-row-flat">
+                            <span class="account-label-flat">Номер аккаунта:</span>
+                        </div>
+                        <div class="account-number-flat">
+                            ${{accountNumber}}
+                        </div>
                     </div>
-                    <div class="bookings-menu-item" onclick="filterBookings('rent')">
-                        <span class="bookings-menu-label">Аренда</span>
+                    
+                    <div class="bookings-menu-grid">
+                        <div class="bookings-menu-item" onclick="filterBookings('all')">
+                            <span class="bookings-menu-label">Услуги</span>
+                        </div>
+                        <div class="bookings-menu-item" onclick="filterBookings('products')">
+                            <span class="bookings-menu-label">Товары</span>
+                        </div>
+                        <div class="bookings-menu-item" onclick="filterBookings('rent')">
+                            <span class="bookings-menu-label">Аренда</span>
+                        </div>
+                        <div class="bookings-menu-item" onclick="filterBookings('events')">
+                            <span class="bookings-menu-label">События</span>
+                        </div>
+                        <div class="bookings-menu-item" onclick="filterBookings('ads')">
+                            <span class="bookings-menu-label">Объявления</span>
+                        </div>
                     </div>
-                    <div class="bookings-menu-item" onclick="filterBookings('events')">
-                        <span class="bookings-menu-label">События</span>
+                    
+                    <div class="bookings-filter-buttons">
+                        <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
+                        <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
+                        <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
+                        <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
                     </div>
-                    <div class="bookings-menu-item" onclick="filterBookings('ads')">
-                        <span class="bookings-menu-label">Объявления</span>
+                    
+                    <div class="page-title">📋 Заявки</div>
+                    <div id="bookings-list-container">
+                        ${{generateBookingsList()}}
                     </div>
-                </div>
-                
-                <div class="bookings-filter-buttons">
-                    <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
-                    <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
-                    <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
-                    <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
-                </div>
-                
-                <div class="page-title">📋 Заявки</div>
-                <div id="bookings-list-container">
-                    ${{generateBookingsList()}}
                 </div>
             `;
         }}
+
 
         // Функции для фильтрации (только один раз!)
         function filterBookings(category) {{
