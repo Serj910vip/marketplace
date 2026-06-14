@@ -916,12 +916,13 @@ COMMON_STYLES = """
     /* Стили для единого блока статистики */
     .stats-header-block {
         background: #003A81;
-        width: 100%;
         height: 334px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 0 20px;
         margin-bottom: 20px;
+        margin-left: -16px;
+        margin-right: -16px;
         box-sizing: border-box;
     }
 
