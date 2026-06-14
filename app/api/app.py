@@ -537,7 +537,7 @@ COMMON_STYLES = """
     .stat-card.success .number { color: #4caf50; }
     .stat-card.cancel .number { color: #f44336; }
 
-    /* Стили для карты баланса */
+    /* Стили для карты баланса 
     .balance-card {
         width: 360px;
         height: 165px;
@@ -588,6 +588,7 @@ COMMON_STYLES = """
         letter-spacing: 0.5px;
         word-break: break-all;
     }
+    */
 
 
     .page-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 20px; }
@@ -912,6 +913,77 @@ COMMON_STYLES = """
         color: #4caf50;
     }
 
+    /* Стили для единого блока статистики */
+    .stats-header-block {
+        background: #003A81;
+        width: 100%;
+        height: 334px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+
+    .user-header-inline {
+        margin-bottom: 24px;
+    }
+
+    .user-header-inline .user-role {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .user-header-inline .user-name {
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .balance-card-flat {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 18px 20px;
+        margin-top: 10px;
+    }
+
+    .balance-row-flat {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 20px;
+    }
+
+    .balance-label-flat {
+        font-size: 16px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .balance-amount-flat {
+        font-size: 24px;
+        font-weight: 800;
+        color: #FFFFFF;
+    }
+
+    .account-label-flat {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .account-number-flat {
+        font-size: 15px;
+        font-weight: 600;
+        color: #FFFFFF;
+        letter-spacing: 0.5px;
+        word-break: break-all;
+    }
+
     input[type="file"] { display: none; }
 """
 
@@ -1219,29 +1291,32 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
-            // Данные для заглушек (потом замените на реальные переменные)
-            const servicesCount = 2;           // Количество услуг
-            const bookingsCount = 218;         // Количество заявок
-            const confirmedBookings = 198;     // Подтверждённые заявки
-            const cancelledBookings = 20;      // Отменённые заявки
-            const earnedMoney = 25680;         // Заработано денег (в рублях)
+            // Данные для заглушек
+            const servicesCount = 2;
+            const bookingsCount = 218;
+            const confirmedBookings = 198;
+            const cancelledBookings = 20;
+            const earnedMoney = 25680;
             
             document.getElementById('main-content').innerHTML = `
-                <div class="user-header">
-                    <div class="user-role">Основатель</div>
-                    <div class="user-name">${{name}}</div>
-                </div>
-                
-                <div class="balance-card">
-                    <div class="balance-row">
-                        <span class="balance-label">Баланс:</span>
-                        <span class="balance-amount">2000.0 ₽</span>
+                <!-- Единый блок с фоном #003A81 -->
+                <div class="stats-header-block">
+                    <div class="user-header-inline">
+                        <div class="user-role">Основатель</div>
+                        <div class="user-name">${{name}}</div>
                     </div>
-                    <div class="account-row">
-                        <span class="account-label">Номер аккаунта:</span>
-                    </div>
-                    <div class="account-number">
-                        ${{accountNumber}}
+                    
+                    <div class="balance-card-flat">
+                        <div class="balance-row-flat">
+                            <span class="balance-label-flat">Баланс:</span>
+                            <span class="balance-amount-flat">2000.0 ₽</span>
+                        </div>
+                        <div class="account-row-flat">
+                            <span class="account-label-flat">Номер аккаунта:</span>
+                        </div>
+                        <div class="account-number-flat">
+                            ${{accountNumber}}
+                        </div>
                     </div>
                 </div>
                 
@@ -1283,26 +1358,11 @@ async def main_app():
                     </div>
                     <div class="accordion-content" id="stats-content-services-detail">
                         <div class="stats-detail">
-                            <div class="stats-row">
-                                <span>Количество услуг:</span>
-                                <span class="stats-value">2</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Количество заявок:</span>
-                                <span class="stats-value">218</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Подтверждённые заявки:</span>
-                                <span class="stats-value">198</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Отменённые заявки:</span>
-                                <span class="stats-value">20</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Заработано денег:</span>
-                                <span class="stats-value">25 680 ₽</span>
-                            </div>
+                            <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">2</span></div>
+                            <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">218</span></div>
+                            <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">198</span></div>
+                            <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">20</span></div>
+                            <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">25 680 ₽</span></div>
                         </div>
                     </div>
                 </div>
@@ -1310,33 +1370,16 @@ async def main_app():
                 <!-- Товары -->
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('products-detail')">
-                        <div class="left">
-                            <span class="label">Товары</span>
-                        </div>
+                        <div class="left"><span class="label">Товары</span></div>
                         <span class="accordion-arrow" id="stats-arrow-products-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-products-detail">
                         <div class="stats-detail">
-                            <div class="stats-row">
-                                <span>Количество товаров:</span>
-                                <span class="stats-value">5</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Количество заказов:</span>
-                                <span class="stats-value">47</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Выполненные заказы:</span>
-                                <span class="stats-value">42</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Возвраты:</span>
-                                <span class="stats-value">5</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Выручка:</span>
-                                <span class="stats-value">12 350 ₽</span>
-                            </div>
+                            <div class="stats-row"><span>Количество товаров:</span><span class="stats-value">5</span></div>
+                            <div class="stats-row"><span>Количество заказов:</span><span class="stats-value">47</span></div>
+                            <div class="stats-row"><span>Выполненные заказы:</span><span class="stats-value">42</span></div>
+                            <div class="stats-row"><span>Возвраты:</span><span class="stats-value">5</span></div>
+                            <div class="stats-row"><span>Выручка:</span><span class="stats-value">12 350 ₽</span></div>
                         </div>
                     </div>
                 </div>
@@ -1344,33 +1387,16 @@ async def main_app():
                 <!-- Аренда -->
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('rentals-detail')">
-                        <div class="left">
-                            <span class="label">Аренда</span>
-                        </div>
+                        <div class="left"><span class="label">Аренда</span></div>
                         <span class="accordion-arrow" id="stats-arrow-rentals-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-rentals-detail">
                         <div class="stats-detail">
-                            <div class="stats-row">
-                                <span>Предметов в аренду:</span>
-                                <span class="stats-value">8</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Активных аренд:</span>
-                                <span class="stats-value">12</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Завершённых аренд:</span>
-                                <span class="stats-value">34</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Отменённых аренд:</span>
-                                <span class="stats-value">3</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Заработано:</span>
-                                <span class="stats-value">8 420 ₽</span>
-                            </div>
+                            <div class="stats-row"><span>Предметов в аренду:</span><span class="stats-value">8</span></div>
+                            <div class="stats-row"><span>Активных аренд:</span><span class="stats-value">12</span></div>
+                            <div class="stats-row"><span>Завершённых аренд:</span><span class="stats-value">34</span></div>
+                            <div class="stats-row"><span>Отменённых аренд:</span><span class="stats-value">3</span></div>
+                            <div class="stats-row"><span>Заработано:</span><span class="stats-value">8 420 ₽</span></div>
                         </div>
                     </div>
                 </div>
@@ -1378,33 +1404,16 @@ async def main_app():
                 <!-- События -->
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('events-detail')">
-                        <div class="left">
-                            <span class="label">События</span>
-                        </div>
+                        <div class="left"><span class="label">События</span></div>
                         <span class="accordion-arrow" id="stats-arrow-events-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-events-detail">
                         <div class="stats-detail">
-                            <div class="stats-row">
-                                <span>Создано событий:</span>
-                                <span class="stats-value">3</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Участников (всего):</span>
-                                <span class="stats-value">156</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Подтверждённых записей:</span>
-                                <span class="stats-value">142</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Отменённых записей:</span>
-                                <span class="stats-value">14</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Сбор с билетов:</span>
-                                <span class="stats-value">31 200 ₽</span>
-                            </div>
+                            <div class="stats-row"><span>Создано событий:</span><span class="stats-value">3</span></div>
+                            <div class="stats-row"><span>Участников (всего):</span><span class="stats-value">156</span></div>
+                            <div class="stats-row"><span>Подтверждённых записей:</span><span class="stats-value">142</span></div>
+                            <div class="stats-row"><span>Отменённых записей:</span><span class="stats-value">14</span></div>
+                            <div class="stats-row"><span>Сбор с билетов:</span><span class="stats-value">31 200 ₽</span></div>
                         </div>
                     </div>
                 </div>
@@ -1412,38 +1421,23 @@ async def main_app():
                 <!-- Объявления -->
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
-                        <div class="left">
-                            <span class="label">📢 Объявления</span>
-                        </div>
+                        <div class="left"><span class="label">📢 Объявления</span></div>
                         <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-ads-detail">
                         <div class="stats-detail">
-                            <div class="stats-row">
-                                <span>Активных объявлений:</span>
-                                <span class="stats-value">4</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Всего просмотров:</span>
-                                <span class="stats-value">2 847</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Кликов:</span>
-                                <span class="stats-value">126</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Заявок с объявлений:</span>
-                                <span class="stats-value">19</span>
-                            </div>
-                            <div class="stats-row">
-                                <span>Конверсия:</span>
-                                <span class="stats-value">15%</span>
-                            </div>
+                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">4</span></div>
+                            <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
+                            <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
+                            <div class="stats-row"><span>Заявок с объявлений:</span><span class="stats-value">19</span></div>
+                            <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
                         </div>
                     </div>
                 </div>
             `;
         }}
+
+
 
         // Функция для открытия/закрытия аккордеона в статистике
         function toggleStatsAccordion(id) {{
