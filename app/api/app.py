@@ -1488,10 +1488,8 @@ async def main_app():
             }}
         }}
 
-        
-        function renderBookings() {{
+       function renderBookings() {{
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
-            const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
             document.getElementById('main-content').innerHTML = `
                 <!-- Синий блок с содержимым внутри -->
@@ -1499,19 +1497,6 @@ async def main_app():
                     <div class="user-header-inline">
                         <div class="user-role">Основатель</div>
                         <div class="user-name">${{name}}</div>
-                    </div>
-                    
-                    <div class="balance-card-flat">
-                        <div class="balance-row-flat">
-                            <span class="balance-label-flat">Баланс:</span>
-                            <span class="balance-amount-flat">2000.0 ₽</span>
-                        </div>
-                        <div class="account-row-flat">
-                            <span class="account-label-flat">Номер аккаунта:</span>
-                        </div>
-                        <div class="account-number-flat">
-                            ${{accountNumber}}
-                        </div>
                     </div>
                     
                     <div class="bookings-menu-grid">
