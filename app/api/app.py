@@ -770,20 +770,23 @@ COMMON_STYLES = """
     /* Стили для верхнего блока заявки */
     /* Стили для страницы заявок */
     .bookings-menu-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        display: flex;
+        justify-content: space-around;
         gap: 10px;
         margin-bottom: 20px;
+        flex-wrap: wrap;
     }
 
     .bookings-menu-item {
         background: var(--tg-theme-secondary-bg-color, #fff);
         border-radius: 15px;
-        padding: 12px 4px;
+        width: 60px;
+        height: 60px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 6px;
+        justify-content: center;
+        gap: 4px;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
