@@ -316,12 +316,18 @@ COMMON_STYLES = """
 
     /* НОВЫЕ СТИЛИ ДЛЯ МЕНЮ */
     .bottom-nav {
-        position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-        width: 100%; max-width: 480px; display: flex; gap: 8px;
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        border-top: 1px solid rgba(0,0,0,0.08); z-index: 100;
-        padding: 8px 12px env(safe-area-inset-bottom, 0);
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 360px;
+        height: 56px;
+        background: #003A81;
+        border-radius: 28px;
+        display: flex;
+        align-items: center;
         justify-content: space-around;
+        z-index: 100;
     }
 
     .nav-item {
