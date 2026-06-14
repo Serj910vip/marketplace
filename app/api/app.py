@@ -427,7 +427,7 @@ COMMON_STYLES = """
     }
     .menu-card {
         background: var(--tg-theme-secondary-bg-color, #fff); border-radius: 12px;
-        padding: 14px 16px; margin-bottom: 10px;
+        padding: 14px 16px; 
         display: flex; align-items: center; justify-content: space-between;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
@@ -952,8 +952,8 @@ COMMON_STYLES = """
 
     /* Остальные аккордеоны */
     .accordion-item:not(:first-of-type) {
-        margin-top: 0;
-        margin-bottom: 10px;
+        margin-top: -15px;
+        margin-bottom: 0;
     }
 
     input[type="file"] { display: none; }
