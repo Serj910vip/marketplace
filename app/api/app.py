@@ -946,6 +946,7 @@ COMMON_STYLES = """
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 16px 20px;
+        height: 165px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.3);
         margin-top: 10px;
