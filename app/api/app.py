@@ -323,6 +323,7 @@ COMMON_STYLES = """
         width: 360px;
         height: 56px;
         background: #003A81;
+        border-radius: 15px;
         border-radius: 28px;
         display: flex;
         align-items: center;
