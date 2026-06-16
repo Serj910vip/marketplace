@@ -887,6 +887,40 @@ COMMON_STYLES = """
         box-sizing: border-box;
     }
 
+    /* Стили для блока подписки */
+    .subscription-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+    }
+
+    .back-link-white {
+        display: inline-block;
+        margin-bottom: 24px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 15px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 0;
+    }
+
+    .back-link-white:hover {
+        color: #FFFFFF;
+    }
+
+    .subscription-title {
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
     .user-header-inline {
         margin-bottom: 24px;
     }
@@ -1531,7 +1565,7 @@ async def main_app():
                         <span class="profile-menu-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="tg.showAlert('Подписка в разработке')">
+                    <div class="profile-menu-item" onclick="window.location.href='/subscription'">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">Подписка</span>
                         </div>
@@ -2201,6 +2235,70 @@ async def wallet_page():
                     <div class="profile-menu-item" onclick="tg.showAlert('Вывод средств в разработке')">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">➖ Вывести</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/subscription", response_class=HTMLResponse)
+async def subscription_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Подписка</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content">
+                <!-- Синий блок с кнопкой назад внутри -->
+                <div class="subscription-header-block">
+                    <button class="back-link-white" onclick="window.location.href='/'">← Назад</button>
+                    <div class="subscription-title">📋 Подписка</div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-info-section">
+                        <div style="font-size:48px; margin-bottom:16px;">⭐</div>
+                        <div class="profile-business-name">Базовый тариф</div>
+                        <div class="profile-business-address" style="margin-top:8px;">До 5 услуг · Базовая статистика</div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Доступные тарифы</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Базовый тариф - 0 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📦 Базовый</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Бесплатно</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Про тариф - 499 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🚀 Про</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">499 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Бизнес тариф - 999 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">💼 Бизнес</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">999 ₽/мес</span>
                         </div>
                         <span class="profile-menu-arrow">▶</span>
                     </div>
