@@ -519,22 +519,97 @@ COMMON_STYLES = """
         align-items: center; 
         justify-content: space-between;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }*/
+    }
 
     .menu-card {
-        background: #FFFFFF;  /* Белый фон */
-        border-radius: 20px;  /* Скругление 20px */
+        background: #FFFFFF;  
+        border-radius: 20px;  
         padding: 14px 16px;
         margin-bottom: 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Drop shadow */
-        border: 1px solid rgba(0, 0, 0, 0.2);  /* Stroke черный 20% */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  
+        border: 1px solid rgba(0, 0, 0, 0.2);  
     }
     .menu-card .left { display: flex; align-items: center; gap: 10px; }
     .menu-card .icon { font-size: 22px; }
-    .menu-card .label { font-size: 15px; font-weight: 600; }
+    .menu-card .label { font-size: 15px; font-weight: 600; }*/
+
+    /* НОВЫЕ СТИЛИ ДЛЯ КНОПОК (ГЛАВНАЯ И СТАТИСТИКА) */
+    .accordion-item {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .accordion-item:first-of-type {
+        margin-top: 35px;
+    }
+
+    .accordion-item:not(:first-of-type) {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .menu-card {
+        background: #ECEBEB;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: none;
+        border: none;
+        width: 326px;
+        height: 68px;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .menu-card:hover {
+        background: #dddcdc;
+    }
+
+    .menu-card .left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .menu-card .icon {
+        font-size: 22px;
+    }
+
+    .menu-card .label {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+    }
+
+    .menu-card .accordion-arrow {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+        transition: transform 0.2s ease;
+    }
+
+    /* Контент аккордеона */
+    .accordion-content {
+        display: none;
+        padding: 12px 16px 16px 16px;
+        background: transparent;
+        border-radius: 0 0 12px 12px;
+        margin-top: 0;
+        margin-bottom: 0;
+        box-shadow: none;
+    }
 
     /* Стили для аккордеона */
     .accordion-header {
