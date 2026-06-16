@@ -536,7 +536,13 @@ COMMON_STYLES = """
     .menu-card .icon { font-size: 22px; }
     .menu-card .label { font-size: 15px; font-weight: 600; }*/
 
+
+    
+
+
+
     /* НОВЫЕ СТИЛИ ДЛЯ КНОПОК (ГЛАВНАЯ И СТАТИСТИКА) */
+   /* Одна общая белая рамка для всех кнопок на главной */
     .accordion-item {
         background: #FFFFFF;
         border-radius: 20px;
@@ -557,11 +563,12 @@ COMMON_STYLES = """
         margin-bottom: 10px;
     }
 
+    /* Кнопки внутри рамки */
     .menu-card {
         background: #ECEBEB;
         border-radius: 10px;
         padding: 14px 16px;
-        margin-bottom: 0;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -572,6 +579,10 @@ COMMON_STYLES = """
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
+    }
+
+    .menu-card:last-child {
+        margin-bottom: 0;
     }
 
     .menu-card:hover {
