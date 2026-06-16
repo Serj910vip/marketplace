@@ -509,11 +509,28 @@ COMMON_STYLES = """
         font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px;
         border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
     }
+    /*
     .menu-card {
-        background: var(--tg-theme-secondary-bg-color, #fff); border-radius: 12px;
-        padding: 14px 16px; margin-bottom: 10px;
-        display: flex; align-items: center; justify-content: space-between;
+        background: var(--tg-theme-secondary-bg-color, #fff); 
+        border-radius: 12px;
+        padding: 14px 16px; 
+        margin-bottom: 10px;
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }*/
+
+    .menu-card {
+        background: #FFFFFF;  /* Белый фон */
+        border-radius: 20px;  /* Скругление 20px */
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Drop shadow */
+        border: 1px solid rgba(0, 0, 0, 0.2);  /* Stroke черный 20% */
     }
     .menu-card .left { display: flex; align-items: center; gap: 10px; }
     .menu-card .icon { font-size: 22px; }
@@ -1411,7 +1428,7 @@ async def main_app():
                     </div>
                 </div>
                 
-                <div class="section-title" style="margin-top: 20px;">Создать:</div>
+                <div class="section-title" style="margin-top: 42px;">Создать:</div>
                 
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
