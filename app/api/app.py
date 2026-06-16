@@ -974,6 +974,32 @@ COMMON_STYLES = """
         margin-top: 8px;
     }
 
+    /* Стили для блока настроек */
+    .settings-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;  /* Прижимаем к верхнему краю */
+    }
+
+    .settings-title {
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .settings-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
     .user-header-inline {
         margin-bottom: 24px;
     }
@@ -1639,7 +1665,7 @@ async def main_app():
                         <span class="profile-menu-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="tg.showAlert('Настройки в разработке')">
+                    <div class="profile-menu-item" onclick="window.location.href='/settings?from=profile'">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">Настройки</span>
                         </div>
@@ -2546,6 +2572,120 @@ async def services_extra_page():
                             <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">799 ₽/мес</span>
                         </div>
                         <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        
+        function goBack() {{
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from');
+            
+            if (from === 'profile') {{
+                window.location.href = '/?tab=profile';
+            }} else {{
+                history.back();
+            }}
+        }}
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Настройки</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" style="padding-top: 0;">
+                <!-- Синий блок с кнопкой назад внутри, прижат к верху -->
+                <div class="settings-header-block">
+                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'">← Назад</button>
+                    <div class="settings-title">⚙️ Настройки</div>
+                    <div class="settings-subtitle">Управление параметрами аккаунта</div>
+                </div>
+                
+                <div class="profile-card" style="margin-top: 20px;">
+                    <div class="profile-info-section">
+                        <div style="font-size:48px; margin-bottom:16px;">🔐</div>
+                        <div class="profile-business-name">Безопасность</div>
+                        <div class="profile-business-address" style="margin-top:8px;">Двухфакторная аутентификация: <span style="color:#4caf50;">Включена</span></div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Общие настройки</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Язык: Русский')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🌍 Язык</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Русский</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Тема: Светлая')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🎨 Тема оформления</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Светлая</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Уведомления: Включены')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🔔 Уведомления</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Включены</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Приватность</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Профиль: Виден всем')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👁️ Видимость профиля</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Виден всем</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Показывать номер телефона: Нет')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📱 Показывать номер телефона</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">Нет</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Конфиденциальность</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Политика конфиденциальности')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📄 Политика конфиденциальности</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Удалить все данные')" style="border: 1px solid #ff3b30;">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label" style="color: #ff3b30;">🗑️ Удалить все данные</span>
+                        </div>
+                        <span class="profile-menu-arrow" style="color: #ff3b30;">▶</span>
                     </div>
                 </div>
             </div>
