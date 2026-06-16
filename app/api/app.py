@@ -409,7 +409,12 @@ COMMON_STYLES = """
     }
 
     .home-business-card {
+        background: var(--tg-theme-secondary-bg-color, #fff);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
+        margin-top: 16px;
     }
 
     .home-business-card .business-photo {
