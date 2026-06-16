@@ -1916,7 +1916,7 @@ async def create_service_page():
     <body>
         <div class="app">
             <div class="content">
-                <button class="back-link" onclick="window.location.href='/?tab=home'">← Назад</button>
+                <button class="back-link" onclick="history.back()">← Назад</button>
                 <div class="page-title">Создание услуги</div>
 
                 <div class="form-card" style="text-align:center">
@@ -2114,7 +2114,7 @@ async def profile_fill_page():
     <body>
         <div class="app">
             <div class="content">
-                <button class="back-link" onclick="window.location.href='/?tab=home'">← Назад</button>
+                <button class="back-link" onclick="history.back()">← Назад</button>
                 <div class="page-title">Заполнение профиля</div>
                 <div class="tabs">
                     <button class="tab active" id="tab-business" onclick="switchTab('business')">Бизнес профиль</button>
@@ -2203,7 +2203,7 @@ async def wallet_page():
     <body>
         <div class="app">
             <div class="content">
-                <button class="back-link" onclick="window.location.href='/?tab=home'">← Назад</button>
+               <button class="back-link" onclick="history.back()">← Назад</button>
                 
                 <!-- Пустой синий блок -->
                 <div class="wallet-header-block"></div>
@@ -2267,7 +2267,7 @@ async def subscription_page():
             <div class="content">
                 <!-- Синий блок с кнопкой назад внутри -->
                 <div class="subscription-header-block">
-                    <button class="back-link-white" onclick="window.location.href='/'">← Назад</button>
+                    <button class="back-link-white" onclick="history.back()">← Назад</button>
                     <div class="subscription-title">📋 Подписка</div>
                 </div>
                 
