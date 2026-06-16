@@ -874,6 +874,18 @@ COMMON_STYLES = """
         margin-right: -16px;
         box-sizing: border-box;
     }
+    /* Стили для блока кошелька */
+    .wallet-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+    }
 
     .user-header-inline {
         margin-bottom: 24px;
@@ -1512,7 +1524,7 @@ async def main_app():
                 <div class="profile-menu-section">
                     <div class="section-title">Меню</div>
                     
-                    <div class="profile-menu-item" onclick="tg.showAlert('Кошелек в разработке')">
+                    <div class="profile-menu-item" onclick="window.location.href='/wallet'">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">Кошелёк</span>
                         </div>
@@ -2135,6 +2147,68 @@ async def profile_fill_page():
             renderForm();
         }}
         init();
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/wallet", response_class=HTMLResponse)
+async def wallet_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Кошелёк</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content">
+                <button class="back-link" onclick="window.location.href='/'">← Назад</button>
+                
+                <!-- Пустой синий блок -->
+                <div class="wallet-header-block"></div>
+                
+                <div class="page-title">💰 Кошелёк</div>
+                
+                <div class="profile-card">
+                    <div class="profile-info-section">
+                        <div style="font-size:48px; margin-bottom:16px;">💳</div>
+                        <div class="profile-business-name">Баланс: 2000.0 ₽</div>
+                        <div class="profile-business-address" style="margin-top:8px;">Номер аккаунта: TIP-XXXX-XXXX</div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Операции</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('История операций в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📊 История операций</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Пополнить баланс в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">➕ Пополнить</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Вывод средств в разработке')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">➖ Вывести</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
         </script>
     </body>
     </html>
