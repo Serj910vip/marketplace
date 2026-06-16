@@ -375,6 +375,85 @@ COMMON_STYLES = """
     }
     /* КОНЕЦ НОВЫХ СТИЛЕЙ */
 
+    /* Стили для главной страницы */
+    .home-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;  /* Прижимаем к верхнему краю */
+    }
+
+    .home-user-inline {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .home-user-role {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+    }
+
+    .home-user-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #FFFFFF;
+    }
+
+    .home-business-card {
+        text-align: center;
+    }
+
+    .home-business-card .business-photo {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 12px;
+        display: block;
+        background: var(--tg-theme-bg-color, #eee);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .home-business-card .photo-placeholder {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 3px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    .home-business-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 4px;
+    }
+
+    .home-business-rating {
+        font-size: 14px;
+        color: #f5a623;
+        margin-bottom: 4px;
+    }
+
+    .home-business-address {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
     .user-header {
         background: var(--tg-theme-secondary-bg-color, #fff);
         border-radius: 16px;
@@ -1299,6 +1378,7 @@ async def main_app():
             return s + ' ' + rating.toFixed(1);
         }}
 
+        
         function renderHome() {{
             if (!businessData?.has_business) {{
                 document.getElementById('main-content').innerHTML =
@@ -1311,18 +1391,22 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
 
             document.getElementById('main-content').innerHTML = `
-                <div class="user-header">
-                    <div class="user-role">Основатель</div>
-                    <div class="user-name">${{name}}</div>
+                <!-- Синий блок с наложением -->
+                <div class="home-header-block">
+                    <div class="home-user-inline">
+                        <span class="home-user-role">Основатель</span>
+                        <span class="home-user-name">${{name}}</span>
+                    </div>
+                    
+                    <div class="home-business-card">
+                        ${{photo}}
+                        <div class="home-business-name">${{businessData.business_name}}</div>
+                        <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
+                        <div class="home-business-address">📍 ${{businessData.business_address}}</div>
+                    </div>
                 </div>
-
-                <div class="business-card">
-                    ${{photo}}
-                    <div class="name">${{businessData.business_name}}</div>
-                    <div class="rating">${{renderStars(businessData.business_rating)}}</div>
-                    <div class="address">📍 ${{businessData.business_address}}</div>
-                </div>
-                <div class="section-title">Создать:</div>
+                
+                <div class="section-title" style="margin-top: 20px;">Создать:</div>
                 
                 <div class="accordion-item">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
