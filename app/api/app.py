@@ -948,6 +948,32 @@ COMMON_STYLES = """
     }
     /**/
 
+    /* Стили для блока дополнительных сервисов */
+    .services-extra-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;  /* Прижимаем к верхнему краю */
+    }
+
+    .services-extra-title {
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .services-extra-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
     .user-header-inline {
         margin-bottom: 24px;
     }
@@ -1606,7 +1632,7 @@ async def main_app():
                         <span class="profile-menu-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="tg.showAlert('Дополнительные сервисы в разработке')">
+                    <div class="profile-menu-item" onclick="window.location.href='/services-extra?from=profile'">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">Дополнительные сервисы</span>
                         </div>
@@ -2410,6 +2436,114 @@ async def clients_page():
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">👤 Дмитрий Сидоров</span>
                             <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">1 запись</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        
+        function goBack() {{
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from');
+            
+            if (from === 'profile') {{
+                window.location.href = '/?tab=profile';
+            }} else {{
+                history.back();
+            }}
+        }}
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/services-extra", response_class=HTMLResponse)
+async def services_extra_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Дополнительные сервисы</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" style="padding-top: 0;">
+                <!-- Синий блок с кнопкой назад внутри, прижат к верху -->
+                <div class="services-extra-header-block">
+                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'">← Назад</button>
+                    <div class="services-extra-title">⚡ Дополнительные сервисы</div>
+                    <div class="services-extra-subtitle">Расширьте возможности вашего бизнеса</div>
+                </div>
+                
+                <div class="profile-card" style="margin-top: 20px;">
+                    <div class="profile-info-section">
+                        <div style="font-size:48px; margin-bottom:16px;">🚀</div>
+                        <div class="profile-business-name">Подключено сервисов: 3</div>
+                        <div class="profile-business-address" style="margin-top:8px;">Доступно: 7</div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Доступные сервисы</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('СМС-уведомления - 299 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📱 СМС-уведомления</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">299 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Email-рассылка - 199 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📧 Email-рассылка</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">199 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Чат-бот для записи - 499 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🤖 Чат-бот для записи</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">499 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Аналитика и отчёты - 399 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">📊 Аналитика и отчёты</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">399 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Интеграция с соцсетями - 249 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">🌐 Интеграция с соцсетями</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">249 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('VIP-поддержка - 599 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👑 VIP-поддержка 24/7</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">599 ₽/мес</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Своя CRM-система - 799 ₽/мес')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">💼 Своя CRM-система</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">799 ₽/мес</span>
                         </div>
                         <span class="profile-menu-arrow">▶</span>
                     </div>
