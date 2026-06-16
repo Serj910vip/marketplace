@@ -444,7 +444,7 @@ COMMON_STYLES = """
     .home-business-name {
         font-size: 18px;
         font-weight: 700;
-        color: #FFFFFF;
+        color: var(--tg-theme-text-color, #1a1a1a);
         margin-bottom: 4px;
     }
 
@@ -456,7 +456,7 @@ COMMON_STYLES = """
 
     .home-business-address {
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--tg-theme-text-color, #1a1a1a);
     }
 
     .user-header {
