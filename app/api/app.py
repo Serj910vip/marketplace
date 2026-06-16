@@ -921,6 +921,33 @@ COMMON_STYLES = """
         font-weight: 700;
     }
 
+    /* Стили для блока клиентской базы */
+    .clients-header-block {
+        background: #003A81;
+        height: 228px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;  /* Прижимаем к верхнему краю */
+    }
+
+    .clients-title {
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .clients-count {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        margin-top: 12px;
+    }
+    /**/
+
     .user-header-inline {
         margin-bottom: 24px;
     }
@@ -1572,7 +1599,7 @@ async def main_app():
                         <span class="profile-menu-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="tg.showAlert('Клиентская база в разработке')">
+                    <div class="profile-menu-item" onclick="window.location.href='/clients?from=profile'">
                         <div class="profile-menu-left">
                             <span class="profile-menu-label">Клиентская база</span>
                         </div>
@@ -2310,6 +2337,98 @@ async def subscription_page():
         </div>
         <script>
         {WEBAPP_INIT}
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/clients", response_class=HTMLResponse)
+async def clients_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Клиентская база</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" style="padding-top: 0;">
+                <!-- Синий блок с кнопкой назад внутри, прижат к верху -->
+                <div class="clients-header-block">
+                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'">← Назад</button>
+                    <div class="clients-title">👥 Клиентская база</div>
+                    <div class="clients-count">Всего клиентов: 156</div>
+                </div>
+                
+                <div class="profile-card" style="margin-top: 20px;">
+                    <div class="profile-info-section">
+                        <div style="font-size:48px; margin-bottom:16px;">📊</div>
+                        <div class="profile-business-name">Активных клиентов: 89</div>
+                        <div class="profile-business-address" style="margin-top:8px;">Новых за месяц: 24</div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-section">
+                    <div class="section-title">Список клиентов</div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Иван Петров - +7 999 123-45-67')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👤 Иван Петров</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">3 записи</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Мария Смирнова - +7 999 234-56-78')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👤 Мария Смирнова</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">5 записей</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Алексей Иванов - +7 999 345-67-89')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👤 Алексей Иванов</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">2 записи</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Екатерина Козлова - +7 999 456-78-90')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👤 Екатерина Козлова</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">7 записей</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                    
+                    <div class="profile-menu-item" onclick="tg.showAlert('Дмитрий Сидоров - +7 999 567-89-01')">
+                        <div class="profile-menu-left">
+                            <span class="profile-menu-label">👤 Дмитрий Сидоров</span>
+                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">1 запись</span>
+                        </div>
+                        <span class="profile-menu-arrow">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        
+        function goBack() {{
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from');
+            
+            if (from === 'profile') {{
+                window.location.href = '/?tab=profile';
+            }} else {{
+                history.back();
+            }}
+        }}
         </script>
     </body>
     </html>
