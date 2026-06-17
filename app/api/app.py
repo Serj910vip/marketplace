@@ -608,7 +608,7 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: 0;  /* Убираем отрицательный отступ */
+        margin-top: 20px;  /* Убираем отрицательный отступ */
     }
 
     .menu-container-stats {
