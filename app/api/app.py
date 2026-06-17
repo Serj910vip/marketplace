@@ -2129,42 +2129,42 @@ async def main_app():
                 <div class="profile-menu-container">
                     <div class="profile-menu-card" onclick="window.location.href='/wallet'">
                         <div class="left">
-                            <span class="label">💰 Кошелёк</span>
+                            <span class="label">Кошелёк</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/subscription'">
                         <div class="left">
-                            <span class="label">📋 Подписка</span>
+                            <span class="label">Подписка</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/clients?from=profile'">
                         <div class="left">
-                            <span class="label">👥 Клиентская база</span>
+                            <span class="label">Клиентская база</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/services-extra?from=profile'">
                         <div class="left">
-                            <span class="label">⚡ Дополнительные сервисы</span>
+                            <span class="label">Дополнительные сервисы</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/settings?from=profile'">
                         <div class="left">
-                            <span class="label">⚙️ Настройки</span>
+                            <span class="label">Настройки</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/privacy?from=profile'">
                         <div class="left">
-                            <span class="label">🔒 Политика и конфиденциальность</span>
+                            <span class="label">Политика и конфиденциальность</span>
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
