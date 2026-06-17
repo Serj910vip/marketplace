@@ -598,7 +598,8 @@ COMMON_STYLES = """
         margin-bottom: 10px;
     }
 
-    .menu-container {
+    
+    .menu-container-home {
         background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 20px;
         padding: 8px 12px;
@@ -607,7 +608,19 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: -35px;
+        margin-top: 0;  /* Убираем отрицательный отступ */
+    }
+
+    .menu-container-stats {
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        border-radius: 20px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+        margin-top: -35px;  /* Оставляем наезжание только для статистики */
     }
 
     /* Кнопки внутри рамки */
@@ -1573,7 +1586,7 @@ async def main_app():
                 
 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК -->
-                <div class="menu-container">
+                <div class="menu-container-home">
                     <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
@@ -1693,7 +1706,7 @@ async def main_app():
         
                 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
-                <div class="menu-container">
+                <div class="menu-container-stats">
                     <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('services-detail')">
                         <div class="left">
