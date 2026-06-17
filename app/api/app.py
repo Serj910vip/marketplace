@@ -1586,6 +1586,18 @@ async def main_app():
                 </div>
 
 
+                <!-- ОТДЕЛЬНЫЙ БЛОК ДЛЯ ОБЪЯВЛЕНИЙ -->
+                <div class="menu-container-home" style="margin-top: 20px !important;">
+                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
+                        <div class="left">
+                            <span class="label">📢 Объявления</span>
+                        </div>
+                        <span class="accordion-arrow" id="arrow-ad">▶</span>
+                    </div>
+                    <div class="accordion-content" id="content-ad">
+                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
+                    </div>
+                </div>
                 
                 <div class="section-title" style="margin-top: 42px;">Создать:</div>
                 
@@ -1637,16 +1649,7 @@ async def main_app():
                         <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
                     </div>
 
-                    <!-- Объявления -->
-                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
-                        <div class="left">
-                            <span class="label">Объявления</span>
-                        </div>
-                        <span class="accordion-arrow" id="arrow-ad">▶</span>
-                    </div>
-                    <div class="accordion-content" id="content-ad">
-                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
-                    </div>
+                    
                 </div>
             `;
                 
