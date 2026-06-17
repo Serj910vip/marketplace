@@ -546,7 +546,7 @@ COMMON_STYLES = """
     .accordion-item {
         background: #FFFFFF;
         border-radius: 20px;
-        padding: 12px;
+        padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(0, 0, 0, 0.2);
         margin-bottom: 10px;
@@ -563,6 +563,18 @@ COMMON_STYLES = """
         margin-bottom: 10px;
     }
 
+    .menu-container {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+        margin-top: 35px;
+    }
+
     /* Кнопки внутри рамки */
     .menu-card {
         background: #ECEBEB;
@@ -574,8 +586,8 @@ COMMON_STYLES = """
         justify-content: space-between;
         box-shadow: none;
         border: none;
-        width: 326px;
-        height: 68px;
+        width: 100%;
+        min-height: 68px;
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
@@ -1516,7 +1528,10 @@ async def main_app():
                 
                 <div class="section-title" style="margin-top: 42px;">Создать:</div>
                 
-                <div class="accordion-item">
+
+                <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК -->
+                <div class="menu-container">
+                    <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
                             <span class="label">Услуги</span>
@@ -1527,9 +1542,8 @@ async def main_app():
                         <button class="btn-sm accordion-btn" onclick="goCreateService()">+ Создать услугу</button>
                         <div id="services-list" class="services-list"></div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
+                    <!-- Товары -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('product')">
                         <div class="left">
                             <span class="label">Товары</span>
@@ -1539,9 +1553,8 @@ async def main_app():
                     <div class="accordion-content" id="content-product">
                         <div class="empty">Функция временно не работает</div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
+                    <!-- Аренда -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('rent')">
                         <div class="left">
                             <span class="label">Аренда</span>
@@ -1551,9 +1564,8 @@ async def main_app():
                     <div class="accordion-content" id="content-rent">
                         <div class="empty">Функция временно не работает</div>
                     </div>
-                </div>
 
-                <div class="accordion-item">
+                    <!-- События -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('event')">
                         <div class="left">
                             <span class="label">События</span>
@@ -1563,9 +1575,8 @@ async def main_app():
                     <div class="accordion-content" id="content-event">
                         <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
                     </div>
-                </div>
 
-                <div class="accordion-item">
+                    <!-- Объявления -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
                         <div class="left">
                             <span class="label">Объявления</span>
@@ -1577,6 +1588,7 @@ async def main_app():
                     </div>
                 </div>
             `;
+                
             
             // Отображаем услуги в списке
             const servicesContainer = document.getElementById('services-list');
