@@ -413,10 +413,11 @@ COMMON_STYLES = """
     /* Стили для главной страницы */
     .home-header-block {
         background: #003A81;
-        height: 228px;
+        height: auto;
+        min-height: 228px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 0 20px;
+        padding: 20px 20px 20px 20px;
         margin-bottom: 0;
         margin-left: -16px;
         margin-right: -16px;
@@ -541,8 +542,12 @@ COMMON_STYLES = """
     .business-card .address { font-size: 13px; color: var(--tg-theme-hint-color, #707579); }
 
     .section-title {
-        font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px;
+        font-size: 16px; 
+        font-weight: 700; 
+        margin-bottom: 12px; 
+        padding-bottom: 8px;
         border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
+        margin-top: 30px;
     }
     /*
     .menu-card {
