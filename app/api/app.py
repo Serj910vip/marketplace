@@ -572,7 +572,7 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: 35px;
+        margin-top: -35px;
     }
 
     /* Кнопки внутри рамки */
@@ -614,7 +614,7 @@ COMMON_STYLES = """
     .menu-card .label {
         font-size: 15px;
         font-weight: 600;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        color: var(--tg-theme-text-color, #003A81);
     }
 
     .menu-card .accordion-arrow {
@@ -1051,13 +1051,13 @@ COMMON_STYLES = """
 
     .stats-row span:first-child {
         font-size: 14px;
-        color: var(--tg-theme-hint-color, #707579);
+        color: var(--tg-theme-hint-color, #003A81);
     }
 
     .stats-value {
         font-size: 16px;
         font-weight: 700;
-        color: var(--tg-theme-button-color, #2481cc);
+        color: var(--tg-theme-button-color, #003A81);
     }
 
 
@@ -1262,28 +1262,26 @@ COMMON_STYLES = """
     }
 
     .balance-label-flat {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.8);
     }
 
     .balance-amount-flat {
-        font-size: 22px;
-        font-weight: 800;
+        font-size: 32px;
+        font-weight: 700;
         color: #FFFFFF;
     }
 
     .account-label-flat {
-        font-size: 12px;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.6);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.9);
         margin-bottom: 4px;
         display: block;
     }
 
     .account-number-flat {
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 10px;
         color: #FFFFFF;
         letter-spacing: 0.5px;
         word-break: break-all;
