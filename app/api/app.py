@@ -1491,6 +1491,67 @@ COMMON_STYLES = """
         margin-bottom: 10px;
     }
 
+    /* Стили для меню профиля (аналогично menu-container-home) */
+    .profile-menu-container {
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        border-radius: 20px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+        margin-top: 20px;
+    }
+
+    /* Стили для пунктов меню профиля (аналогично menu-card) */
+    .profile-menu-card {
+        background: var(--tg-theme-bg-color, #ECEBEB);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        min-height: 68px;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .profile-menu-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .profile-menu-card:hover {
+        background: var(--tg-theme-hint-color, #dddcdc);
+    }
+
+    .profile-menu-card .left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .profile-menu-card .icon {
+        font-size: 22px;
+    }
+
+    .profile-menu-card .label {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #003A81);
+    }
+
+    .profile-menu-card .accordion-arrow {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color, #707579);
+        transition: transform 0.2s ease;
+    }
+
     input[type="file"] { display: none; }
 """
 
@@ -2063,49 +2124,49 @@ async def main_app():
                     <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">✏️ Редактировать профиль</button>
                 </div>
 
-                <div class="profile-menu-section">
-                    <div class="section-title">Меню</div>
-                    
-                    <div class="profile-menu-item" onclick="window.location.href='/wallet'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Кошелёк</span>
+
+                 <!-- Меню профиля с теми же стилями, что и menu-container-home -->
+                <div class="profile-menu-container">
+                    <div class="profile-menu-card" onclick="window.location.href='/wallet'">
+                        <div class="left">
+                            <span class="label">💰 Кошелёк</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="window.location.href='/subscription'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Подписка</span>
+                    <div class="profile-menu-card" onclick="window.location.href='/subscription'">
+                        <div class="left">
+                            <span class="label">📋 Подписка</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="window.location.href='/clients?from=profile'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Клиентская база</span>
+                    <div class="profile-menu-card" onclick="window.location.href='/clients?from=profile'">
+                        <div class="left">
+                            <span class="label">👥 Клиентская база</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="window.location.href='/services-extra?from=profile'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Дополнительные сервисы</span>
+                    <div class="profile-menu-card" onclick="window.location.href='/services-extra?from=profile'">
+                        <div class="left">
+                            <span class="label">⚡ Дополнительные сервисы</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="window.location.href='/settings?from=profile'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Настройки</span>
+                    <div class="profile-menu-card" onclick="window.location.href='/settings?from=profile'">
+                        <div class="left">
+                            <span class="label">⚙️ Настройки</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-item" onclick="window.location.href='/privacy?from=profile'">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">Политика и конфиденциальность</span>
+                    <div class="profile-menu-card" onclick="window.location.href='/privacy?from=profile'">
+                        <div class="left">
+                            <span class="label">🔒 Политика и конфиденциальность</span>
                         </div>
-                        <span class="profile-menu-arrow">▶</span>
+                        <span class="accordion-arrow">▶</span>
                     </div>
                 </div>
                 
