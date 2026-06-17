@@ -417,7 +417,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
-        margin-bottom: 240px;
+        margin-bottom: 140px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -1587,6 +1587,8 @@ async def main_app():
 
 
                 <!-- ОТДЕЛЬНЫЙ БЛОК ДЛЯ ОБЪЯВЛЕНИЙ -->
+
+                <div class="section-title" style="margin-top: 42px;">Создать бесплатно:</div>
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
                         <div class="left">
@@ -1599,7 +1601,7 @@ async def main_app():
                     </div>
                 </div>
                 
-                <div class="section-title" style="margin-top: 42px;">Создать:</div>
+                <div class="section-title" style="margin-top: 42px;">Создать по подписке:</div>
                 
 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК -->
@@ -1648,8 +1650,6 @@ async def main_app():
                     <div class="accordion-content" id="content-event">
                         <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать событие</button>
                     </div>
-
-                    
                 </div>
             `;
                 
