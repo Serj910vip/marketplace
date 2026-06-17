@@ -389,6 +389,8 @@ COMMON_STYLES = """
         transform: translateY(0px);
     }
 
+
+
     /* Линия разделитель */
     .divider-line {
         width: 304px;
@@ -410,6 +412,137 @@ COMMON_STYLES = """
     }
     /* КОНЕЦ НОВЫХ СТИЛЕЙ */
 
+    /* Стили для публичной страницы маркета */
+    .market-header-block {
+        background: #003A81;
+        min-height: 297px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 20px 20px;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .market-info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .market-photo-wrapper {
+        flex-shrink: 0;
+    }
+
+    .market-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .market-photo-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 3px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    .market-info-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .market-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #FFFFFF;
+    }
+
+    .market-username {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .market-rating {
+        font-size: 14px;
+        color: #f5a623;
+    }
+
+    .market-address {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 10px;
+        padding-bottom: 5px;
+    }
+
+    /* Меню квадратиками */
+    .market-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .market-menu-item {
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        border-radius: 15px;
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        border: 2px solid transparent;
+        min-height: 70px;
+    }
+
+    .market-menu-item:hover {
+        background: var(--tg-theme-bg-color, #f0f0f0);
+        transform: scale(0.98);
+    }
+
+    .market-menu-item.active {
+        border-color: var(--tg-theme-button-color, #003A81);
+        background: var(--tg-theme-button-color, #003A81);
+    }
+
+    .market-menu-item.active .market-menu-label {
+        color: #FFFFFF;
+    }
+
+    .market-menu-icon {
+        font-size: 24px;
+    }
+
+    .market-menu-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color, #1a1a1a);
+        text-align: center;
+    }
+
+    .market-menu-item.active .market-menu-label {
+        color: #FFFFFF;
+    }
+    
+
     /* Стили для главной страницы */
     .home-header-block {
         background: #003A81;
@@ -417,7 +550,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
-        margin-bottom: 140px;
+        margin-bottom: 180px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -1579,7 +1712,7 @@ async def main_app():
                         <div class="divider-line"></div>
                         
                         <!-- КНОПКА MY MARKET -->
-                        <button class="my-market-btn" onclick="window.location.href='/?tab=profile'">
+                        <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
                             My Market
                         </button>
                     </div>
@@ -1592,7 +1725,7 @@ async def main_app():
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
                         <div class="left">
-                            <span class="label">📢 Объявления</span>
+                            <span class="label">Объявления</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-ad">▶</span>
                     </div>
@@ -3143,6 +3276,147 @@ async def privacy_page():
                 history.back();
             }}
         }}
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/market/{telegram_id}", response_class=HTMLResponse)
+async def public_market_page(telegram_id: int):
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Мой Маркет</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" id="main-content"></div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        {SERVICE_HELPERS_JS}
+
+        const MARKETPLACE = "{MARKETPLACE_NAME}";
+        let businessData = null;
+        let servicesList = [];
+        let currentTab = 'services';
+        let telegramId = {telegram_id};
+
+        function renderStars(rating) {{
+            const full = Math.floor(rating);
+            let s = '';
+            for (let i = 0; i < 5; i++) s += i < full ? '★' : '☆';
+            return s + ' ' + rating.toFixed(1);
+        }}
+
+        function renderPublicPage() {{
+            if (!businessData) {{
+                document.getElementById('main-content').innerHTML =
+                    '<div class="error">Бизнес не найден</div>';
+                return;
+            }}
+
+            const photo = businessData.business_photo_url
+                ? `<img class="market-photo" src="${{businessData.business_photo_url}}" alt="">`
+                : '<div class="market-photo-placeholder">🏪</div>';
+
+            document.getElementById('main-content').innerHTML = `
+                <!-- Синий блок -->
+                <div class="market-header-block">
+                    <div class="market-info-row">
+                        <div class="market-photo-wrapper">
+                            ${{photo}}
+                        </div>
+                        <div class="market-info-wrapper">
+                            <div class="market-name">${{businessData.business_name}}</div>
+                            <div class="market-username">@{{
+                                businessData.username || 'Пользователь'
+                            }}</div>
+                            <div class="market-rating">${{renderStars(businessData.business_rating)}}</div>
+                        </div>
+                    </div>
+                    <div class="market-address">📍 ${{businessData.business_address}}</div>
+                </div>
+
+                <!-- Меню квадратиками -->
+                <div class="market-menu-grid">
+                    <div class="market-menu-item active" data-tab="services" onclick="switchMarketTab('services')">
+                        <span class="market-menu-icon">🛠️</span>
+                        <span class="market-menu-label">Услуги</span>
+                    </div>
+                    <div class="market-menu-item" data-tab="products" onclick="switchMarketTab('products')">
+                        <span class="market-menu-icon">🛍️</span>
+                        <span class="market-menu-label">Товары</span>
+                    </div>
+                    <div class="market-menu-item" data-tab="rent" onclick="switchMarketTab('rent')">
+                        <span class="market-menu-icon">🔑</span>
+                        <span class="market-menu-label">Аренда</span>
+                    </div>
+                    <div class="market-menu-item" data-tab="events" onclick="switchMarketTab('events')">
+                        <span class="market-menu-icon">🎉</span>
+                        <span class="market-menu-label">События</span>
+                    </div>
+                    <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
+                        <span class="market-menu-icon">📢</span>
+                        <span class="market-menu-label">Объявления</span>
+                    </div>
+                </div>
+
+                <!-- Контент -->
+                <div id="market-content">
+                    ${{renderTabContent('services')}}
+                </div>
+            `;
+        }}
+
+        function renderTabContent(tab) {{
+            if (tab === 'services') {{
+                if (servicesList && servicesList.length) {{
+                    return servicesList.map(serviceCardHtml).join('');
+                }} else {{
+                    return '<div class="empty">Услуги пока не созданы</div>';
+                }}
+            }} else if (tab === 'products') {{
+                return '<div class="empty">Товары временно не доступны</div>';
+            }} else if (tab === 'rent') {{
+                return '<div class="empty">Аренда временно не доступна</div>';
+            }} else if (tab === 'events') {{
+                return '<div class="empty">События временно не доступны</div>';
+            }} else if (tab === 'ads') {{
+                return '<div class="empty">Объявления временно не доступны</div>';
+            }}
+            return '';
+        }}
+
+        function switchMarketTab(tab) {{
+            currentTab = tab;
+            document.querySelectorAll('.market-menu-item').forEach(el =>
+                el.classList.toggle('active', el.dataset.tab === tab));
+            document.getElementById('market-content').innerHTML = renderTabContent(tab);
+        }}
+
+        async function loadMarketData() {{
+            try {{
+                const [biz, svc] = await Promise.all([
+                    fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
+                ]);
+                businessData = biz;
+                servicesList = svc.services || [];
+            }} catch(e) {{
+                console.error('Ошибка загрузки:', e);
+            }}
+        }}
+
+        async function init() {{
+            await loadMarketData();
+            renderPublicPage();
+        }}
+        init();
         </script>
     </body>
     </html>
