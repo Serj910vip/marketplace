@@ -1993,9 +1993,29 @@ async def main_app():
         async function init() {{
             if (!tgUser) {{
                 document.getElementById('main-content').innerHTML = '<div class="error">Не удалось получить данные пользователя</div>';
-                document.getElementById('bottom-nav').classList.add('hidden');
-                return;
+                // ДОБАВЛЯЕМ ТЕСТОВЫЙ РЕЖИМ
+                // Создаем тестового пользователя
+                tgUser = {{
+                    id: 123456789,
+                    username: 'test_user',
+                    first_name: 'Тестовый',
+                    last_name: 'Пользователь'
+                }};
+                
+                // Показываем предупреждение о тестовом режиме
+                const mainContent = document.getElementById('main-content');
+                if (mainContent) {{
+                    mainContent.innerHTML = `
+                        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-weight: 600;">
+                            ⚠️ РЕЖИМ ТЕСТИРОВАНИЯ: Данные пользователя заглушка
+                        </div>
+                    `;
+                }}
+                
+                // Не возвращаем, а продолжаем выполнение с тестовыми данными
             }}
+                
+
             try {{
                 await loadAll();
                 // Проверяем параметр tab в URL
