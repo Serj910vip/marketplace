@@ -568,7 +568,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.2));
+        border: 1px solid rgba(0, 0, 0, 0.2);
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
