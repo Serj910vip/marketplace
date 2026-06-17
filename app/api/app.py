@@ -362,6 +362,41 @@ COMMON_STYLES = """
         display: block;
     }
 
+    /* Стиль для кнопки My Market */
+    .my-market-btn {
+        width: 100%;
+        height: 68px;
+        background: rgba(0, 58, 129, 0.2);
+        border: none;
+        border-radius: 12px;
+        color: #003A81;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0, 58, 129, 0.25);
+        margin-top: 0;
+        padding: 0 20px;
+    }
+
+    .my-market-btn:hover {
+        background: rgba(0, 58, 129, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 58, 129, 0.3);
+    }
+
+    .my-market-btn:active {
+        transform: translateY(0px);
+    }
+
+    /* Линия разделитель */
+    .divider-line {
+        width: 304px;
+        height: 1px;
+        background: #000000;
+        margin: 22px auto 22px auto;
+    }
+
     /* Активный пункт - показываем иконку и текст, с белым фоном */
     .nav-item.active {
         background: var(--tg-theme-button-text-color, #ffffff);
@@ -1521,8 +1556,18 @@ async def main_app():
                         <div class="home-business-name">${{businessData.business_name}}</div>
                         <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                         <div class="home-business-address">📍 ${{businessData.business_address}}</div>
+                    
+                        <!-- ЛИНИЯ -->
+                        <div class="divider-line"></div>
+                        
+                        <!-- КНОПКА MY MARKET -->
+                        <button class="my-market-btn" onclick="window.location.href='/?tab=profile'">
+                            My Market
+                        </button>
                     </div>
                 </div>
+
+
                 
                 <div class="section-title" style="margin-top: 42px;">Создать:</div>
                 
