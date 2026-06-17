@@ -1586,7 +1586,7 @@ async def main_app():
                 
 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК -->
-                <div class="menu-container-home">
+                <div class="menu-container-home" style="margin-top: 20px !important;">
                     <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
