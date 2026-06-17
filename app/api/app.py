@@ -1649,8 +1649,9 @@ async def main_app():
                 </div>
         
                 
-                <!-- Услуги -->
-                <div class="accordion-item">
+                <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
+                <div class="menu-container">
+                    <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('services-detail')">
                         <div class="left">
                             <span class="label">Услуги</span>
@@ -1666,12 +1667,12 @@ async def main_app():
                             <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">25 680 ₽</span></div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Товары -->
-                <div class="accordion-item">
+                    
+                    <!-- Товары -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('products-detail')">
-                        <div class="left"><span class="label">Товары</span></div>
+                        <div class="left">
+                            <span class="label">Товары</span>
+                        </div>
                         <span class="accordion-arrow" id="stats-arrow-products-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-products-detail">
@@ -1683,12 +1684,12 @@ async def main_app():
                             <div class="stats-row"><span>Выручка:</span><span class="stats-value">12 350 ₽</span></div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Аренда -->
-                <div class="accordion-item">
+                    
+                    <!-- Аренда -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('rentals-detail')">
-                        <div class="left"><span class="label">Аренда</span></div>
+                        <div class="left">
+                            <span class="label">Аренда</span>
+                        </div>
                         <span class="accordion-arrow" id="stats-arrow-rentals-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-rentals-detail">
@@ -1700,12 +1701,12 @@ async def main_app():
                             <div class="stats-row"><span>Заработано:</span><span class="stats-value">8 420 ₽</span></div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- События -->
-                <div class="accordion-item">
+                    
+                    <!-- События -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('events-detail')">
-                        <div class="left"><span class="label">События</span></div>
+                        <div class="left">
+                            <span class="label">События</span>
+                        </div>
                         <span class="accordion-arrow" id="stats-arrow-events-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-events-detail">
@@ -1717,12 +1718,12 @@ async def main_app():
                             <div class="stats-row"><span>Сбор с билетов:</span><span class="stats-value">31 200 ₽</span></div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Объявления -->
-                <div class="accordion-item">
+                    
+                    <!-- Объявления -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
-                        <div class="left"><span class="label">📢 Объявления</span></div>
+                        <div class="left">
+                            <span class="label">Объявления</span>
+                        </div>
                         <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-ads-detail">
