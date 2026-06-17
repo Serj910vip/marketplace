@@ -417,7 +417,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
-        margin-bottom: 0;
+        margin-bottom: 240px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -450,7 +450,7 @@ COMMON_STYLES = """
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
         margin-top: 16px;
-        margin-bottom: 240px;
+        
     }
 
     .home-business-card .business-photo {
