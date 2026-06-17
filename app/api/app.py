@@ -544,11 +544,11 @@ COMMON_STYLES = """
     /* НОВЫЕ СТИЛИ ДЛЯ КНОПОК (ГЛАВНАЯ И СТАТИСТИКА) */
    /* Одна общая белая рамка для всех кнопок на главной */
     .accordion-item {
-        background: #FFFFFF;
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.2));
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -564,11 +564,11 @@ COMMON_STYLES = """
     }
 
     .menu-container {
-        background: #FFFFFF;
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.2));
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -577,7 +577,7 @@ COMMON_STYLES = """
 
     /* Кнопки внутри рамки */
     .menu-card {
-        background: #ECEBEB;
+        background: var(--tg-theme-bg-color, #ECEBEB);
         border-radius: 10px;
         padding: 14px 16px;
         margin-bottom: 8px;
@@ -591,6 +591,7 @@ COMMON_STYLES = """
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
+        color: var(--tg-theme-text-color, #1a1a1a);
     }
 
     .menu-card:last-child {
@@ -598,7 +599,7 @@ COMMON_STYLES = """
     }
 
     .menu-card:hover {
-        background: #dddcdc;
+        background: var(--tg-theme-hint-color, #dddcdc);
     }
 
     .menu-card .left {
@@ -614,7 +615,7 @@ COMMON_STYLES = """
     .menu-card .label {
         font-size: 15px;
         font-weight: 600;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        color: var(--tg-theme-text-color, #003A81);
     }
 
     .menu-card .accordion-arrow {
