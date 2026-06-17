@@ -548,7 +548,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.2));
+        border: 1px solid rgba(0, 0, 0, 0.2);
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -591,7 +591,6 @@ COMMON_STYLES = """
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
-        color: var(--tg-theme-text-color, #1a1a1a);
     }
 
     .menu-card:last-child {
@@ -615,7 +614,7 @@ COMMON_STYLES = """
     .menu-card .label {
         font-size: 15px;
         font-weight: 600;
-        color: var(--tg-theme-text-color, #003A81);
+        color: var(--tg-theme-text-color, #1a1a1a);
     }
 
     .menu-card .accordion-arrow {
