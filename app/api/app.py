@@ -750,7 +750,7 @@ COMMON_STYLES = """
     }
 
     .menu-container-stats {
-        background: var(--tg-theme-secondary-bg-color, #FFFFFF)
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
