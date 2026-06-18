@@ -303,6 +303,22 @@ async def get_stats(telegram_id: int):
 # ========== HTML ==========
 
 COMMON_STYLES = """
+
+    :root {
+        /* Цвета Telegram для светлой темы */
+        --tg-theme-bg-color: #ffffff;
+        --tg-theme-secondary-bg-color: #f0f0f0;
+        --tg-theme-text-color: #000000;
+        --tg-theme-hint-color: #999999;
+        --tg-theme-link-color: #2481cc;
+        --tg-theme-button-color: #2481cc;
+        --tg-theme-button-text-color: #ffffff;
+        --tg-theme-header-bg-color: #ffffff;
+        --tg-theme-accent-text-color: #2481cc;
+        --tg-theme-section-bg-color: #f0f0f0;
+        --tg-theme-subtitle-text-color: #666666;
+        --tg-theme-destructive-text-color: #e74c3c;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -2258,23 +2274,7 @@ async def main_app():
 
         async function init() {{
         
-            // Устанавливаем CSS-переменные из Telegram
-            if (window.Telegram && window.Telegram.WebApp) {{
-                const tg = window.Telegram.WebApp;
-                const theme = tg.themeParams || {{}};
-                
-                // Применяем все цвета из Telegram в CSS
-                document.documentElement.style.setProperty('--tg-theme-bg-color', theme.bg_color || '#ffffff');
-                document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color || '#f0f0f0');
-                document.documentElement.style.setProperty('--tg-theme-text-color', theme.text_color || '#000000');
-                document.documentElement.style.setProperty('--tg-theme-hint-color', theme.hint_color || '#999999');
-                document.documentElement.style.setProperty('--tg-theme-link-color', theme.link_color || '#2481cc');
-                document.documentElement.style.setProperty('--tg-theme-button-color', theme.button_color || '#2481cc');
-                document.documentElement.style.setProperty('--tg-theme-button-text-color', theme.button_text_color || '#ffffff');
-            }} else {{
-                
-                document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', '#f0f0f0');
-            }}
+            
             if (!tgUser) {{
                 document.getElementById('main-content').innerHTML = '<div class="error">Не удалось получить данные пользователя</div>';
                 // ДОБАВЛЯЕМ ТЕСТОВЫЙ РЕЖИМ
