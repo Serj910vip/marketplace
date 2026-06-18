@@ -303,7 +303,7 @@ async def get_stats(telegram_id: int):
 # ========== HTML ==========
 
 COMMON_STYLES = """
-
+     /* НОВЫЕ СТИЛИ ДЛЯ МЕНЮ
     :root {
         /* Цвета Telegram для светлой темы */
         --tg-theme-bg-color: #ffffff;
@@ -319,6 +319,7 @@ COMMON_STYLES = """
         --tg-theme-subtitle-text-color: #666666;
         --tg-theme-destructive-text-color: #e74c3c;
     }
+     */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
