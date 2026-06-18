@@ -326,6 +326,7 @@ COMMON_STYLES = """
         background: var(--tg-theme-bg-color, #f5f5f5);
         color: var(--tg-theme-text-color, #1a1a1a);
         min-height: 100vh;
+        margin: 0;
     }
     .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
     .content { flex: 1; padding: 16px 16px 88px; overflow-y: auto; }
@@ -1283,6 +1284,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
+        margin-top: -16px;
     }
     /* Стили для блока кошелька */
     .wallet-header-block {
