@@ -817,7 +817,7 @@ COMMON_STYLES = """
 
     .menu-card .label {
         font-size: 20px;
-        font-weight: 600;
+        font-weight: 500;
         color: #003A81;
     }
 
@@ -1569,7 +1569,7 @@ COMMON_STYLES = """
 
     .profile-menu-card .label {
         font-size: 20px;
-        font-weight: 600;
+        font-weight: 500;
         color: var(--tg-theme-text-color, #003A81);
     }
 
@@ -2125,14 +2125,20 @@ async def main_app():
         }}
 
         function renderProfile() {{
-        
+                       
             
             const b = businessData || {{}};
             const photo = b.business_photo_url
                 ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
+            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             document.getElementById('main-content').innerHTML = `
                 <div class="home-header-block">
+                
+                    <div class="home-user-inline">
+                        <span class="home-user-role">Основатель</span>
+                        <span class="home-user-name">${{name}}</span>
+                    </div>
                     <div class="profile-card">
                         <div class="profile-photo-section">
                             <div class="field-label">Главная фотография профиля</div>
