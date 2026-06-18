@@ -725,7 +725,7 @@ COMMON_STYLES = """
     }
     .menu-card .left { display: flex; align-items: center; gap: 10px; }
     .menu-card .icon { font-size: 22px; }
-    .menu-card .label { font-size: 15px; font-weight: 600; }*/
+    .menu-card .label { font-size: 20px; font-weight: 600; }*/
 
 
     
@@ -816,7 +816,7 @@ COMMON_STYLES = """
     }
 
     .menu-card .label {
-        font-size: 15px;
+        font-size: 20px;
         font-weight: 600;
         color: #003A81;
     }
@@ -1568,7 +1568,7 @@ COMMON_STYLES = """
     }
 
     .profile-menu-card .label {
-        font-size: 15px;
+        font-size: 20px;
         font-weight: 600;
         color: var(--tg-theme-text-color, #003A81);
     }
@@ -1914,9 +1914,9 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <!-- Единый блок с фоном #003A81 -->
                 <div class="stats-header-block">
-                    <div class="user-header-inline">
-                        <div class="user-role">Основатель</div>
-                        <div class="user-name">${{name}}</div>
+                    <div class="home-user-inline">
+                        <span class="home-user-role">Основатель</span>
+                        <span class="home-user-name">${{name}}</span>
                     </div>
                     
                     <div class="balance-card-flat">
@@ -2076,9 +2076,9 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <!-- Синий блок с содержимым внутри -->
                 <div class="stats-header-block">
-                    <div class="user-header-inline">
-                        <div class="user-role">Основатель</div>
-                        <div class="user-name">${{name}}</div>
+                    <div class="home-user-inline">
+                        <span class="home-user-role">Основатель</span>
+                        <span class="home-user-name">${{name}}</span>
                     </div>
                     
                     <div class="bookings-menu-grid">
