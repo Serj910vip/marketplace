@@ -1030,7 +1030,7 @@ COMMON_STYLES = """
 
     /* Стили для профиля */
     .profile-card {
-        background: #eb0101;
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 20px;
