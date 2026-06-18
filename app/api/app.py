@@ -1056,8 +1056,8 @@ COMMON_STYLES = """
     }
 
     .btn-edit-profile {
-        background: #ECEBEB;
-        color: #003A81;
+        background: var(--tg-theme-button-color, #ECEBEB);
+        color: var(--tg-theme-button-color, #003A81);
         margin-top: 0;
         height: 68px;
     }
