@@ -2128,7 +2128,15 @@ async def main_app():
         }}
 
         function renderProfile() {{
-                       
+
+            // Определяем тему Telegram
+            const tg = window.Telegram?.WebApp;
+            const isDark = tg?.colorScheme === 'dark';
+            
+            // Выбираем цвет фона
+            const bgColor = isDark 
+                ? '#2b2b2b'  // Темная тема — темно-серый
+                : '#FFFFFF'; // Светлая тема — БЕЛЫЙ!        
             
             const b = businessData || {{}};
             const photo = b.business_photo_url
