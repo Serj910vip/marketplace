@@ -2150,7 +2150,7 @@ async def main_app():
                         <span class="home-user-role">Основатель</span>
                         <span class="home-user-name">${{name}}</span>
                     </div>
-                    <div class="profile-card">
+                    <div class="profile-card" style="background: ${{bgColor}};">
                         <div class="profile-photo-section">
                             <div class="field-label">Главная фотография профиля</div>
                             <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
