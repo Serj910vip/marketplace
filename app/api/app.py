@@ -2123,31 +2123,35 @@ async def main_app():
         }}
 
         function renderProfile() {{
+        
+            
             const b = businessData || {{}};
             const photo = b.business_photo_url
                 ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
             document.getElementById('main-content').innerHTML = `
-                <div class="page-title">👤 Профиль</div>
-                <div class="profile-card">
-                    <div class="profile-photo-section">
-                        <div class="field-label">Главная фотография профиля</div>
-                        <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
-                            ${{photo}}
+                <div class="home-header-block">
+                    <div class="profile-card">
+                        <div class="profile-photo-section">
+                            <div class="field-label">Главная фотография профиля</div>
+                            <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
+                                ${{photo}}
+                            </div>
+                            <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
+                            <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
                         </div>
-                        <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
-                        <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
+                        
+                        <div class="profile-info-section">
+                            <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
+                            <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
+                        </div>
+                        
+                        <div class="profile-divider"></div>
+                        
+                        <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
                     </div>
-                    
-                    <div class="profile-info-section">
-                        <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
-                        <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
-                    </div>
-                    
-                    <div class="profile-divider"></div>
-                    
-                    <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
                 </div>
+
 
 
                  <!-- Меню профиля с теми же стилями, что и menu-container-home -->
