@@ -871,16 +871,10 @@ COMMON_STYLES = """
         font-size: 13px; font-weight: 600; cursor: pointer;
     }
     .btn {
-        width: 100%; 
-        background: var(--tg-theme-button-color, #2481cc);
+        width: 100%; background: var(--tg-theme-button-color, #2481cc);
         color: var(--tg-theme-button-text-color, #fff);
-        border: none; 
-        padding: 14px; 
-        border-radius: 10px;
-        font-size: 20px; 
-        font-weight: 600; 
-        cursor: pointer; 
-        margin-top: 10px;
+        border: none; padding: 14px; border-radius: 12px;
+        font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
     }
     .btn-secondary {
         background: var(--tg-theme-secondary-bg-color, #e8e8e8);
@@ -1056,10 +1050,10 @@ COMMON_STYLES = """
     }
 
     .btn-edit-profile {
-        background: var(--tg-theme-button-color, #ECEBEB);
-        color: var(--tg-theme-button-color, #003A81);
+        background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+        color: var(--tg-theme-button-color, #2481cc);
+        border: 1px solid var(--tg-theme-button-color, #2481cc);
         margin-top: 0;
-        height: 68px;
     }
 
     .btn-edit-profile:hover {
