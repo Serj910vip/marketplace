@@ -516,7 +516,7 @@ COMMON_STYLES = """
     }
 
     .market-menu-item {
-        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        background: var(--tg-theme-bg-color, #FFFFFF);
         border-radius: 15px;
         padding: 12px 8px;
         display: flex;
@@ -1523,7 +1523,7 @@ COMMON_STYLES = """
 
     /* Стили для меню профиля (аналогично menu-container-home) */
     .profile-menu-container {
-        background: #FFFFFF;
+        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
