@@ -307,7 +307,7 @@ COMMON_STYLES = """
     :root {
         /* Цвета Telegram для светлой темы */
         --tg-theme-bg-color: #ffffff;
-        --tg-theme-secondary-bg-color: #f0f0f0;
+        --tg-theme-secondary-bg-color: #ff0000;
         --tg-theme-text-color: #000000;
         --tg-theme-hint-color: #999999;
         --tg-theme-link-color: #2481cc;
