@@ -1068,8 +1068,8 @@ COMMON_STYLES = """
     }
 
     .btn-edit-profile {
-        background: var(--tg-theme-secondary-bg-color, #ECEBEB);
-        color: var(--tg-theme-button-color, #003A81);
+        background: #ECEBEB;
+        color: #003A81;
         margin-top: 0;
         height: 68px;
 
@@ -1167,10 +1167,13 @@ COMMON_STYLES = """
     }
 
     .btn-delete-market {
-        background: transparent;
-        color: #ff3b30;
-        border: 1px solid #ff3b30;
-        margin-top: 10px;
+        color: #003A81;
+        margin-top: 0px;
+        font-size: 20px;
+        font-weight: 500;
+        height: 68px;
+        background: #FFB5B5;
+        border-radius: 10px;
     }
 
     .btn-delete-market:hover {
@@ -2205,9 +2208,10 @@ async def main_app():
                         </div>
                         <span class="accordion-arrow">▶</span>
                     </div>
+                    <button class="btn btn-delete-market" onclick="deleteMarket()">Удалить маркет</button>
                 </div>
                 
-                <button class="btn btn-delete-market" onclick="deleteMarket()">🗑️ Удалить маркет</button>
+
             `;
         }}
 
