@@ -1523,7 +1523,7 @@ COMMON_STYLES = """
 
     /* Стили для меню профиля (аналогично menu-container-home) */
     .profile-menu-container {
-        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        background: #FFFFFF;
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1531,7 +1531,7 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: 20px;
+        margin-top: 2228px;
     }
 
     /* Стили для пунктов меню профиля (аналогично menu-card) */
