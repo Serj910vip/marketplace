@@ -1531,7 +1531,7 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: 2228px;
+        margin-top: 228px;
     }
 
     /* Стили для пунктов меню профиля (аналогично menu-card) */
