@@ -1163,7 +1163,7 @@ COMMON_STYLES = """
     }
 
     .bookings-menu-item {
-        background: var(--tg-theme-secondary-bg-color, #fff);
+        background: rgba(236, 235, 235, 0.2);
         border-radius: 15px;
         width: 60px;
         height: 60px;
@@ -1186,7 +1186,7 @@ COMMON_STYLES = """
     .bookings-menu-label {
         font-size: 11px;
         font-weight: 600;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        color: FFFFFF;
     }
 
     .bookings-filter-buttons {
@@ -1200,9 +1200,8 @@ COMMON_STYLES = """
     .booking-filter-btn {
         width: 160px;
         height: 41px;
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        color: var(--tg-theme-text-color, #1a1a1a);
-        border: 1px solid var(--tg-theme-hint-color, #ccc);
+        background: rgba(0, 0, 0, 0.2);
+        color: #ffffff;
         border-radius: 10px;
         font-size: 14px;
         font-weight: 600;
@@ -1237,13 +1236,13 @@ COMMON_STYLES = """
 
     .stats-row span:first-child {
         font-size: 14px;
-        color: var(--tg-theme-hint-color, #003A81);
+        color: #003A81;
     }
 
     .stats-value {
         font-size: 16px;
         font-weight: 700;
-        color: var(--tg-theme-button-color, #003A81);
+        color: #003A81;
     }
 
 
