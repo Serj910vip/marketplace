@@ -871,10 +871,16 @@ COMMON_STYLES = """
         font-size: 13px; font-weight: 600; cursor: pointer;
     }
     .btn {
-        width: 100%; background: var(--tg-theme-button-color, #2481cc);
+        width: 100%; 
+        background: var(--tg-theme-button-color, #2481cc);
         color: var(--tg-theme-button-text-color, #fff);
-        border: none; padding: 14px; border-radius: 12px;
-        font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
+        border: none; 
+        padding: 14px; 
+        border-radius: 10px;
+        font-size: 20px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        margin-top: 10px;
     }
     .btn-secondary {
         background: var(--tg-theme-secondary-bg-color, #e8e8e8);
@@ -986,7 +992,14 @@ COMMON_STYLES = """
     }
     .tab.active { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); }
 
-    .field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--tg-theme-hint-color, #707579); }
+    .field-label { 
+        font-size: 13px; 
+        font-weight: 600; 
+        margin-bottom: 6px; 
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--tg-theme-hint-color, #707579); 
+    }
     .field-group { margin-bottom: 16px; }
     select, input[type="text"], input[type="number"], textarea {
         width: 100%; padding: 12px; border-radius: 10px;
@@ -1024,7 +1037,7 @@ COMMON_STYLES = """
     }
 
     .profile-business-name {
-        font-size: 20px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--tg-theme-text-color, #1a1a1a);
         margin-bottom: 6px;
@@ -1032,6 +1045,7 @@ COMMON_STYLES = """
 
     .profile-business-address {
         font-size: 14px;
+        margin-top: 16px;
         color: var(--tg-theme-hint-color, #707579);
     }
 
@@ -1042,10 +1056,10 @@ COMMON_STYLES = """
     }
 
     .btn-edit-profile {
-        background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        color: var(--tg-theme-button-color, #2481cc);
-        border: 1px solid var(--tg-theme-button-color, #2481cc);
+        background: #ECEBEB;
+        color: #003A81;
         margin-top: 0;
+        height: 68px;
     }
 
     .btn-edit-profile:hover {
