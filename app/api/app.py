@@ -1050,10 +1050,11 @@ COMMON_STYLES = """
     }
 
     .btn-edit-profile {
-        background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        color: var(--tg-theme-button-color, #2481cc);
-        border: 1px solid var(--tg-theme-button-color, #2481cc);
+        background: var(--tg-theme-secondary-bg-color, #ECEBEB);
+        color: var(--tg-theme-button-color, #003A81);
         margin-top: 0;
+        height: 68px;
+
     }
 
     .btn-edit-profile:hover {
@@ -2128,7 +2129,7 @@ async def main_app():
                     
                     <div class="profile-divider"></div>
                     
-                    <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">✏️ Редактировать профиль</button>
+                    <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
                 </div>
 
 
