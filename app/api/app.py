@@ -1936,6 +1936,7 @@ async def main_app():
                         </div>
                     </div>
                 </div>
+                <div class="profile-divider"></div>
         
                 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
@@ -2166,6 +2167,7 @@ async def main_app():
                             <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
                             <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
                         </div>
+                        
                         
                         <div class="profile-divider"></div>
                         
