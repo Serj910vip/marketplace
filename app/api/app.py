@@ -1270,11 +1270,10 @@ COMMON_STYLES = """
 
     /* Стили для единого блока статистики */
     .stats-header-block {
-        background: #003A81;
         height: 334px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 0 20px;
+        padding: 20px 16px 0 16px;
         margin-bottom: 0;  /* Убираем отступ снизу */
         margin-left: -16px;
         margin-right: -16px;
@@ -1451,7 +1450,7 @@ COMMON_STYLES = """
     }
 
     .balance-card-flat {
-        background: rgba(255, 255, 255, 0.2);
+        background: #121918;
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 16px 20px;
