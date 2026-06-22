@@ -323,7 +323,7 @@ COMMON_STYLES = """
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: var(--tg-theme-bg-color, #f5f5f5);
+        background: #0A0E0D;
         color: var(--tg-theme-text-color, #1a1a1a);
         min-height: 100vh;
         margin: 0;
@@ -702,13 +702,14 @@ COMMON_STYLES = """
     }
     /*
     .menu-card {
-        background: var(--tg-theme-secondary-bg-color, #fff); 
+        background: rgba(0, 58, 129, 0.7); 
         border-radius: 12px;
         padding: 14px 16px; 
         margin-bottom: 10px;
         display: flex; 
         align-items: center; 
         justify-content: space-between;
+        border: 0.5px solid #0073FF;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
@@ -768,7 +769,7 @@ COMMON_STYLES = """
     }
 
     .menu-container-stats {
-        background: #FFFFFF;
+        background: #121918;
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -781,8 +782,8 @@ COMMON_STYLES = """
 
     /* Кнопки внутри рамки */
     .menu-card {
-        background: #ECEBEB;
-        border-radius: 10px;
+        background: rgba(0, 58, 129, 0.7);
+        border-radius: 20px;
         padding: 14px 16px;
         margin-bottom: 8px;
         display: flex;
@@ -818,7 +819,7 @@ COMMON_STYLES = """
     .menu-card .label {
         font-size: 20px;
         font-weight: 500;
-        color: #003A81;
+        color: #FFFFFF;
     }
 
     .menu-card .accordion-arrow {
@@ -827,16 +828,6 @@ COMMON_STYLES = """
         transition: transform 0.2s ease;
     }
 
-    /* Контент аккордеона */
-    .accordion-content {
-        display: none;
-        padding: 12px 16px 16px 16px;
-        background: transparent;
-        border-radius: 0 0 12px 12px;
-        margin-top: 0;
-        margin-bottom: 0;
-        box-shadow: none;
-    }
 
     /* Стили для аккордеона */
     .accordion-header {
@@ -857,7 +848,7 @@ COMMON_STYLES = """
     .accordion-content {
         display: none;
         padding: 12px 16px 16px 40px;
-        background: var(--tg-theme-secondary-bg-color, #fff);
+        background: rgba(0, 58, 129, 0.7);
         border-radius: 12px;
         margin-top: -8px;
         margin-bottom: 12px;
@@ -1256,8 +1247,9 @@ COMMON_STYLES = """
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+        padding: 3px 0px;
+        margin-left: -23px;
+       
     }
 
     .stats-row:last-child {
@@ -1265,14 +1257,14 @@ COMMON_STYLES = """
     }
 
     .stats-row span:first-child {
-        font-size: 14px;
-        color: #003A81;
+        font-size: 10px;
+        color: #FFFFFF;
     }
 
     .stats-value {
-        font-size: 16px;
-        font-weight: 700;
-        color: #003A81;
+        font-size: 10px;
+        font-weight: 500;
+        color: #FFFFFF;
     }
 
 
@@ -1463,9 +1455,9 @@ COMMON_STYLES = """
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 16px 20px;
-        height: 165px;
+        height: 150px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 0.3px solid rgba(67, 84, 80, 0.6);
         margin-top: 10px;
     }
 
@@ -1473,20 +1465,20 @@ COMMON_STYLES = """
         display: flex;
         justify-content: space-between;
         align-items: baseline;
-        margin-top: 20px;
+        margin-top: 60px;
         margin-bottom: 20px;
     }
 
     .balance-label-flat {
-        font-size: 14px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        font-weight: 500;
+        color: #8A9593;
     }
 
     .balance-amount-flat {
         font-size: 32px;
         font-weight: 700;
-        color: #FFFFFF;
+        color: #8A9593;
     }
 
     .account-label-flat {
@@ -1932,15 +1924,16 @@ async def main_app():
                     </div>
                     
                     <div class="balance-card-flat">
-                        <div class="balance-row-flat">
-                            <span class="balance-label-flat">Баланс:</span>
-                            <span class="balance-amount-flat">2000.0 ₽</span>
-                        </div>
+                        
                         <div class="account-row-flat">
                             <span class="account-label-flat">Номер аккаунта:</span>
                         </div>
                         <div class="account-number-flat">
                             ${{accountNumber}}
+                        </div>
+                        <div class="balance-row-flat">
+                            <span class="balance-label-flat">Баланс:</span>
+                            <span class="balance-amount-flat">2000.0 ₽</span>
                         </div>
                     </div>
                 </div>
@@ -1948,6 +1941,22 @@ async def main_app():
                 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
                 <div class="menu-container-stats">
+                    <!-- Объявления -->
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
+                        <div class="left">
+                            <span class="label">Объявления</span>
+                        </div>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
+                    </div>
+                    <div class="accordion-content" id="stats-content-ads-detail">
+                        <div class="stats-detail">
+                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">4</span></div>
+                            <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
+                            <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
+                            <div class="stats-row"><span>Заявок с объявлений:</span><span class="stats-value">19</span></div>
+                            <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
+                        </div>
+                    </div>
                     <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('services-detail')">
                         <div class="left">
@@ -2016,22 +2025,7 @@ async def main_app():
                         </div>
                     </div>
                     
-                    <!-- Объявления -->
-                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
-                        <div class="left">
-                            <span class="label">Объявления</span>
-                        </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
-                    </div>
-                    <div class="accordion-content" id="stats-content-ads-detail">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">4</span></div>
-                            <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
-                            <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
-                            <div class="stats-row"><span>Заявок с объявлений:</span><span class="stats-value">19</span></div>
-                            <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
-                        </div>
-                    </div>
+                    
                 </div>
             `;
         }}
@@ -2184,7 +2178,7 @@ async def main_app():
 
                  <!-- Меню профиля с теми же стилями, что и menu-container-home -->
                 <div class="profile-menu-container">
-                    <div class="profile-menu-card" onclick="window.location.href='/wallet'">
+                    <div class="profile-menu-card" onclick="toggleProfileMenu('wallet')">
                         <div class="left">
                             <span class="label">Кошелёк</span>
                         </div>
