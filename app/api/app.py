@@ -563,8 +563,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        background: #003A81;
-        height: 228px;
+        height: 173px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
@@ -1023,9 +1022,7 @@ COMMON_STYLES = """
 
     /* Стили для профиля */
     .profile-card {
-        background: #FFFFFF;
         border-radius: 16px;
-        padding: 20px;
         margin-bottom: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
@@ -1042,7 +1039,7 @@ COMMON_STYLES = """
     .profile-business-name {
         font-size: 14px;
         font-weight: 700;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        color: #FFFFFF;
         margin-bottom: 6px;
     }
 
@@ -1054,15 +1051,19 @@ COMMON_STYLES = """
 
     .profile-divider {
         height: 1px;
-        background: var(--tg-theme-hint-color, #e0e0e0);
+        background: rgba(67, 84, 80, 0.6);
         margin: 16px 0;
     }
 
     .btn-edit-profile {
-        background: #ECEBEB;
-        color: #003A81;
-        margin-top: 0;
+        background: #003A81;
+        color: #FFFFFF;
+        font-weight: 500;
+        font-size: 20px;
+        margin-top: 0px;
         height: 68px;
+        margin-bottom: 10px;
+        border-radius: 20px;
 
     }
 
@@ -1270,7 +1271,7 @@ COMMON_STYLES = """
 
     /* Стили для единого блока статистики */
     .stats-header-block {
-        height: 334px;
+        height: 314px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 16px 0 16px;
@@ -1458,6 +1459,7 @@ COMMON_STYLES = """
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         border: 0.3px solid rgba(67, 84, 80, 0.6);
         margin-top: 10px;
+        margin-bottom: 20px;
     }
 
     .balance-row-flat {
@@ -1514,11 +1516,11 @@ COMMON_STYLES = """
 
     /* Стили для меню профиля (аналогично menu-container-home) */
     .profile-menu-container {
-        background: var(--tg-theme-secondary-bg-color, #FFFFFF);
+        background: #121918;
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -1527,8 +1529,8 @@ COMMON_STYLES = """
 
     /* Стили для пунктов меню профиля (аналогично menu-card) */
     .profile-menu-card {
-        background: var(--tg-theme-bg-color, #ECEBEB);
-        border-radius: 10px;
+        background: rgba(0, 58, 129, 0.3);
+        border-radius: 20px;
         padding: 14px 16px;
         margin-bottom: 8px;
         display: flex;
@@ -1541,6 +1543,7 @@ COMMON_STYLES = """
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
     }
 
     .profile-menu-card:last-child {
@@ -1564,12 +1567,12 @@ COMMON_STYLES = """
     .profile-menu-card .label {
         font-size: 20px;
         font-weight: 500;
-        color: var(--tg-theme-text-color, #003A81);
+        color: #FFFFFF;
     }
 
     .profile-menu-card .accordion-arrow {
         font-size: 14px;
-        color: var(--tg-theme-hint-color, #707579);
+        color: #FFFFFF;
         transition: transform 0.2s ease;
     }
 
@@ -1934,9 +1937,10 @@ async def main_app():
                             <span class="balance-label-flat">Баланс:</span>
                             <span class="balance-amount-flat">2000.0 ₽</span>
                         </div>
+                        <div class="profile-divider"></div>
                     </div>
                 </div>
-                <div class="profile-divider"></div>
+                
         
                 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
@@ -2149,10 +2153,7 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <div class="home-header-block">
                 
-                    <div class="home-user-inline">
-                        <span class="home-user-role">Основатель</span>
-                        <span class="home-user-name">${{name}}</span>
-                    </div>
+                
                     <div class="profile-card" style="background: ${{bgColor}};">
                         <div class="profile-photo-section">
                             <div class="field-label">Главная фотография профиля</div>
@@ -2164,14 +2165,16 @@ async def main_app():
                         </div>
                         
                         <div class="profile-info-section">
-                            <div class="profile-business-name">${{b.business_name || 'Не указано'}}</div>
+                            <div class="profile-business-name">${{b.business_name || 'Название маркета'}}</div>
                             <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
                         </div>
                         
                         
-                        <div class="profile-divider"></div>
+                        
                         
                         <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
+                        <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Настройки</button>
+                        <div class="profile-divider"></div>
                     </div>
                 </div>
 
