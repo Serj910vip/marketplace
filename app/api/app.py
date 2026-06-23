@@ -674,13 +674,13 @@ COMMON_STYLES = """
         box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;
     }
     .business-photo, .photo-preview {
-        width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
+        width: 80px; height: 80px; border-radius: 20%; object-fit: cover;
         margin: 0 auto 12px; display: block;
         background: var(--tg-theme-bg-color, #eee);
         border: 3px solid var(--tg-theme-button-color, #2481cc);
     }
     .photo-placeholder, .photo-upload-box {
-        width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 12px;
+        width: 80px; height: 80px; border-radius: 20%; margin: 0 auto 12px;
         display: flex; align-items: center; justify-content: center;
         font-size: 36px; background: var(--tg-theme-bg-color, #eee);
         border: 3px dashed var(--tg-theme-button-color, #2481cc);
