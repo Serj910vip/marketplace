@@ -437,7 +437,7 @@ COMMON_STYLES = """
         min-height: 297px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 20px 20px;
+        padding: 20px 20px 20px 25px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -469,7 +469,7 @@ COMMON_STYLES = """
     .market-photo-placeholder {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
+        border-radius: 20%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -482,11 +482,11 @@ COMMON_STYLES = """
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
     }
 
     .market-name {
-        font-size: 20px;
+        font-size: 14px;
         font-weight: 700;
         color: #FFFFFF;
     }
@@ -502,9 +502,9 @@ COMMON_STYLES = """
     }
 
     .market-address {
-        font-size: 13px;
+        font-size: 12px;
         color: rgba(255, 255, 255, 0.8);
-        margin-top: 10px;
+        margin-top: 33px;
         padding-bottom: 5px;
     }
 
@@ -517,19 +517,18 @@ COMMON_STYLES = """
     }
 
     .market-menu-item {
-        background: var(--tg-theme-bg-color, #FFFFFF);
+        background: rgba(0, 58, 129, 0.2);
+        width: 60px;
+        height: 60px;
         border-radius: 15px;
-        padding: 12px 8px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 4px;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         border: 2px solid transparent;
-        min-height: 70px;
     }
 
     .market-menu-item:hover {
@@ -538,8 +537,9 @@ COMMON_STYLES = """
     }
 
     .market-menu-item.active {
-        border-color: var(--tg-theme-button-color, #003A81);
-        background: var(--tg-theme-button-color, #003A81);
+        border: 0.5px solid #0073FF;
+        background: #003A81;
+        box-shadow: 1px 2px 6px rgb(255 255 255 / 60%);
     }
 
     .market-menu-item.active .market-menu-label {
@@ -551,9 +551,9 @@ COMMON_STYLES = """
     }
 
     .market-menu-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        font-size: 10px;
+        font-weight: 700;
+        color: #8A9593;
         text-align: center;
     }
 
@@ -3774,23 +3774,18 @@ async def public_market_page(telegram_id: int):
                 <!-- Меню квадратиками -->
                 <div class="market-menu-grid">
                     <div class="market-menu-item active" data-tab="services" onclick="switchMarketTab('services')">
-                        <span class="market-menu-icon">🛠️</span>
                         <span class="market-menu-label">Услуги</span>
                     </div>
                     <div class="market-menu-item" data-tab="products" onclick="switchMarketTab('products')">
-                        <span class="market-menu-icon">🛍️</span>
                         <span class="market-menu-label">Товары</span>
                     </div>
                     <div class="market-menu-item" data-tab="rent" onclick="switchMarketTab('rent')">
-                        <span class="market-menu-icon">🔑</span>
                         <span class="market-menu-label">Аренда</span>
                     </div>
                     <div class="market-menu-item" data-tab="events" onclick="switchMarketTab('events')">
-                        <span class="market-menu-icon">🎉</span>
                         <span class="market-menu-label">События</span>
                     </div>
                     <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
-                        <span class="market-menu-icon">📢</span>
                         <span class="market-menu-label">Объявления</span>
                     </div>
                 </div>
