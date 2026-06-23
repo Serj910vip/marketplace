@@ -433,8 +433,7 @@ COMMON_STYLES = """
 
     /* Стили для публичной страницы маркета */
     .market-header-block {
-        background: #003A81;
-        min-height: 297px;
+   
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 0px 25px;
