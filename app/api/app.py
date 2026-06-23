@@ -1326,8 +1326,7 @@ COMMON_STYLES = """
 
     .back-link-white {
         display: inline-block;
-        margin-bottom: 24px;
-        color: rgba(255, 255, 255, 0.8);
+        color: #FFFFFF;
         font-size: 15px;
         cursor: pointer;
         border: none;
@@ -1597,10 +1596,6 @@ COMMON_STYLES = """
 
     /* Верхний блок с шапкой */
     .ads-header-block {
-        background: #003A81;
-        height: 100px;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
         padding: 20px 20px 0 20px;
         margin-bottom: 0;
         margin-left: -16px;
@@ -1621,8 +1616,8 @@ COMMON_STYLES = """
 
     .ads-header-title {
         color: #FFFFFF;
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 12px;
+        font-weight: 500;
         margin-right: 20px;
     }
 
