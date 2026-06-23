@@ -394,7 +394,7 @@ COMMON_STYLES = """
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 15px rgba(0, 58, 129, 0.25);
-        margin-top: 0;
+        margin-top: 10px;
         padding: 0 20px;
     }
 
@@ -697,6 +697,7 @@ COMMON_STYLES = """
         margin-bottom: 12px; 
         padding-bottom: 8px;
         margin-top: 15px;
+        margin-left: 10px;
     }
     /*
     .menu-card {
@@ -1808,6 +1809,7 @@ async def main_app():
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
+                        <span class="home-user-name">${{name}}</span>
                         <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                         <div class="home-business-address">📍 ${{businessData.business_address}}</div>
                     
