@@ -1327,7 +1327,7 @@ COMMON_STYLES = """
     .back-link-white {
         display: inline-block;
         color: #FFFFFF;
-        font-size: 15px;
+        font-size: 10px;
         cursor: pointer;
         border: none;
         background: none;
