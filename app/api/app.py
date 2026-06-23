@@ -433,10 +433,9 @@ COMMON_STYLES = """
 
     /* Стили для публичной страницы маркета */
     .market-header-block {
-   
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 0px 25px;
+        padding: 0px 20px 0px 25px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -527,7 +526,7 @@ COMMON_STYLES = """
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        border: 2px solid transparent;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
     }
 
     .market-menu-item:hover {
