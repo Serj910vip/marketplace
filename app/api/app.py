@@ -1816,7 +1816,7 @@ async def main_app():
 
                 
                 <div class="menu-container-home" style="margin-top: 20px !important;">
-                    <div class="section-title" style="margin-top: 42px;">Создать бесплатно:</div>
+                    <div class="section-title">Создать бесплатно:</div>
                         <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
                             <div class="left">
                                 <span class="label">Объявления</span>
@@ -1832,11 +1832,12 @@ async def main_app():
                         </div>
                 </div>
                 
-                <div class="section-title" style="margin-top: 42px;">Создать по подписке:</div>
+                
                 
 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК -->
                 <div class="menu-container-home" style="margin-top: 20px !important;">
+                    <div class="section-title">Создать по подписке:</div>
                     <!-- Услуги -->
                     <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
                         <div class="left">
