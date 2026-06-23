@@ -697,8 +697,7 @@ COMMON_STYLES = """
         font-weight: 700; 
         margin-bottom: 12px; 
         padding-bottom: 8px;
-        border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
-        margin-top: 30px;
+        margin-top: 15px;
     }
     /*
     .menu-card {
