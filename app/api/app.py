@@ -2324,16 +2324,37 @@ async def main_app():
         }}
 
         async function loadAll() {{
-            const [biz, svc, stats, bookings] = await Promise.all([
-                fetch(`/api/business/${{tgUser.id}}`).then(r => r.json()),
-                fetch(`/api/services/${{tgUser.id}}`).then(r => r.json()),
-                fetch(`/api/stats/${{tgUser.id}}`).then(r => r.json()),
-                fetch(`/api/bookings/${{tgUser.id}}`).then(r => r.json()),
-            ]);
-            businessData = biz;
-            servicesList = svc.services || [];
-            statsData = stats;
-            bookingsList = bookings.bookings || [];
+            try {{
+                console.log('🔄 Загружаем данные с сервера...');
+                
+                const [biz, svc, stats, bookings] = await Promise.all([
+                    fetch(`/api/business/${{tgUser.id}}`).then(r => r.json()),
+                    fetch(`/api/services/${{tgUser.id}}`).then(r => r.json()),
+                    fetch(`/api/stats/${{tgUser.id}}`).then(r => r.json()),
+                    fetch(`/api/bookings/${{tgUser.id}}`).then(r => r.json()),
+                ]);
+                
+                // Проверяем: есть ли бизнес на сервере
+                if (biz && biz.has_business === true) {{
+                    console.log('✅ Бизнес найден на сервере:', biz.business_name);
+                    businessData = biz;
+                    servicesList = svc.services || [];
+                    statsData = stats;
+                    bookingsList = bookings.bookings || [];
+                }} else {{
+                    console.log('ℹ️ Бизнес НЕ найден на сервере, будут созданы тестовые данные');
+                    businessData = null;
+                    servicesList = [];
+                    statsData = null;
+                    bookingsList = [];
+                }}
+            }} catch(e) {{
+                console.warn('⚠️ Ошибка загрузки с сервера:', e.message);
+                businessData = null;
+                servicesList = [];
+                statsData = null;
+                bookingsList = [];
+            }}
         }}
 
         async function init() {{
