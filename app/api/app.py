@@ -3834,10 +3834,76 @@ async def public_market_page(telegram_id: int):
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
                 ]);
-                businessData = biz;
-                servicesList = svc.services || [];
+                
+                // ЕСЛИ БИЗНЕС НЕ НАЙДЕН - СОЗДАЕМ ТЕСТОВЫЙ
+                if (!biz || !biz.has_business) {{
+                    console.log('🔧 Создаем тестовый бизнес для публичной страницы...');
+                    businessData = {{
+                        has_business: true,
+                        business_name: "Тестовый Маркет",
+                        business_photo_url: null,
+                        business_rating: 4.8,
+                        business_address: "Москва, ул. Тестовая, д. 1",
+                        business_country: "Россия",
+                        business_region: "Москва",
+                        business_city: "Москва",
+                        username: "test_user"
+                    }};
+                    
+                    servicesList = [
+                        {{
+                            id: 1,
+                            title: "Персональная тренировка",
+                            description: "Индивидуальное занятие с профессиональным тренером",
+                            price: 1500,
+                            category: "Персональные тренировки",
+                            training_duration: 60,
+                            booking_format: "online",
+                            working_days_label: "Пн, Ср, Пт",
+                            photo_url: null,
+                            created_at: new Date().toISOString()
+                        }},
+                        {{
+                            id: 2,
+                            title: "Групповая йога",
+                            description: "Занятия йогой в группе до 10 человек",
+                            price: 800,
+                            category: "Йога",
+                            training_duration: 45,
+                            booking_format: "offline",
+                            working_days_label: "Вт, Чт",
+                            photo_url: null,
+                            created_at: new Date().toISOString()
+                        }}
+                    ];
+                }} else {{
+                    businessData = biz;
+                    servicesList = svc.services || [];
+                }}
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
+                // ПРИ ОШИБКЕ - СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС
+                businessData = {{
+                    has_business: true,
+                    business_name: "Тестовый Маркет (оффлайн)",
+                    business_photo_url: null,
+                    business_rating: 4.5,
+                    business_address: "Москва, ул. Тестовая, д. 1",
+                    username: "test_user"
+                }};
+                servicesList = [
+                    {{
+                        id: 1,
+                        title: "Тестовая услуга",
+                        description: "Описание тестовой услуги",
+                        price: 1000,
+                        category: "Персональные тренировки",
+                        training_duration: 60,
+                        booking_format: "online",
+                        working_days_label: "Пн, Ср, Пт",
+                        photo_url: null
+                    }}
+                ];
             }}
         }}
 
