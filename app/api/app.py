@@ -412,9 +412,9 @@ COMMON_STYLES = """
 
     /* Линия разделитель */
     .divider-line {
-        width: 304px;
+        width: 360px;
         height: 1px;
-        background: #000000;
+        background: #435450;
         margin: 22px auto 22px auto;
     }
 
@@ -693,8 +693,7 @@ COMMON_STYLES = """
     .business-card .address { font-size: 13px; color: var(--tg-theme-hint-color, #707579); }
 
     .section-title {
-        font-size: 16px; 
-        font-weight: 700; 
+        font-size: 10px; 
         margin-bottom: 12px; 
         padding-bottom: 8px;
         margin-top: 15px;
@@ -1812,8 +1811,7 @@ async def main_app():
                         <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                         <div class="home-business-address">📍 ${{businessData.business_address}}</div>
                     
-                        <!-- ЛИНИЯ -->
-                        <div class="divider-line"></div>
+                        
                         
                         <!-- КНОПКА MY MARKET -->
                         <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
@@ -1821,6 +1819,9 @@ async def main_app():
                         </button>
                     </div>
                 </div>
+
+                <!-- ЛИНИЯ -->
+                <div class="divider-line"></div>
 
 
                 <!-- ОТДЕЛЬНЫЙ БЛОК ДЛЯ ОБЪЯВЛЕНИЙ -->
