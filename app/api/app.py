@@ -643,7 +643,8 @@ COMMON_STYLES = """
 
     .home-business-address {
         font-size: 13px;
-        color: var(--tg-theme-text-color, #1a1a1a);
+        color: #FFFFFF;
+        margin-bottom: 20px;
     }
 
     .user-header {
