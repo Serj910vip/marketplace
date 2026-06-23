@@ -707,7 +707,7 @@ COMMON_STYLES = """
         display: flex; 
         align-items: center; 
         justify-content: space-between;
-        border: 0.5px solid #0073FF;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
@@ -1593,6 +1593,138 @@ COMMON_STYLES = """
         transition: transform 0.2s ease;
     }
 
+    /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ ОБЪЯВЛЕНИЙ ===== */
+
+    /* Верхний блок с шапкой */
+    .ads-header-block {
+        background: #003A81;
+        height: 100px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .ads-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .ads-header-title {
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: 700;
+        margin-right: 20px;
+    }
+
+    /* Кнопка создания объявления */
+    .ads-create-container {
+        background: #121918;
+        border-radius: 20px;
+        padding: 13px 17px;
+        border: 0.3px solid rgba(67, 84, 80, 0.6);
+        margin-top: 20px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .ads-create-btn {
+        width: 100%;
+        height: 68px;
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .ads-create-btn:hover {
+        background: rgba(0, 58, 129, 0.7);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 58, 129, 0.3);
+    }
+
+    .ads-create-btn:active {
+        transform: translateY(0px);
+    }
+
+    /* Линия разделитель */
+    .ads-divider {
+        width: 100%;
+        height: 1px;
+        background: #435450;
+        margin: 22px 0;
+    }
+
+    /* Счетчик объявлений */
+    .ads-count {
+        font-size: 16px;
+        font-weight: 500;
+        color: #FFFFFF;
+        margin-bottom: 16px;
+    }
+
+    /* Контейнер со списком объявлений */
+    .ads-list-container {
+        background: #121918;
+        border-radius: 20px;
+        padding: 20px;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        min-height: 200px;
+    }
+
+    /* Пустой список */
+    .ads-empty {
+        text-align: center;
+        color: #8A9593;
+        font-size: 14px;
+        padding: 40px 10px;
+    }
+
+    /* Элемент объявления */
+    .ads-item {
+        background: rgba(0, 58, 129, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 10px;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
+    }
+
+    .ads-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .ads-item-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 6px;
+    }
+
+    .ads-item-meta {
+        font-size: 13px;
+        color: #8A9593;
+        margin-bottom: 6px;
+    }
+
+    .ads-item-status {
+        font-size: 12px;
+        color: #4caf50;
+        font-weight: 500;
+    }
+
     input[type="file"] { display: none; }
 """
 
@@ -1825,7 +1957,7 @@ async def main_app():
                 
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="section-title">Создать бесплатно:</div>
-                        <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
+                        <div class="menu-card onclick="window.location.href='/ads'">
                             <div class="left">
                                 <span class="label">Объявления</span>
                             </div>
@@ -1834,9 +1966,6 @@ async def main_app():
                                     <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
                                 </svg>
                             </span>
-                        </div>
-                        <div class="accordion-content" id="content-ad">
-                            <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
                         </div>
                 </div>
                 
@@ -3909,3 +4038,150 @@ async def public_market_page(telegram_id: int):
     </body>
     </html>
     """
+
+@app.get("/ads", response_class=HTMLResponse)
+async def ads_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Объявления</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" style="padding-top: 0;">
+                <!-- Верхний блок с шапкой -->
+                <div class="ads-header-block">
+                    <div class="ads-header-row">
+                        <button class="back-link-white" onclick="window.location.href='/?tab=home'">← Назад</button>
+                        <span class="ads-header-title">Объявления</span>
+                    </div>
+                </div>
+
+                <!-- Кнопка создания объявления -->
+                <div class="ads-create-container">
+                    <button class="ads-create-btn" onclick="goCreateAd()">
+                        Создать объявление
+                    </button>
+                </div>
+
+                <!-- Линия разделитель -->
+                <div class="ads-divider"></div>
+
+                <!-- Счетчик объявлений -->
+                <div class="ads-count" id="ads-count">У вас 0 объявлений</div>
+
+                <!-- Список объявлений -->
+                <div class="ads-list-container" id="ads-list-container">
+                    <div class="ads-empty">Список объявлений пуст</div>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+
+        let adsList = [];
+        let telegramId = tgUser?.id || 123456789;
+
+        function renderAds() {{
+            const container = document.getElementById('ads-list-container');
+            const countElement = document.getElementById('ads-count');
+            
+            // Обновляем счетчик
+            countElement.textContent = `У вас ${{adsList.length}} объявлений`;
+            
+            if (adsList.length === 0) {{
+                container.innerHTML = '<div class="ads-empty">Список объявлений пуст</div>';
+                return;
+            }}
+            
+            container.innerHTML = adsList.map(ad => `
+                <div class="ads-item">
+                    <div class="ads-item-title">${{ad.title}}</div>
+                    <div class="ads-item-meta">${{ad.description || 'Без описания'}}</div>
+                    <div class="ads-item-status">${{ad.status || 'Активно'}}</div>
+                </div>
+            `).join('');
+        }}
+
+        function goCreateAd() {{
+            tg.showAlert('Создание объявления в разработке');
+            // В будущем: window.location.href = '/ad/create';
+        }}
+
+        async function loadAds() {{
+            try {{
+                // Пытаемся загрузить объявления с сервера
+                const response = await fetch(`/api/ads/${{telegramId}}`);
+                if (response.ok) {{
+                    const data = await response.json();
+                    adsList = data.ads || [];
+                }} else {{
+                    // Если API нет - используем тестовые данные
+                    adsList = [
+                        {{
+                            id: 1,
+                            title: "Тестовое объявление",
+                            description: "Это пример объявления",
+                            status: "Активно"
+                        }}
+                    ];
+                }}
+            }} catch(e) {{
+                console.log('Используем тестовые данные');
+                adsList = [
+                    {{
+                        id: 1,
+                        title: "Тестовое объявление",
+                        description: "Это пример объявления",
+                        status: "Активно"
+                    }}
+                ];
+            }}
+            renderAds();
+        }}
+
+        async function init() {{
+            await loadAds();
+        }}
+        init();
+        </script>
+    </body>
+    </html>
+    """
+
+# ========== API для объявлений ==========
+
+@app.get("/api/ads/{telegram_id}")
+async def get_ads(telegram_id: int):
+    try:
+        async with AsyncSessionLocal() as session:
+            user_repo = UserRepository(session)
+            user = await user_repo.get_by_telegram_id(telegram_id)
+            if not user:
+                return JSONResponse({"ads": []})
+            
+            # ВРЕМЕННО: возвращаем тестовые данные
+            # ПОТОМ: замените на реальную базу данных
+            return JSONResponse({
+                "ads": [
+                    {
+                        "id": 1,
+                        "title": "Тестовое объявление",
+                        "description": "Описание тестового объявления",
+                        "status": "Активно",
+                        "created_at": "2024-01-01T12:00:00"
+                    },
+                    {
+                        "id": 2,
+                        "title": "Еще одно объявление",
+                        "description": "Описание второго объявления",
+                        "status": "Активно",
+                        "created_at": "2024-01-02T14:30:00"
+                    }
+                ]
+            })
+    except Exception as e:
+        return JSONResponse({"ads": [], "error": str(e)})
