@@ -1,24 +1,28 @@
 # add_ads_table.py
 import asyncio
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 from app.database.session import engine
 
 async def add_ads_table():
     async with engine.begin() as conn:
-        # Проверяем, существует ли таблица ads
+        # Проверяем, существует ли таблица ads (для PostgreSQL)
         result = await conn.execute(text("""
-            SELECT name FROM sqlite_master 
-            WHERE type='table' AND name='ads'
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'ads'
+            )
         """))
         
-        if result.fetchone():
+        exists = result.scalar()
+        
+        if exists:
             print("ℹ️ Таблица ads уже существует")
             return
         
-        # Создаем таблицу ads
+        # Создаем таблицу ads (синтаксис для PostgreSQL)
         await conn.execute(text("""
             CREATE TABLE ads (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 user_id INTEGER NOT NULL,
                 title VARCHAR(200) NOT NULL,
                 description TEXT,
@@ -26,8 +30,8 @@ async def add_ads_table():
                 category VARCHAR(100),
                 price FLOAT,
                 status VARCHAR(20) DEFAULT 'active',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         """))
