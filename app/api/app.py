@@ -1,6 +1,9 @@
 import json
 from typing import Any, Literal, Optional
 
+from pydantic import BaseModel
+from typing import Optional
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
@@ -13,6 +16,7 @@ from app.models.user import User
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
+from app.models.ad import Ad
 
 app = FastAPI()
 
@@ -46,6 +50,14 @@ class ServiceCreateRequest(BaseModel):
     booking_format: Optional[str] = None
     working_schedule: Optional[dict[str, list[str]]] = None
 
+class AdCreateRequest(BaseModel):
+    telegram_id: int
+    title: str
+    description: Optional[str] = None
+    photo_url: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[float] = None
+    status: str = "active"
 
 def _format_address(city: str | None, region: str | None, country: str | None) -> str:
     parts = [p for p in (city, region, country) if p]
@@ -4180,3 +4192,187 @@ async def get_ads(telegram_id: int):
             })
     except Exception as e:
         return JSONResponse({"ads": [], "error": str(e)})
+    
+
+
+@app.get("/ad/create", response_class=HTMLResponse)
+async def create_ad_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Создание объявления</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content">
+                <button class="back-link" onclick="history.back()">← Назад</button>
+                <div class="page-title">Создание объявления</div>
+
+                <div class="form-card" style="text-align:center">
+                    <div class="field-label">Добавить фото</div>
+                    <div class="photo-upload-box lg" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">📷</div>
+                    <input type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
+                    <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px;">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Название объявления *</div>
+                    <input type="text" id="ad-title" maxlength="200" placeholder="Введите название объявления">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Описание</div>
+                    <textarea id="ad-desc" placeholder="Опишите ваше объявление" maxlength="1000"></textarea>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Категория</div>
+                    <select id="ad-category">
+                        <option value="">Выберите категорию</option>
+                        <option value="Услуги">Услуги</option>
+                        <option value="Товары">Товары</option>
+                        <option value="Аренда">Аренда</option>
+                        <option value="События">События</option>
+                        <option value="Работа">Работа</option>
+                        <option value="Обучение">Обучение</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Цена (₽)</div>
+                    <input type="number" id="ad-price" min="0" placeholder="0">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Статус</div>
+                    <select id="ad-status">
+                        <option value="active">Активно</option>
+                        <option value="paused">Приостановлено</option>
+                        <option value="archived">Архив</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="createAd()">Создать объявление</button>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        {SERVICE_HELPERS_JS}
+
+        let adPhoto = null;
+
+        function onAdPhotoSelect(input) {{
+            readPhotoFile(input, dataUrl => {{
+                adPhoto = dataUrl;
+                document.getElementById('ad-photo-box').innerHTML =
+                    `<img src="${{dataUrl}}" style="width:100%;height:100%;object-fit:cover">`;
+            }});
+        }}
+
+        async function createAd() {{
+            const title = document.getElementById('ad-title').value.trim();
+            if (!title) {{
+                tg.showAlert('Введите название объявления');
+                return;
+            }}
+
+            const description = document.getElementById('ad-desc').value.trim();
+            const category = document.getElementById('ad-category').value;
+            const price = document.getElementById('ad-price').value;
+            const status = document.getElementById('ad-status').value;
+
+            try {{
+                const response = await fetch(`/api/ads/create`, {{
+                    method: 'POST',
+                    headers: {{'Content-Type':'application/json'}},
+                    body: JSON.stringify({{
+                        telegram_id: tgUser.id,
+                        title: title,
+                        description: description || null,
+                        photo_url: adPhoto,
+                        category: category || null,
+                        price: price ? parseFloat(price) : null,
+                        status: status
+                    }})
+                }});
+
+                if (!response.ok) throw new Error('Ошибка создания');
+                
+                tg.showAlert('Объявление создано!', () => {{
+                    window.location.href = '/ads';
+                }});
+            }} catch(e) {{
+                tg.showAlert('Ошибка: ' + e.message);
+            }}
+        }}
+
+        function init() {{
+            if (!tgUser) {{
+                tgUser = {{
+                    id: 123456789,
+                    username: 'test_user',
+                    first_name: 'Тестовый'
+                }};
+            }}
+        }}
+        init();
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/api/ads/{telegram_id}")
+async def get_ads(telegram_id: int):
+    try:
+        async with AsyncSessionLocal() as session:
+            user_repo = UserRepository(session)
+            user = await user_repo.get_by_telegram_id(telegram_id)
+            if not user:
+                return JSONResponse({"ads": []})
+            
+            # Получаем объявления из временного хранилища
+            user_ads = [ad for ad in ads_storage if ad.get("telegram_id") == telegram_id]
+            
+            return JSONResponse({
+                "ads": user_ads
+            })
+    except Exception as e:
+        return JSONResponse({"ads": [], "error": str(e)})
+
+@app.post("/api/ads/create")
+async def create_ad(body: AdCreateRequest):
+    try:
+        async with AsyncSessionLocal() as session:
+            user_repo = UserRepository(session)
+            user = await user_repo.get_by_telegram_id(body.telegram_id)
+            if not user:
+                raise HTTPException(status_code=404, detail="Пользователь не найден")
+            
+            # Создаем объявление в временном хранилище
+            ad = {
+                "id": len(ads_storage) + 1,
+                "user_id": user.id,
+                "telegram_id": body.telegram_id,
+                "title": body.title,
+                "description": body.description,
+                "photo_url": body.photo_url,
+                "category": body.category,
+                "price": body.price,
+                "status": body.status,
+                "created_at": datetime.now().isoformat()
+            }
+            ads_storage.append(ad)
+            
+            return JSONResponse({
+                "success": True,
+                "ad": ad
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

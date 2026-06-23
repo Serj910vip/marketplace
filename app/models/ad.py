@@ -1,0 +1,17 @@
+from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey
+from sqlalchemy.sql import func
+from app.database.base import Base
+
+class Ad(Base):
+    __tablename__ = "ads"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    photo_url = Column(String(500), nullable=True)
+    category = Column(String(100), nullable=True)
+    price = Column(Float, nullable=True)
+    status = Column(String(20), default="active")  # active, paused, archived
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
