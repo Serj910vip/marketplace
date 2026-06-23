@@ -1213,9 +1213,12 @@ COMMON_STYLES = """
         text-align: center;
     }
 
+
     .bookings-menu-item:hover {
-        background: var(--tg-theme-bg-color, #f0f0f0);
-        transform: scale(0.98);
+        background: #003A81;
+        border-color: #0073FF;
+        box-shadow: 1px 1px 4px #FFFF;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
     }
 
     .bookings-menu-label {
@@ -1235,20 +1238,22 @@ COMMON_STYLES = """
     .booking-filter-btn {
         width: 160px;
         height: 41px;
-        background: rgba(0, 0, 0, 0.2);
-        color: #ffffff;
+        background: rgba(0, 58, 129, 0.2);
+        color: #8A9593;
         border-radius: 10px;
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
         transition: all 0.2s ease;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
     .booking-filter-btn:hover {
-        background: var(--tg-theme-button-color, #2481cc);
-        color: var(--tg-theme-button-text-color, #fff);
-        border-color: var(--tg-theme-button-color, #2481cc);
+        background: #003A81;
+        color: #FFFFFF;
+        border-color: #0073FF;
+        box-shadow: 1px 1px 4px #FFFF;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
     }
 
     
