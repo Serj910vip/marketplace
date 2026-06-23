@@ -2357,6 +2357,111 @@ async def main_app():
             }}
         }}
 
+        // ===================== ФУНКЦИЯ СОЗДАНИЯ ТЕСТОВОГО БИЗНЕСА =====================
+        function createTestBusiness() {{
+            console.log('🔧 СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС...');
+            
+            // ТЕСТОВЫЙ БИЗНЕС
+            businessData = {{
+                has_business: true,
+                business_name: "Тестовый Маркет",
+                business_photo_url: null,
+                business_rating: 4.8,
+                business_address: "Москва, ул. Тестовая, д. 1",
+                business_country: "Россия",
+                business_region: "Москва",
+                business_city: "Москва",
+                username: tgUser?.username || "test_user",
+                market_created_at: new Date().toISOString()
+            }};
+            
+            // ТЕСТОВЫЕ УСЛУГИ
+            servicesList = [
+                {{
+                    id: 1,
+                    title: "Персональная тренировка",
+                    description: "Индивидуальное занятие с профессиональным тренером",
+                    price: 1500,
+                    category: "Персональные тренировки",
+                    training_duration: 60,
+                    booking_format: "online",
+                    working_days_label: "Пн, Ср, Пт",
+                    photo_url: null,
+                    created_at: new Date().toISOString()
+                }},
+                {{
+                    id: 2,
+                    title: "Групповая йога",
+                    description: "Занятия йогой в группе до 10 человек",
+                    price: 800,
+                    category: "Йога",
+                    training_duration: 45,
+                    booking_format: "offline",
+                    working_days_label: "Вт, Чт",
+                    photo_url: null,
+                    created_at: new Date().toISOString()
+                }},
+                {{
+                    id: 3,
+                    title: "Кроссфит",
+                    description: "Интенсивные функциональные тренировки",
+                    price: 1200,
+                    category: "Кроссфит",
+                    training_duration: 50,
+                    booking_format: "online",
+                    working_days_label: "Пн, Вт, Чт, Пт",
+                    photo_url: null,
+                    created_at: new Date().toISOString()
+                }}
+            ];
+            
+            // ТЕСТОВАЯ СТАТИСТИКА
+            statsData = {{
+                total_requests: 25,
+                successful_requests: 20,
+                cancelled_requests: 5
+            }};
+            
+            // ТЕСТОВЫЕ БРОНИРОВАНИЯ
+            bookingsList = [
+                {{
+                    id: 1,
+                    service_id: 1,
+                    service_title: "Персональная тренировка",
+                    client_name: "Иван Петров",
+                    booking_day: "mon",
+                    booking_day_label: "Пн",
+                    booking_time: "10:00",
+                    status: "confirmed",
+                    created_at: new Date().toISOString()
+                }},
+                {{
+                    id: 2,
+                    service_id: 2,
+                    service_title: "Групповая йога",
+                    client_name: "Мария Смирнова",
+                    booking_day: "wed",
+                    booking_day_label: "Ср",
+                    booking_time: "18:30",
+                    status: "pending",
+                    created_at: new Date().toISOString()
+                }},
+                {{
+                    id: 3,
+                    service_id: 3,
+                    service_title: "Кроссфит",
+                    client_name: "Алексей Иванов",
+                    booking_day: "fri",
+                    booking_day_label: "Пт",
+                    booking_time: "09:00",
+                    status: "confirmed",
+                    created_at: new Date().toISOString()
+                }}
+            ];
+            
+            console.log('✅ Тестовый бизнес создан!');
+        }}
+
         async function init() {{
             // ============ ТЕСТОВЫЙ РЕЖИМ ============
             // Если нет пользователя - создаем тестового
