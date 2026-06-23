@@ -1182,6 +1182,12 @@ COMMON_STYLES = """
     
     /* Стили для верхнего блока заявки */
     /* Стили для страницы заявок */
+
+    .books-stats {
+        background: #121918;
+        padding: 6px;
+        border-radius: 20px;
+    }
     .bookings-menu-grid {
         display: flex;
         justify-content: space-around;
@@ -1191,7 +1197,7 @@ COMMON_STYLES = """
     }
 
     .bookings-menu-item {
-        background: rgba(236, 235, 235, 0.2);
+        background: rgba(0, 58, 129, 0.2);
         border-radius: 15px;
         width: 60px;
         height: 60px;
@@ -1203,6 +1209,7 @@ COMMON_STYLES = """
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
         text-align: center;
     }
 
@@ -1212,9 +1219,9 @@ COMMON_STYLES = """
     }
 
     .bookings-menu-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: FFFFFF;
+        font-size: 10px;
+        font-weight: 700;
+        color: #8A9593;
     }
 
     .bookings-filter-buttons {
@@ -2103,6 +2110,9 @@ async def main_app():
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
+                            <div class="bookings-menu-item" onclick="filterBookings('ads')">
+                                <span class="bookings-menu-label">Объявления</span>
+                            </div>
                             <div class="bookings-menu-item" onclick="filterBookings('all')">
                                 <span class="bookings-menu-label">Услуги</span>
                             </div>
@@ -2114,9 +2124,6 @@ async def main_app():
                             </div>
                             <div class="bookings-menu-item" onclick="filterBookings('events')">
                                 <span class="bookings-menu-label">События</span>
-                            </div>
-                            <div class="bookings-menu-item" onclick="filterBookings('ads')">
-                                <span class="bookings-menu-label">Объявления</span>
                             </div>
                         </div>
                         
