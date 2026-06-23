@@ -1802,11 +1802,6 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <!-- Синий блок с наложением -->
                 <div class="home-header-block">
-                    <div class="home-user-inline">
-                        <span class="home-user-role">Основатель</span>
-                        <span class="home-user-name">${{name}}</span>
-                    </div>
-                    
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
