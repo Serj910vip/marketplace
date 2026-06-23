@@ -760,7 +760,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 0.5px solid #0073FF;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -772,7 +772,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 0.5px solid #0073FF;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -2101,29 +2101,31 @@ async def main_app():
                         <span class="home-user-name">${{name}}</span>
                     </div>
                     
-                    <div class="bookings-menu-grid">
-                        <div class="bookings-menu-item" onclick="filterBookings('all')">
-                            <span class="bookings-menu-label">Услуги</span>
+                    <div class="books-stats">
+                        <div class="bookings-menu-grid">
+                            <div class="bookings-menu-item" onclick="filterBookings('all')">
+                                <span class="bookings-menu-label">Услуги</span>
+                            </div>
+                            <div class="bookings-menu-item" onclick="filterBookings('products')">
+                                <span class="bookings-menu-label">Товары</span>
+                            </div>
+                            <div class="bookings-menu-item" onclick="filterBookings('rent')">
+                                <span class="bookings-menu-label">Аренда</span>
+                            </div>
+                            <div class="bookings-menu-item" onclick="filterBookings('events')">
+                                <span class="bookings-menu-label">События</span>
+                            </div>
+                            <div class="bookings-menu-item" onclick="filterBookings('ads')">
+                                <span class="bookings-menu-label">Объявления</span>
+                            </div>
                         </div>
-                        <div class="bookings-menu-item" onclick="filterBookings('products')">
-                            <span class="bookings-menu-label">Товары</span>
+                        
+                        <div class="bookings-filter-buttons">
+                            <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
+                            <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
+                            <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
+                            <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
                         </div>
-                        <div class="bookings-menu-item" onclick="filterBookings('rent')">
-                            <span class="bookings-menu-label">Аренда</span>
-                        </div>
-                        <div class="bookings-menu-item" onclick="filterBookings('events')">
-                            <span class="bookings-menu-label">События</span>
-                        </div>
-                        <div class="bookings-menu-item" onclick="filterBookings('ads')">
-                            <span class="bookings-menu-label">Объявления</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bookings-filter-buttons">
-                        <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
-                        <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
-                        <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
-                        <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
                     </div>
                     
                     <div class="page-title">📋 Заявки</div>
