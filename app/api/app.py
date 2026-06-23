@@ -595,8 +595,6 @@ COMMON_STYLES = """
     }
 
     .home-business-card {
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        border-radius: 16px;
         padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
@@ -605,9 +603,9 @@ COMMON_STYLES = """
     }
 
     .home-business-card .business-photo {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        border-radius: 20%;
         object-fit: cover;
         margin: 0 auto 12px;
         display: block;
@@ -616,9 +614,9 @@ COMMON_STYLES = """
     }
 
     .home-business-card .photo-placeholder {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        border-radius: 20%;
         margin: 0 auto 12px;
         display: flex;
         align-items: center;
@@ -629,16 +627,18 @@ COMMON_STYLES = """
     }
 
     .home-business-name {
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 700;
-        color: var(--tg-theme-text-color, #1a1a1a);
-        margin-bottom: 4px;
+        color: #FFFFFF;
+        margin-top: 17px;
+        margin-bottom: 20px;
     }
 
     .home-business-rating {
         font-size: 14px;
         color: #f5a623;
-        margin-bottom: 4px;
+        margin-top: 14px;
+        margin-bottom: 13px;
     }
 
     .home-business-address {
