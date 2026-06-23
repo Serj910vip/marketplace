@@ -564,7 +564,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 232px;
+        height: 186px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
@@ -2183,7 +2183,6 @@ async def main_app():
                 
                     <div class="profile-card">
                         <div class="profile-photo-section">
-                            <div class="field-label">Главная фотография профиля</div>
                             <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
                                 ${{photo}}
                             </div>
