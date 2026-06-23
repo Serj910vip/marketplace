@@ -1777,12 +1777,12 @@ async def main_app():
 
         
         function renderHome() {{
-        /*
+    
             if (!businessData?.has_business) {{
                 document.getElementById('main-content').innerHTML =
                     '<div class="error">Бизнес не зарегистрирован. Создайте его в боте.</div>';
                 return;
-            }}*/
+            }}
             const photo = businessData.business_photo_url
                 ? `<img class="business-photo" src="${{businessData.business_photo_url}}" alt="">`
                 : '<div class="photo-placeholder">🏪</div>';
@@ -2337,11 +2337,11 @@ async def main_app():
         }}
 
         async function init() {{
-        
-            
+            // ============ ТЕСТОВЫЙ РЕЖИМ ============
+            // Если нет пользователя - создаем тестового
             if (!tgUser) {{
-                document.getElementById('main-content').innerHTML = '<div class="error">Не удалось получить данные пользователя</div>';
-                // ДОБАВЛЯЕМ ТЕСТОВЫЙ РЕЖИМ
+                console.log('🔧 Создаем тестового пользователя...');
+                
                 // Создаем тестового пользователя
                 tgUser = {{
                     id: 123456789,
@@ -2354,24 +2354,163 @@ async def main_app():
                 const mainContent = document.getElementById('main-content');
                 if (mainContent) {{
                     mainContent.innerHTML = `
-                        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-weight: 600;">
+                        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-weight: 600; border: 2px solid #ffc107;">
                             ⚠️ РЕЖИМ ТЕСТИРОВАНИЯ: Данные пользователя заглушка
                         </div>
                     `;
                 }}
-                
-                // Не возвращаем, а продолжаем выполнение с тестовыми данными
             }}
-                
-
+            // ========================================
+            
             try {{
+                // Загружаем данные с сервера
                 await loadAll();
+                
+                // ============ СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС ============
+                // Если бизнес не найден - создаем тестовый
+                if (!businessData || !businessData.has_business) {{
+                    console.log('🔧 Создаем тестовый бизнес...');
+                    
+                    // Тестовые данные бизнеса
+                    businessData = {{
+                        has_business: true,
+                        business_name: "Тестовый Маркет",
+                        business_photo_url: null,
+                        business_rating: 4.8,
+                        business_address: "Москва, ул. Тестовая, д. 1",
+                        business_country: "Россия",
+                        business_region: "Москва",
+                        business_city: "Москва",
+                        username: tgUser?.username || "test_user",
+                        market_created_at: new Date().toISOString()
+                    }};
+                    
+                    // Тестовые услуги
+                    servicesList = [
+                        {{
+                            id: 1,
+                            title: "Персональная тренировка",
+                            description: "Индивидуальное занятие с профессиональным тренером",
+                            price: 1500,
+                            category: "Персональные тренировки",
+                            training_duration: 60,
+                            booking_format: "online",
+                            working_days_label: "Пн, Ср, Пт",
+                            photo_url: null,
+                            created_at: new Date().toISOString()
+                        }},
+                        {{
+                            id: 2,
+                            title: "Групповая йога",
+                            description: "Занятия йогой в группе до 10 человек",
+                            price: 800,
+                            category: "Йога",
+                            training_duration: 45,
+                            booking_format: "offline",
+                            working_days_label: "Вт, Чт",
+                            photo_url: null,
+                            created_at: new Date().toISOString()
+                        }},
+                        {{
+                            id: 3,
+                            title: "Кроссфит",
+                            description: "Интенсивные функциональные тренировки",
+                            price: 1200,
+                            category: "Кроссфит",
+                            training_duration: 50,
+                            booking_format: "online",
+                            working_days_label: "Пн, Вт, Чт, Пт",
+                            photo_url: null,
+                            created_at: new Date().toISOString()
+                        }}
+                    ];
+                    
+                    // Тестовая статистика
+                    statsData = {{
+                        total_requests: 25,
+                        successful_requests: 20,
+                        cancelled_requests: 5
+                    }};
+                    
+                    // Тестовые бронирования
+                    bookingsList = [
+                        {{
+                            id: 1,
+                            service_id: 1,
+                            service_title: "Персональная тренировка",
+                            client_name: "Иван Петров",
+                            booking_day: "mon",
+                            booking_day_label: "Пн",
+                            booking_time: "10:00",
+                            status: "confirmed",
+                            created_at: new Date().toISOString()
+                        }},
+                        {{
+                            id: 2,
+                            service_id: 2,
+                            service_title: "Групповая йога",
+                            client_name: "Мария Смирнова",
+                            booking_day: "wed",
+                            booking_day_label: "Ср",
+                            booking_time: "18:30",
+                            status: "pending",
+                            created_at: new Date().toISOString()
+                        }},
+                        {{
+                            id: 3,
+                            service_id: 3,
+                            service_title: "Кроссфит",
+                            client_name: "Алексей Иванов",
+                            booking_day: "fri",
+                            booking_day_label: "Пт",
+                            booking_time: "09:00",
+                            status: "confirmed",
+                            created_at: new Date().toISOString()
+                        }}
+                    ];
+                    
+                    // Убираем предупреждение о тестовом режиме, если оно было
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent && mainContent.innerHTML.includes('РЕЖИМ ТЕСТИРОВАНИЯ')) {{
+                        mainContent.innerHTML = '';
+                    }}
+                }}
+                // ================================================
+                
                 // Проверяем параметр tab в URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const tab = urlParams.get('tab') || 'home';
                 switchTab(tab);
+                
             }} catch(e) {{
-                document.getElementById('main-content').innerHTML = `<div class="error">Ошибка: ${{e.message}}</div>`;
+                console.error('❌ Ошибка:', e);
+                // При ошибке тоже создаем тестовые данные
+                if (!businessData) {{
+                    businessData = {{
+                        has_business: true,
+                        business_name: "Тестовый Маркет (оффлайн)",
+                        business_photo_url: null,
+                        business_rating: 4.5,
+                        business_address: "Москва, ул. Тестовая, д. 1",
+                        username: tgUser?.username || "test_user"
+                    }};
+                }}
+                if (!servicesList || servicesList.length === 0) {{
+                    servicesList = [
+                        {{
+                            id: 1,
+                            title: "Тестовая услуга",
+                            description: "Описание тестовой услуги",
+                            price: 1000,
+                            category: "Персональные тренировки",
+                            training_duration: 60,
+                            booking_format: "online",
+                            working_days_label: "Пн, Ср, Пт",
+                            photo_url: null
+                        }}
+                    ];
+                }}
+                document.getElementById('main-content').innerHTML = `<div class="error">Ошибка: ${e.message}</div>`;
             }}
         }}
         init();
