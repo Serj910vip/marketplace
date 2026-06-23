@@ -2174,9 +2174,9 @@ async def main_app():
                         
                         <div class="profile-info-section">
                             <div class="profile-business-name">${{b.business_name || 'Название маркета'}}</div>
-                            <div class="home-user-inline">
+                            /*<div class="home-user-inline">
                                 <span class="home-user-name">${{name}}</span>
-                            </div>
+                            </div>*/
                             <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                             <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
                         </div>
