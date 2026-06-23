@@ -340,12 +340,13 @@ COMMON_STYLES = """
         transform: translateX(-50%);
         width: 360px;
         height: 56px;
-        background: #003A81;
+        background: #121918;
         border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: space-around;
         z-index: 100;
+        border: 1px solid #0073FF;
     }
 
     .nav-item {
@@ -359,7 +360,7 @@ COMMON_STYLES = """
         border-radius: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
-        color: var(--tg-theme-hint-color, #8e8e93);
+        color: #FFFFFF;
         min-width: 60px;
     }
 
@@ -419,8 +420,8 @@ COMMON_STYLES = """
 
     /* Активный пункт - показываем иконку и текст, с белым фоном */
     .nav-item.active {
-        background: var(--tg-theme-button-text-color, #ffffff);
-        color: var(--tg-theme-button-color, #007aff);
+        background: #003A81;
+        color: #FFFFFF;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         padding: 10px 16px;
     }
@@ -563,7 +564,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 173px;
+        height: 240px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
@@ -1052,7 +1053,7 @@ COMMON_STYLES = """
     .profile-divider {
         height: 1px;
         background: rgba(67, 84, 80, 0.6);
-        margin: 16px 0;
+        margin: 10px 0;
     }
 
     .btn-edit-profile {
@@ -1159,13 +1160,14 @@ COMMON_STYLES = """
     }
 
     .btn-delete-market {
-        color: #003A81;
+        color: #FFFFFF;
         margin-top: 0px;
         font-size: 20px;
         font-weight: 500;
-        height: 68px;
-        background: #FFB5B5;
-        border-radius: 10px;
+        height: 70px;
+        background: #FF8282;
+        border-radius: 20px;
+        border: 0.5px solid #0073FF;
     }
 
     .btn-delete-market:hover {
