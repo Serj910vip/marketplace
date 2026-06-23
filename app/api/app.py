@@ -437,7 +437,7 @@ COMMON_STYLES = """
         min-height: 297px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 20px 25px;
+        padding: 20px 20px 0px 25px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
