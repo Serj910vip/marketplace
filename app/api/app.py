@@ -4313,7 +4313,7 @@ async def create_ad_page():
         function init() {{
             if (!tgUser) {{
                 tgUser = {{
-                    id: 123456789,
+                    id: 552386150,
                     username: 'test_user',
                     first_name: 'Тестовый'
                 }};
