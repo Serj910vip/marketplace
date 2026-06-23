@@ -2510,7 +2510,7 @@ async def main_app():
                         }}
                     ];
                 }}
-                document.getElementById('main-content').innerHTML = `<div class="error">Ошибка: ${e.message}</div>`;
+                document.getElementById('main-content').innerHTML = `<div class="error">Ошибка: ${{e.message}}</div>`;
             }}
         }}
         init();
