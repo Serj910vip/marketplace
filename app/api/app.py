@@ -598,7 +598,7 @@ COMMON_STYLES = """
         padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
-        margin-top: 16px;
+        margin-top: 0px;
         
     }
 
