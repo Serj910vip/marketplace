@@ -4161,40 +4161,6 @@ async def ads_page():
 
 # ========== API для объявлений ==========
 
-@app.get("/api/ads/{telegram_id}")
-async def get_ads(telegram_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(telegram_id)
-            if not user:
-                return JSONResponse({"ads": []})
-            
-            # ВРЕМЕННО: возвращаем тестовые данные
-            # ПОТОМ: замените на реальную базу данных
-            return JSONResponse({
-                "ads": [
-                    {
-                        "id": 1,
-                        "title": "Тестовое объявление",
-                        "description": "Описание тестового объявления",
-                        "status": "Активно",
-                        "created_at": "2024-01-01T12:00:00"
-                    },
-                    {
-                        "id": 2,
-                        "title": "Еще одно объявление",
-                        "description": "Описание второго объявления",
-                        "status": "Активно",
-                        "created_at": "2024-01-02T14:30:00"
-                    }
-                ]
-            })
-    except Exception as e:
-        return JSONResponse({"ads": [], "error": str(e)})
-    
-
-
 @app.get("/ad/create", response_class=HTMLResponse)
 async def create_ad_page():
     return f"""
