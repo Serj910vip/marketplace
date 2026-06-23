@@ -572,7 +572,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -16px;  /* Прижимаем к верхнему краю */
+        margin-top: -36px;  /* Прижимаем к верхнему краю */
     }
 
     .home-user-inline {
