@@ -4115,8 +4115,7 @@ async def ads_page():
         }}
 
         function goCreateAd() {{
-            tg.showAlert('Создание объявления в разработке');
-            // В будущем: window.location.href = '/ad/create';
+            window.location.href = '/ad/create';
         }}
 
         async function loadAds() {{
