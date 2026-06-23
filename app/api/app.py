@@ -1777,11 +1777,12 @@ async def main_app():
 
         
         function renderHome() {{
+        /*
             if (!businessData?.has_business) {{
                 document.getElementById('main-content').innerHTML =
                     '<div class="error">Бизнес не зарегистрирован. Создайте его в боте.</div>';
                 return;
-            }}
+            }}*/
             const photo = businessData.business_photo_url
                 ? `<img class="business-photo" src="${{businessData.business_photo_url}}" alt="">`
                 : '<div class="photo-placeholder">🏪</div>';
