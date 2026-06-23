@@ -564,7 +564,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 240px;
+        height: 232px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
@@ -1055,6 +1055,12 @@ COMMON_STYLES = """
         background: rgba(67, 84, 80, 0.6);
         margin: 10px 0;
     }
+    .profile-divider-stats {
+        height: 1px;
+        background: rgba(67, 84, 80, 0.6);
+        margin: 10px -18px;
+        margin-top: 52px;
+    }
 
     .btn-edit-profile {
         background: #003A81;
@@ -1486,14 +1492,14 @@ COMMON_STYLES = """
 
     .account-label-flat {
         font-size: 10px;
-        color: rgba(255, 255, 255, 0.9);
+        color: #8A9593;
         margin-bottom: 4px;
         display: block;
     }
 
     .account-number-flat {
         font-size: 10px;
-        color: #FFFFFF;
+        color: #8A9593;
         letter-spacing: 0.5px;
         word-break: break-all;
     }
@@ -1939,7 +1945,7 @@ async def main_app():
                             <span class="balance-label-flat">Баланс:</span>
                             <span class="balance-amount-flat">2000.0 ₽</span>
                         </div>
-                        <div class="profile-divider"></div>
+                        <div class="profile-divider-stats"></div>
                     </div>
                 </div>
                 
@@ -2168,6 +2174,10 @@ async def main_app():
                         
                         <div class="profile-info-section">
                             <div class="profile-business-name">${{b.business_name || 'Название маркета'}}</div>
+                            <div class="home-user-inline">
+                                <span class="home-user-name">${{name}}</span>
+                            </div>
+                            <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                             <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
                         </div>
                         
