@@ -564,7 +564,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 210px;
+        height: 200px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
@@ -702,7 +702,7 @@ COMMON_STYLES = """
     }
     /*
     .menu-card {
-        background: rgba(0, 58, 129, 0.7); 
+        background: rgba(0, 58, 129, 0.3); 
         border-radius: 12px;
         padding: 14px 16px; 
         margin-bottom: 10px;
@@ -782,7 +782,7 @@ COMMON_STYLES = """
 
     /* Кнопки внутри рамки */
     .menu-card {
-        background: rgba(0, 58, 129, 0.7);
+        background: rgba(0, 58, 129, 0.3);
         border-radius: 20px;
         padding: 14px 16px;
         margin-bottom: 8px;
