@@ -301,11 +301,16 @@ async def get_stats(telegram_id: int):
                     Booking.status == "cancelled",
                 )
             ) or 0
+            
+            ads_count = await session.scalar(
+                select(func.count()).select_from(Ad).where(Ad.user_id == user.id)
+            ) or 0
 
             return JSONResponse({
                 "total_requests": total,
                 "successful_requests": successful,
                 "cancelled_requests": cancelled,
+                "ads_count": ads_count,
             })
     except HTTPException:
         raise
@@ -1733,6 +1738,46 @@ COMMON_STYLES = """
         font-weight: 500;
     }
 
+    /* Стили для объявлений на публичной странице */
+    .market-ad-item {
+        background: rgba(0, 58, 129, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 10px;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
+    }
+
+    .market-ad-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .market-ad-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 6px;
+    }
+
+    .market-ad-meta {
+        font-size: 13px;
+        color: #8A9593;
+        margin-bottom: 6px;
+    }
+
+    .market-ad-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: #f5a623;
+        margin-bottom: 6px;
+    }
+
+    .market-ad-status {
+        font-size: 12px;
+        color: #4caf50;
+        font-weight: 500;
+    }
+
+
     input[type="file"] { display: none; }
 """
 
@@ -2065,6 +2110,8 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
+            const adsCount = s.ads_count || 0;
+
             // Данные для заглушек
             const servicesCount = 2;
             const bookingsCount = 218;
@@ -2105,12 +2152,13 @@ async def main_app():
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
                         <div class="left">
                             <span class="label">Объявления</span>
+                            <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
                         </div>
                         <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-ads-detail">
                         <div class="stats-detail">
-                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">4</span></div>
+                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">${{adsCount}}</span></div>
                             <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
                             <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
                             <div class="stats-row"><span>Заявок с объявлений:</span><span class="stats-value">19</span></div>
@@ -3867,6 +3915,7 @@ async def public_market_page(telegram_id: int):
         const MARKETPLACE = "{MARKETPLACE_NAME}";
         let businessData = null;
         let servicesList = [];
+        let adsList = [];
         let currentTab = 'services';
         let telegramId = {telegram_id};
 
@@ -3946,7 +3995,18 @@ async def public_market_page(telegram_id: int):
             }} else if (tab === 'events') {{
                 return '<div class="empty">События временно не доступны</div>';
             }} else if (tab === 'ads') {{
-                return '<div class="empty">Объявления временно не доступны</div>';
+                if (adsList && adsList.length) {{
+                    return adsList.map(ad => `
+                        <div class="market-ad-item">
+                            <div class="market-ad-title">${{ad.title}}</div>
+                            <div class="market-ad-meta">${{ad.description || 'Без описания'}}</div>
+                            ${{ad.price ? `<div class="market-ad-price">${{ad.price}} ₽</div>` : ''}}
+                            <div class="market-ad-status">${{ad.status === 'active' ? '🟢 Активно' : '⚪ ' + ad.status}}</div>
+                        </div>
+                    `).join('');
+                }} else {{
+                    return '<div class="empty">Объявлений пока нет</div>';
+                }}
             }}
             return '';
         }}
@@ -4010,6 +4070,11 @@ async def public_market_page(telegram_id: int):
                     businessData = biz;
                     servicesList = svc.services || [];
                 }}
+
+                // Загружаем объявления
+                adsList = ads.ads || [];
+
+
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
                 // ПРИ ОШИБКЕ - СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС
