@@ -761,7 +761,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 0.5px solid #0073FF;
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -773,7 +773,7 @@ COMMON_STYLES = """
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 0.5px solid #0073FF;
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -796,6 +796,7 @@ COMMON_STYLES = """
         box-sizing: border-box;
         cursor: pointer;
         transition: background 0.2s ease;
+        border: 0.5px solid #0073FF;
     }
 
     .menu-card:last-child {
@@ -1058,8 +1059,6 @@ COMMON_STYLES = """
     .profile-divider-stats {
         height: 1px;
         background: rgba(67, 84, 80, 0.6);
-        margin: 10px -18px;
-        margin-top: 52px;
     }
 
     .btn-edit-profile {
@@ -1948,8 +1947,9 @@ async def main_app():
                             <span class="balance-label-flat">Баланс:</span>
                             <span class="balance-amount-flat">2000.0 ₽</span>
                         </div>
-                        <div class="profile-divider-stats"></div>
+                        
                     </div>
+                    <div class="profile-divider-stats"></div>
                 </div>
                 
         
