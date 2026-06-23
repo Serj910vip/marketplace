@@ -384,13 +384,13 @@ COMMON_STYLES = """
     /* Стиль для кнопки My Market */
     .my-market-btn {
         width: 100%;
-        height: 68px;
-        background: rgba(0, 58, 129, 0.2);
+        height: 70px;
+        background: #003A81;
         border: none;
-        border-radius: 12px;
-        color: #003A81;
-        font-size: 16px;
-        font-weight: 600;
+        border-radius: 20px;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 15px rgba(0, 58, 129, 0.25);
@@ -757,7 +757,7 @@ COMMON_STYLES = """
 
     
     .menu-container-home {
-        background: #FFFFFF;
+        background: #121918;
         border-radius: 20px;
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1814,21 +1814,22 @@ async def main_app():
 
                 <!-- ОТДЕЛЬНЫЙ БЛОК ДЛЯ ОБЪЯВЛЕНИЙ -->
 
-                <div class="section-title" style="margin-top: 42px;">Создать бесплатно:</div>
+                
                 <div class="menu-container-home" style="margin-top: 20px !important;">
-                    <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
-                        <div class="left">
-                            <span class="label">Объявления</span>
+                    <div class="section-title" style="margin-top: 42px;">Создать бесплатно:</div>
+                        <div class="menu-card accordion-header" onclick="toggleAccordion('ad')">
+                            <div class="left">
+                                <span class="label">Объявления</span>
+                            </div>
+                            <span class="accordion-arrow" id="arrow-ad">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+                                </svg>
+                            </span>
                         </div>
-                        <span class="accordion-arrow" id="arrow-ad">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
-                            </svg>
-                        </span>
-                    </div>
-                    <div class="accordion-content" id="content-ad">
-                        <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
-                    </div>
+                        <div class="accordion-content" id="content-ad">
+                            <button class="btn-sm accordion-btn" onclick="tg.showAlert('Скоро будет доступно')">+ Создать объявление</button>
+                        </div>
                 </div>
                 
                 <div class="section-title" style="margin-top: 42px;">Создать по подписке:</div>
