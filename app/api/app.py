@@ -17,6 +17,7 @@ from app.repositories.booking_repository import BookingRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
+from app.repositories.ad_repository import AdRepository
 
 app = FastAPI()
 
@@ -4335,15 +4336,28 @@ async def get_ads(telegram_id: int):
             if not user:
                 return JSONResponse({"ads": []})
             
-            # Получаем объявления из временного хранилища
-            user_ads = [ad for ad in ads_storage if ad.get("telegram_id") == telegram_id]
+            ad_repo = AdRepository(session)
+            ads = await ad_repo.get_by_user_id(user.id)
             
             return JSONResponse({
-                "ads": user_ads
+                "ads": [
+                    {
+                        "id": ad.id,
+                        "title": ad.title,
+                        "description": ad.description,
+                        "photo_url": ad.photo_url,
+                        "category": ad.category,
+                        "price": ad.price,
+                        "status": ad.status,
+                        "created_at": ad.created_at.isoformat() if ad.created_at else None
+                    }
+                    for ad in ads
+                ]
             })
     except Exception as e:
         return JSONResponse({"ads": [], "error": str(e)})
 
+# ===== CREATE объявления =====
 @app.post("/api/ads/create")
 async def create_ad(body: AdCreateRequest):
     try:
@@ -4353,25 +4367,68 @@ async def create_ad(body: AdCreateRequest):
             if not user:
                 raise HTTPException(status_code=404, detail="Пользователь не найден")
             
-            # Создаем объявление в временном хранилище
-            ad = {
-                "id": len(ads_storage) + 1,
-                "user_id": user.id,
-                "telegram_id": body.telegram_id,
-                "title": body.title,
-                "description": body.description,
-                "photo_url": body.photo_url,
-                "category": body.category,
-                "price": body.price,
-                "status": body.status,
-                "created_at": datetime.now().isoformat()
-            }
-            ads_storage.append(ad)
+            ad_repo = AdRepository(session)
+            ad = await ad_repo.create(
+                user_id=user.id,
+                title=body.title,
+                description=body.description,
+                photo_url=body.photo_url,
+                category=body.category,
+                price=body.price,
+                status=body.status
+            )
             
             return JSONResponse({
                 "success": True,
-                "ad": ad
+                "ad": {
+                    "id": ad.id,
+                    "title": ad.title,
+                    "description": ad.description,
+                    "photo_url": ad.photo_url,
+                    "category": ad.category,
+                    "price": ad.price,
+                    "status": ad.status,
+                    "created_at": ad.created_at.isoformat() if ad.created_at else None
+                }
             })
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== UPDATE статуса объявления =====
+@app.put("/api/ads/{ad_id}/status")
+async def update_ad_status(ad_id: int, status: str):
+    try:
+        async with AsyncSessionLocal() as session:
+            ad_repo = AdRepository(session)
+            ad = await ad_repo.update_status(ad_id, status)
+            if not ad:
+                raise HTTPException(status_code=404, detail="Объявление не найдено")
+            
+            return JSONResponse({
+                "success": True,
+                "ad": {
+                    "id": ad.id,
+                    "status": ad.status
+                }
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== DELETE объявления =====
+@app.delete("/api/ads/{ad_id}")
+async def delete_ad(ad_id: int):
+    try:
+        async with AsyncSessionLocal() as session:
+            ad_repo = AdRepository(session)
+            result = await ad_repo.delete(ad_id)
+            if not result:
+                raise HTTPException(status_code=404, detail="Объявление не найдено")
+            
+            return JSONResponse({"success": True})
     except HTTPException:
         raise
     except Exception as e:
