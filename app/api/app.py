@@ -564,7 +564,7 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 186px;
+        height: 200px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
