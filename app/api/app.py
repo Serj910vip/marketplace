@@ -4020,7 +4020,7 @@ async def public_market_page(telegram_id: int):
 
         async function loadMarketData() {{
             try {{
-                const [biz, svc] = await Promise.all([
+                const [biz, svc, ads] = await Promise.all([
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/ads/${{telegramId}}`).then(r => r.json()),
