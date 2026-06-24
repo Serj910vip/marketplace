@@ -3957,6 +3957,9 @@ async def public_market_page(telegram_id: int):
 
                 <!-- Меню квадратиками -->
                 <div class="market-menu-grid">
+                    <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
+                        <span class="market-menu-label">Объявления</span>
+                    </div>
                     <div class="market-menu-item active" data-tab="services" onclick="switchMarketTab('services')">
                         <span class="market-menu-label">Услуги</span>
                     </div>
@@ -3969,9 +3972,7 @@ async def public_market_page(telegram_id: int):
                     <div class="market-menu-item" data-tab="events" onclick="switchMarketTab('events')">
                         <span class="market-menu-label">События</span>
                     </div>
-                    <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
-                        <span class="market-menu-label">Объявления</span>
-                    </div>
+                    
                 </div>
 
                 <!-- Контент -->
