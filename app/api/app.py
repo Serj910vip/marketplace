@@ -4023,6 +4023,7 @@ async def public_market_page(telegram_id: int):
                 const [biz, svc] = await Promise.all([
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/ads/${{telegramId}}`).then(r => r.json()),
                 ]);
                 
                 // ЕСЛИ БИЗНЕС НЕ НАЙДЕН - СОЗДАЕМ ТЕСТОВЫЙ
