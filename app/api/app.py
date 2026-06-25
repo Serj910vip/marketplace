@@ -4458,7 +4458,8 @@ async def ads_page():
                 const response = await fetch(`/api/ads/${{telegramId}}`);
                 if (response.ok) {{
                     const data = await response.json();
-                    adsList = data.ads || [];
+                    if (data.ads && data.ads.length > 0) {{
+                        adsList = data.ads;
                 }} else {{
                     // Тестовые данные
                     adsList = [
