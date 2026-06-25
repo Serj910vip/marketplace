@@ -4679,9 +4679,6 @@ async def edit_ad_page(ad_id: int):
 
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
-            const category = document.getElementById('ad-category').value;
-            const priceVal = document.getElementById('ad-price').value;
-            const status = document.getElementById('ad-status').value;
 
             // Формируем полное описание
             let fullDescription = description;
@@ -4832,9 +4829,7 @@ async def create_ad_page():
 
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
-            const category = document.getElementById('ad-category').value;
-            const priceVal = document.getElementById('ad-price').value;
-            const status = document.getElementById('ad-status').value;
+
 
             // Формируем полное описание (подзаголовок + содержание)
             let fullDescription = description;
@@ -4851,9 +4846,9 @@ async def create_ad_page():
                         title: title,
                         description: fullDescription || null,
                         photo_url: adPhoto,
-                        category: category || null,
-                        price: priceVal ? parseFloat(priceVal) : null,
-                        status: status
+                        category: null,
+                        price: null,
+                        status: "status"
                     }})
                 }});
 
