@@ -2035,6 +2035,7 @@ COMMON_STYLES = """
 
     /* ===== НОВЫЕ СТИЛИ ДЛЯ ТЕСТОВЫХ КАРТОЧЕК ОБЪЯВЛЕНИЙ ===== */
     .ad-card {
+        display: block !important;
         background: #121918;
         border-radius: 20px;
         padding: 20px;
