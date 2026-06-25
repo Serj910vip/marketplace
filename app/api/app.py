@@ -2032,6 +2032,98 @@ COMMON_STYLES = """
     }
 
 
+
+    /* ===== НОВЫЕ СТИЛИ ДЛЯ ТЕСТОВЫХ КАРТОЧЕК ОБЪЯВЛЕНИЙ ===== */
+    .ad-card {
+        background: #121918;
+        border-radius: 20px;
+        padding: 20px;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        margin-bottom: 16px;
+        position: relative;
+    }
+
+    .ad-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 6px;
+    }
+
+    .ad-card-title-block {
+        flex: 1;
+    }
+
+    .ad-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 2px;
+    }
+
+    .ad-card-subtitle {
+        font-size: 13px;
+        color: #8A9593;
+    }
+
+    .ad-card-number {
+        font-size: 12px;
+        color: #8A9593;
+        white-space: nowrap;
+        margin-left: 16px;
+        padding: 4px 10px;
+        background: rgba(0, 58, 129, 0.3);
+        border-radius: 12px;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
+    }
+
+    .ad-card-date {
+        font-size: 12px;
+        color: #8A9593;
+        margin-bottom: 16px;
+    }
+
+    .ad-card-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 0.5px solid rgba(67, 84, 80, 0.6);
+    }
+
+    .ad-card-btn {
+        padding: 10px 32px;
+        border-radius: 12px;
+        border: 0.5px solid #0073FF;
+        background: rgba(0, 58, 129, 0.3);
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 120px;
+    }
+
+    .ad-card-btn:hover {
+        background: #003A81;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 58, 129, 0.3);
+    }
+
+    .ad-card-btn:active {
+        transform: translateY(0px);
+    }
+
+    .ad-card-btn-edit {
+        background: #003A81;
+    }
+
+    .ad-card-btn-edit:hover {
+        background: rgba(0, 58, 129, 0.7);
+    }
+
+
     input[type="file"] { display: none; }
 """
 
