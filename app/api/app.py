@@ -1777,6 +1777,157 @@ COMMON_STYLES = """
         font-weight: 500;
     }
 
+    /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ СОЗДАНИЯ ОБЪЯВЛЕНИЯ ===== */
+    .ad-create-main-block {
+        background: #121918;
+        border-radius: 20px;
+        padding: 24px 20px 20px;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        margin-bottom: 20px;
+    }
+
+    .ad-create-main-block .form-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .ad-field-group {
+        margin-bottom: 16px;
+    }
+    .ad-field-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .ad-field-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #8A9593;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .ad-field-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(0, 58, 129, 0.3);
+        border: 0.5px solid #0073FF;
+        border-radius: 20px;
+        color: #FFFFFF;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        font-family: inherit;
+    }
+    .ad-field-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+    .ad-field-input:focus {
+        border-color: #4a9eff;
+    }
+
+    textarea.ad-field-input {
+        min-height: 100px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    select.ad-field-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9593' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        cursor: pointer;
+    }
+    select.ad-field-input option {
+        background: #121918;
+        color: #FFFFFF;
+    }
+
+    .ad-photo-upload-box {
+        width: 100%;
+        height: 160px;
+        background: rgba(0, 58, 129, 0.3);
+        border: 0.5px solid #0073FF;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        overflow: hidden;
+        color: #8A9593;
+    }
+    .ad-photo-upload-box:hover {
+        border-color: #4a9eff;
+        background: rgba(0, 58, 129, 0.4);
+    }
+    .ad-photo-upload-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .ad-photo-hint {
+        font-size: 12px;
+        color: #8A9593;
+        margin-top: 6px;
+        text-align: center;
+    }
+    .ad-input-file {
+        display: none;
+    }
+
+    .ad-btn-create {
+        width: 100%;
+        padding: 16px;
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        border-radius: 20px;
+        color: #FFFFFF;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+    }
+    .ad-btn-create:hover {
+        background: rgba(0, 58, 129, 0.8);
+        transform: translateY(-1px);
+    }
+    .ad-btn-create:active {
+        transform: translateY(0px);
+    }
+
+    /* Стили для верхнего блока объявлений */
+    .ad-header-block {
+        padding: 20px 20px 0 20px;
+        margin-bottom: 0;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -16px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .ad-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .ad-header-title {
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 500;
+        margin-right: 20px;
+    }
+
 
     input[type="file"] { display: none; }
 """
@@ -4240,63 +4391,84 @@ async def create_ad_page():
     </head>
     <body>
         <div class="app">
-            <div class="content">
-                <div class="ads-header-block">
-                <div class="ads-header-row">
-                    <button class="back-link-white" onclick="history.back()">← Назад</button>
-                    <span class="ads-header-title">Создание объявления</span>
+            <div class="content" style="padding-top: 0;">
+                <!-- Верхний блок с шапкой -->
+                <div class="ad-header-block">
+                    <div class="ad-header-row">
+                        <button class="back-link-white" onclick="history.back()">← Назад</button>
+                        <span class="ad-header-title">Создание объявления</span>
+                    </div>
                 </div>
 
-                
+                <!-- ===== ГЛАВНЫЙ БЛОК С ФОРМОЙ ===== -->
+                <div class="ad-create-main-block" style="margin-top: 20px;">
+                    <div class="form-title">📢 Новое объявление</div>
 
-                <div class="field-group">
-                    <div class="field-label">Название объявления *</div>
-                    <input type="text" id="ad-title" maxlength="200" placeholder="Введите название объявления">
+                    <!-- Заголовок -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Заголовок объявления</label>
+                        <input class="ad-field-input" id="ad-title" type="text" placeholder="Введите заголовок" maxlength="200">
+                    </div>
+
+                    <!-- Подзаголовок -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Подзаголовок объявления</label>
+                        <input class="ad-field-input" id="ad-subtitle" type="text" placeholder="Краткое описание" maxlength="100">
+                    </div>
+
+                    <!-- Содержание -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Содержание объявления</label>
+                        <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
+                    </div>
+
+                    <!-- Загрузите фото -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Загрузите фото</label>
+                        <div class="ad-photo-upload-box" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">
+                            📷
+                        </div>
+                        <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
+                        <div class="ad-photo-hint">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                    </div>
+
+                    <!-- Категория -->
+                    <div class="ad-field-group" style="margin-top: 8px;">
+                        <label class="ad-field-label">Категория</label>
+                        <select class="ad-field-input" id="ad-category">
+                            <option value="">Выберите категорию</option>
+                            <option value="Услуги">Услуги</option>
+                            <option value="Товары">Товары</option>
+                            <option value="Аренда">Аренда</option>
+                            <option value="События">События</option>
+                            <option value="Работа">Работа</option>
+                            <option value="Обучение">Обучение</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+
+                    <!-- Цена -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Цена (₽)</label>
+                        <input class="ad-field-input" id="ad-price" type="number" min="0" placeholder="0">
+                    </div>
+
+                    <!-- Статус -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Статус</label>
+                        <select class="ad-field-input" id="ad-status">
+                            <option value="active">🟢 Активно</option>
+                            <option value="paused">⏸ Приостановлено</option>
+                            <option value="archived">📦 Архив</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="field-group">
-                    <div class="field-label">Описание</div>
-                    <textarea id="ad-desc" placeholder="Опишите ваше объявление" maxlength="1000"></textarea>
-                </div>
-
-                <div class="field-group">
-                    <div class="field-label">Категория</div>
-                    <select id="ad-category">
-                        <option value="">Выберите категорию</option>
-                        <option value="Услуги">Услуги</option>
-                        <option value="Товары">Товары</option>
-                        <option value="Аренда">Аренда</option>
-                        <option value="События">События</option>
-                        <option value="Работа">Работа</option>
-                        <option value="Обучение">Обучение</option>
-                        <option value="Другое">Другое</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <div class="field-label">Цена (₽)</div>
-                    <input type="number" id="ad-price" min="0" placeholder="0">
-                </div>
-
-                <div class="field-group">
-                    <div class="field-label">Статус</div>
-                    <select id="ad-status">
-                        <option value="active">Активно</option>
-                        <option value="paused">Приостановлено</option>
-                        <option value="archived">Архив</option>
-                    </select>
-                </div>
-
-                <div class="form-card" style="text-align:center">
-                    <div class="field-label">Добавить фото</div>
-                    <div class="photo-upload-box lg" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">📷</div>
-                    <input type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
-                    <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px;">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
-                </div>
-
-                <button class="btn" onclick="createAd()">Создать объявление</button>
+                <!-- Кнопка создания -->
+                <button class="ad-btn-create" onclick="createAd()">➕ Создать объявление</button>
             </div>
         </div>
+
         <script>
         {WEBAPP_INIT}
         {SERVICE_HELPERS_JS}
@@ -4306,50 +4478,58 @@ async def create_ad_page():
         function onAdPhotoSelect(input) {{
             readPhotoFile(input, dataUrl => {{
                 adPhoto = dataUrl;
-                document.getElementById('ad-photo-box').innerHTML =
-                    `<img src="${{dataUrl}}" style="width:100%;height:100%;object-fit:cover">`;
+                const box = document.getElementById('ad-photo-box');
+                box.innerHTML = `<img src="${{dataUrl}}" alt="Фото">`;
             }});
         }}
 
         async function createAd() {{
             const title = document.getElementById('ad-title').value.trim();
             if (!title) {{
-                tg.showAlert('Введите название объявления');
+                tg.showAlert('Введите заголовок объявления');
                 return;
             }}
 
-            const description = document.getElementById('ad-desc').value.trim();
+            const subtitle = document.getElementById('ad-subtitle').value.trim();
+            const description = document.getElementById('ad-description').value.trim();
             const category = document.getElementById('ad-category').value;
-            const price = document.getElementById('ad-price').value;
+            const priceVal = document.getElementById('ad-price').value;
             const status = document.getElementById('ad-status').value;
+
+            // Формируем полное описание (подзаголовок + содержание)
+            let fullDescription = description;
+            if (subtitle) {{
+                fullDescription = subtitle + (description ? '\\n\\n' + description : '');
+            }}
 
             try {{
                 const response = await fetch(`/api/ads/create`, {{
                     method: 'POST',
-                    headers: {{'Content-Type':'application/json'}},
+                    headers: {{'Content-Type': 'application/json'}},
                     body: JSON.stringify({{
                         telegram_id: tgUser.id,
                         title: title,
-                        description: description || null,
+                        description: fullDescription || null,
                         photo_url: adPhoto,
                         category: category || null,
-                        price: price ? parseFloat(price) : null,
+                        price: priceVal ? parseFloat(priceVal) : null,
                         status: status
                     }})
                 }});
 
                 if (!response.ok) throw new Error('Ошибка создания');
                 
-                tg.showAlert('Объявление создано!', () => {{
+                tg.showAlert('✅ Объявление создано!', () => {{
                     window.location.href = '/ads';
                 }});
             }} catch(e) {{
-                tg.showAlert('Ошибка: ' + e.message);
+                tg.showAlert('❌ Ошибка: ' + e.message);
             }}
         }}
 
         function init() {{
             if (!tgUser) {{
+                // Тестовый пользователь для разработки
                 tgUser = {{
                     id: 552386150,
                     username: 'test_user',
