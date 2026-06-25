@@ -1950,14 +1950,13 @@ COMMON_STYLES = """
     }
 
     .add-item-title-block {
-        flex: 1;
     }
 
     .add-item-title {
         font-size: 16px;
         font-weight: 600;
         color: #FFFFFF;
-        margin-bottom: 2px;
+        margin-bottom: 17px;
     }
 
     .add-item-subtitle {
@@ -1988,20 +1987,21 @@ COMMON_STYLES = """
         gap: 12px;
         margin-top: 12px;
         padding-top: 12px;
-        border-top: 0.5px solid rgba(67, 84, 80, 0.6);
     }
 
     .add-item-btn {
         padding: 10px 32px;
         border-radius: 12px;
         border: 0.5px solid #0073FF;
-        background: rgba(0, 58, 129, 0.3);
+        background: #003A81;
         color: #FFFFFF;
-        font-size: 14px;
+        font-size: 20px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
         min-width: 120px;
+        width: 100%;
+        height: 68px;
     }
 
     .add-item-btn:hover {
