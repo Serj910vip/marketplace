@@ -4241,15 +4241,13 @@ async def create_ad_page():
     <body>
         <div class="app">
             <div class="content">
-                <button class="back-link" onclick="history.back()">← Назад</button>
-                <div class="page-title">Создание объявления</div>
-
-                <div class="form-card" style="text-align:center">
-                    <div class="field-label">Добавить фото</div>
-                    <div class="photo-upload-box lg" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">📷</div>
-                    <input type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
-                    <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px;">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                <div class="ads-header-block">
+                <div class="ads-header-row">
+                    <button class="back-link-white" onclick="history.back()">← Назад</button>
+                    <span class="ads-header-title">Создание объявления</span>
                 </div>
+
+                
 
                 <div class="field-group">
                     <div class="field-label">Название объявления *</div>
@@ -4287,6 +4285,13 @@ async def create_ad_page():
                         <option value="paused">Приостановлено</option>
                         <option value="archived">Архив</option>
                     </select>
+                </div>
+
+                <div class="form-card" style="text-align:center">
+                    <div class="field-label">Добавить фото</div>
+                    <div class="photo-upload-box lg" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">📷</div>
+                    <input type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
+                    <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px;">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
                 </div>
 
                 <button class="btn" onclick="createAd()">Создать объявление</button>
