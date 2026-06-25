@@ -4489,6 +4489,7 @@ async def ads_page():
                         }}
                     ];
                 }}
+                }}
             }} catch(e) {{
                 console.log('Используем тестовые данные');
                 adsList = [
