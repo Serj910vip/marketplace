@@ -1934,10 +1934,10 @@ COMMON_STYLES = """
     /* ===== НОВЫЕ СТИЛИ ДЛЯ КАРТОЧЕК ОБЪЯВЛЕНИЙ ===== */
     .add-item{
         display: block !important;
-        background: #121918;
+        background: rgba(0, 58, 129, 0.3);
         border-radius: 20px;
         padding: 20px;
-        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        border: 0.5px solid #0073FF;
         margin-bottom: 16px;
         position: relative;
     }
@@ -4443,9 +4443,12 @@ async def ads_page():
                                 <div class="add-item-title">${{ad.title}}</div>
                                 <div class="add-item-subtitle">${{subtitle}}</div>
                             </div>
-                            <div class="add-item-number">#${{adNumber}}</div>
+                            <div class="add-item-title-block">
+                                <div class="add-item-number">#${{adNumber}}</div>
+                                <div class="add-item-date">📅 ${{createdDate}}</div>
+                            </div>
                         </div>
-                        <div class="add-item-date">📅 ${{createdDate}}</div>
+                        
                         <div class="add-item-actions">
                             <button class="add-item-btn add-item-btn-edit" onclick="editAd(${{ad.id}})">Редактировать</button>
                         </div>
