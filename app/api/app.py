@@ -2045,7 +2045,7 @@ COMMON_STYLES = """
     }
 
     .ad-card-header {
-        display: flex;
+        display: flex !important;
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 6px;
@@ -2085,7 +2085,7 @@ COMMON_STYLES = """
     }
 
     .ad-card-actions {
-        display: flex;
+        display: flex important;
         justify-content: center;
         gap: 12px;
         margin-top: 12px;
