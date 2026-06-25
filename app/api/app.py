@@ -4178,6 +4178,33 @@ async def public_market_page(telegram_id: int):
         let currentTab = 'services';
         let telegramId = {telegram_id};
 
+        const TEST_ADS = [
+            {{
+                id: 1,
+                title: "Скидка на персональные тренировки",
+                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
+                price: 1200,
+                status: "active",
+                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+            }},
+            {{
+                id: 2,
+                title: "Новый курс по йоге",
+                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
+                price: 800,
+                status: "active",
+                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+            }},
+            {{
+                id: 3,
+                title: "Спецпредложение",
+                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
+                price: 1500,
+                status: "active",
+                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+            }}
+        ];
+
         function renderStars(rating) {{
             const full = Math.floor(rating);
             let s = '';
@@ -4197,7 +4224,7 @@ async def public_market_page(telegram_id: int):
                 : '<div class="market-photo-placeholder">🏪</div>';
 
             document.getElementById('main-content').innerHTML = `
-                <!-- Синий блок -->
+          
                 <div class="market-header-block">
                     <div class="market-info-row">
                         <div class="market-photo-wrapper">
@@ -4333,7 +4360,14 @@ async def public_market_page(telegram_id: int):
                 }}
 
                 // Загружаем объявления
-                adsList = ads.ads || [];
+                if (ads.ads && ads.ads.length > 0) {{
+                    adsList = ads.ads;
+                    console.log('✅ Загружены реальные объявления:', adsList.length);
+                }} else {{
+                    // ЕСЛИ НЕТ ОБЪЯВЛЕНИЙ - ИСПОЛЬЗУЕМ ТЕСТОВЫЕ
+                    adsList = TEST_ADS;
+                    console.log('📢 Используем тестовые объявления:', adsList.length);
+                }}
 
 
             }} catch(e) {{
