@@ -1022,9 +1022,12 @@ COMMON_STYLES = """
     }
     .field-group { margin-bottom: 16px; }
     select, input[type="text"], input[type="number"], textarea {
-        width: 100%; padding: 12px; border-radius: 10px;
-        border: 1px solid var(--tg-theme-hint-color, #ccc);
-        font-size: 15px; background: var(--tg-theme-bg-color, #fff);
+        width: 100%; 
+        padding: 12px; 
+        border-radius: 10px;
+        border: 0.5px solid #0073FF;
+        font-size: 15px; 
+        background: rgba(0, 58, 129, 0.3);
         color: var(--tg-theme-text-color, #000);
     }
     textarea { resize: vertical; min-height: 80px; }
@@ -1802,10 +1805,10 @@ COMMON_STYLES = """
     }
 
     .ad-field-label {
-        font-size: 13px;
+        font-size: 10px;
         font-weight: 500;
         color: #8A9593;
-        margin-bottom: 6px;
+        margin-bottom: 12px;
         display: block;
     }
 
@@ -1885,10 +1888,10 @@ COMMON_STYLES = """
         padding: 16px;
         background: #003A81;
         border: 0.5px solid #0073FF;
-        border-radius: 20px;
+        border-radius: 10px;
         color: #FFFFFF;
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 20px;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
         margin-top: 8px;
@@ -4402,70 +4405,40 @@ async def create_ad_page():
 
                 <!-- ===== ГЛАВНЫЙ БЛОК С ФОРМОЙ ===== -->
                 <div class="ad-create-main-block" style="margin-top: 20px;">
-                    <div class="form-title">📢 Новое объявление</div>
+    
 
                     <!-- Заголовок -->
                     <div class="ad-field-group">
-                        <label class="ad-field-label">Заголовок объявления</label>
+                        <label class="ad-field-label">Заголовок объявления: </label>
                         <input class="ad-field-input" id="ad-title" type="text" placeholder="Введите заголовок" maxlength="200">
                     </div>
 
                     <!-- Подзаголовок -->
                     <div class="ad-field-group">
-                        <label class="ad-field-label">Подзаголовок объявления</label>
+                        <label class="ad-field-label">Подзаголовок объявления: </label>
                         <input class="ad-field-input" id="ad-subtitle" type="text" placeholder="Краткое описание" maxlength="100">
                     </div>
 
                     <!-- Содержание -->
                     <div class="ad-field-group">
-                        <label class="ad-field-label">Содержание объявления</label>
+                        <label class="ad-field-label">Содержание объявления: </label>
                         <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
                     </div>
 
                     <!-- Загрузите фото -->
                     <div class="ad-field-group">
-                        <label class="ad-field-label">Загрузите фото</label>
+                        <label class="ad-field-label">Загрузите фото: (минимум одно фото)</label>
                         <div class="ad-photo-upload-box" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">
-                            📷
+                            📷 ➕ 
                         </div>
                         <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
                         <div class="ad-photo-hint">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
                     </div>
-
-                    <!-- Категория -->
-                    <div class="ad-field-group" style="margin-top: 8px;">
-                        <label class="ad-field-label">Категория</label>
-                        <select class="ad-field-input" id="ad-category">
-                            <option value="">Выберите категорию</option>
-                            <option value="Услуги">Услуги</option>
-                            <option value="Товары">Товары</option>
-                            <option value="Аренда">Аренда</option>
-                            <option value="События">События</option>
-                            <option value="Работа">Работа</option>
-                            <option value="Обучение">Обучение</option>
-                            <option value="Другое">Другое</option>
-                        </select>
-                    </div>
-
-                    <!-- Цена -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Цена (₽)</label>
-                        <input class="ad-field-input" id="ad-price" type="number" min="0" placeholder="0">
-                    </div>
-
-                    <!-- Статус -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Статус</label>
-                        <select class="ad-field-input" id="ad-status">
-                            <option value="active">🟢 Активно</option>
-                            <option value="paused">⏸ Приостановлено</option>
-                            <option value="archived">📦 Архив</option>
-                        </select>
-                    </div>
+                     <!-- Кнопка создания -->
+                    <button class="ad-btn-create" onclick="createAd()">Создать объявление</button>
                 </div>
 
-                <!-- Кнопка создания -->
-                <button class="ad-btn-create" onclick="createAd()">➕ Создать объявление</button>
+               
             </div>
         </div>
 
