@@ -4656,9 +4656,6 @@ async def edit_ad_page(ad_id: int):
                         document.getElementById('ad-description').value = desc;
                     }}
                     
-                    document.getElementById('ad-category').value = currentAdData.category || '';
-                    document.getElementById('ad-price').value = currentAdData.price || '';
-                    document.getElementById('ad-status').value = currentAdData.status || 'active';
                     
                     // Показываем фото если есть
                     if (currentAdData.photo_url) {{
@@ -4702,9 +4699,7 @@ async def edit_ad_page(ad_id: int):
                         title: title,
                         description: fullDescription || null,
                         photo_url: adPhoto || currentAdData?.photo_url || null,
-                        category: category || null,
-                        price: priceVal ? parseFloat(priceVal) : null,
-                        status: status
+                   
                     }})
                 }});
 
