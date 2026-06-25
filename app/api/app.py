@@ -1932,7 +1932,7 @@ COMMON_STYLES = """
     }
     
     /* ===== НОВЫЕ СТИЛИ ДЛЯ КАРТОЧЕК ОБЪЯВЛЕНИЙ ===== */
-    .ad-card{
+    .add-item{
         display: block !important;
         background: #121918;
         border-radius: 20px;
@@ -1942,30 +1942,30 @@ COMMON_STYLES = """
         position: relative;
     }
 
-    .ad-card-header {
+    .add-item-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 6px;
     }
 
-    .ad-card-title-block {
+    .add-item-title-block {
         flex: 1;
     }
 
-    .ad-card-title {
+    .add-item-title {
         font-size: 16px;
         font-weight: 600;
         color: #FFFFFF;
         margin-bottom: 2px;
     }
 
-    .ad-card-subtitle {
+    .add-item-subtitle {
         font-size: 13px;
         color: #8A9593;
     }
 
-    .ad-card-number {
+    .add-item-number {
         font-size: 12px;
         color: #8A9593;
         white-space: nowrap;
@@ -1976,13 +1976,13 @@ COMMON_STYLES = """
         border: 0.5px solid rgba(0, 115, 255, 0.4);
     }
 
-    .ad-card-date {
+    .add-item-date {
         font-size: 12px;
         color: #8A9593;
         margin-bottom: 16px;
     }
 
-    .ad-card-actions {
+    .add-item-actions {
         display: flex;
         justify-content: center;
         gap: 12px;
@@ -1991,7 +1991,7 @@ COMMON_STYLES = """
         border-top: 0.5px solid rgba(67, 84, 80, 0.6);
     }
 
-    .ad-card-btn {
+    .add-item-btn {
         padding: 10px 32px;
         border-radius: 12px;
         border: 0.5px solid #0073FF;
@@ -2004,30 +2004,30 @@ COMMON_STYLES = """
         min-width: 120px;
     }
 
-    .ad-card-btn:hover {
+    .add-item-btn:hover {
         background: #003A81;
         transform: translateY(-1px);
         box-shadow: 0 4px 15px rgba(0, 58, 129, 0.3);
     }
 
-    .ad-card-btn:active {
+    .add-item-btn:active {
         transform: translateY(0px);
     }
 
-    .ad-card-btn-edit {
+    .add-item-btn-edit {
         background: #003A81;
     }
 
-    .ad-card-btn-edit:hover {
+    .add-item-btn-edit:hover {
         background: rgba(0, 58, 129, 0.7);
     }
 
-    .ad-card-btn-delete {
+    .add-item-btn-delete {
         border-color: #ff3b30;
         color: #ff3b30;
     }
 
-    .ad-card-btn-delete:hover {
+    .add-item-btn-delete:hover {
         background: rgba(255, 59, 48, 0.2);
         border-color: #ff3b30;
     }
@@ -4437,17 +4437,17 @@ async def ads_page():
                 const subtitle = ad.description ? ad.description.split('\\n')[0] : 'Без подзаголовка';
                 
                 return `
-                    <div class="ad-card">
-                        <div class="ad-card-header">
-                            <div class="ad-card-title-block">
-                                <div class="ad-card-title">${{ad.title}}</div>
-                                <div class="ad-card-subtitle">${{subtitle}}</div>
+                    <div class="add-item">
+                        <div class="add-item-header">
+                            <div class="add-item-title-block">
+                                <div class="add-item-title">${{ad.title}}</div>
+                                <div class="add-item-subtitle">${{subtitle}}</div>
                             </div>
-                            <div class="ad-card-number">#${{adNumber}}</div>
+                            <div class="add-item-number">#${{adNumber}}</div>
                         </div>
-                        <div class="ad-card-date">📅 ${{createdDate}}</div>
-                        <div class="ad-card-actions">
-                            <button class="ad-card-btn ad-card-btn-edit" onclick="editAd(${{ad.id}})">Редактировать</button>
+                        <div class="add-item-date">📅 ${{createdDate}}</div>
+                        <div class="add-item-actions">
+                            <button class="add-item-btn add-item-btn-edit" onclick="editAd(${{ad.id}})">Редактировать</button>
                         </div>
                     </div>
                 `;
