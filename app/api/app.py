@@ -5493,18 +5493,17 @@ async def view_ad_page(telegram_id: int, ad_id: int):
 
         async function loadAdData() {{
             try {{
-                // Сначала пробуем загрузить с сервера
                 const response = await fetch(`/api/ads/get/${{adId}}`);
                 if (response.ok) {{
                     const data = await response.json();
                     if (data.ad) {{
                         adData = data.ad;
                         console.log('✅ Загружено реальное объявление');
+                        renderAdDetail();
                         return;
                     }}
                 }}
                 
-                // Если не нашли - ищем в тестовых
                 const found = TEST_ADS.find(a => a.id === adId);
                 if (found) {{
                     adData = found;
@@ -5519,6 +5518,7 @@ async def view_ad_page(telegram_id: int, ad_id: int):
             }}
             renderAdDetail();
         }}
+
 
         async function init() {{
             await loadAdData();
