@@ -18,9 +18,16 @@ class AdRepository:
         )
         return result.scalar_one_or_none()
     
-    async def create(self, user_id: int, title: str, description: str = None, 
-                     photo_url: str = None, category: str = None, 
-                     price: float = None, status: str = "active"):
+    async def create(
+            self, 
+            user_id: int, 
+            title: str, 
+            description: str = None,        
+            photo_url: str = None, 
+            category: str = None, 
+            price: float = None, 
+            status: str = "active",
+            hidden: bool = False, ):
         ad = Ad(
             user_id=user_id,
             title=title,
@@ -28,7 +35,8 @@ class AdRepository:
             photo_url=photo_url,
             category=category,
             price=price,
-            status=status
+            status=status,
+             hidden=hidden
         )
         self.session.add(ad)
         await self.session.commit()

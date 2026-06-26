@@ -59,6 +59,7 @@ class AdCreateRequest(BaseModel):
     category: Optional[str] = None
     price: Optional[float] = None
     status: str = "active"
+    hidden: bool = False 
 
 def _format_address(city: str | None, region: str | None, country: str | None) -> str:
     parts = [p for p in (city, region, country) if p]
@@ -5338,7 +5339,8 @@ async def create_ad_page():
                         photo_url: adPhoto,
                         category: null,
                         price: null,
-                        status: "status"
+                        status: "status",
+                        hidden: false 
                     }})
                 }});
 
@@ -5391,6 +5393,7 @@ async def get_ads(telegram_id: int):
                         "category": ad.category,
                         "price": ad.price,
                         "status": ad.status,
+                        "hidden": ad.hidden, 
                         "created_at": ad.created_at.isoformat() if ad.created_at else None
                     }
                     for ad in ads
@@ -5417,7 +5420,8 @@ async def create_ad(body: AdCreateRequest):
                 photo_url=body.photo_url,
                 category=body.category,
                 price=body.price,
-                status=body.status
+                status=body.status,
+                hidden=body.hidden
             )
             
             return JSONResponse({
@@ -5430,6 +5434,7 @@ async def create_ad(body: AdCreateRequest):
                     "category": ad.category,
                     "price": ad.price,
                     "status": ad.status,
+                    "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
             })
@@ -5498,6 +5503,7 @@ async def get_ad(ad_id: int):
                     "category": ad.category,
                     "price": ad.price,
                     "status": ad.status,
+                    "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
             })
