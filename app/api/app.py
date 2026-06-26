@@ -2032,6 +2032,210 @@ COMMON_STYLES = """
         border-color: #ff3b30;
     }
 
+    /* ===== СТИЛИ ДЛЯ КАРТОЧЕК ОБЪЯВЛЕНИЙ НА СТРАНИЦЕ МОЙ МАРКЕТ ===== */
+    .market-ads-container {
+        background: #121918;
+        border-radius: 20px;
+        padding: 16px;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+    }
+
+    .market-ad-card {
+        background: #121918;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 16px;
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+    }
+
+    .market-ad-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .market-ad-card-image {
+        width: 100%;
+        height: 157px;
+        object-fit: cover;
+        display: block;
+        background: rgba(0, 58, 129, 0.2);
+    }
+
+    .market-ad-card-image-placeholder {
+        width: 100%;
+        height: 157px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 58, 129, 0.2);
+        font-size: 48px;
+        color: #8A9593;
+    }
+
+    .market-ad-card-body {
+        padding: 16px;
+    }
+
+    .market-ad-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 4px;
+    }
+
+    .market-ad-card-subtitle {
+        font-size: 13px;
+        color: #8A9593;
+        margin-bottom: 12px;
+    }
+
+    .market-ad-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .market-ad-card-date {
+        font-size: 12px;
+        color: #8A9593;
+    }
+
+    .market-ad-card-rating {
+        font-size: 12px;
+        color: #f5a623;
+    }
+
+    .market-ad-card-btn {
+        padding: 8px 20px;
+        border-radius: 12px;
+        border: 0.5px solid #0073FF;
+        background: #003A81;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .market-ad-card-btn:hover {
+        background: rgba(0, 58, 129, 0.7);
+        transform: translateY(-1px);
+    }
+
+    /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ ПРОСМОТРА ОБЪЯВЛЕНИЯ ===== */
+    .ad-detail-page {
+        padding: 0;
+    }
+
+    .ad-detail-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+        background: rgba(0, 58, 129, 0.2);
+        border-radius: 0 0 20px 20px;
+    }
+
+    .ad-detail-image-placeholder {
+        width: 100%;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 58, 129, 0.2);
+        font-size: 64px;
+        color: #8A9593;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .ad-detail-content {
+        padding: 20px 16px;
+    }
+
+    .ad-detail-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 8px;
+    }
+
+    .ad-detail-subtitle {
+        font-size: 14px;
+        color: #8A9593;
+        margin-bottom: 16px;
+    }
+
+    .ad-detail-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 0.5px solid rgba(67, 84, 80, 0.6);
+    }
+
+    .ad-detail-date {
+        font-size: 13px;
+        color: #8A9593;
+    }
+
+    .ad-detail-rating {
+        font-size: 13px;
+        color: #f5a623;
+    }
+
+    .ad-detail-description {
+        font-size: 15px;
+        color: #FFFFFF;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        white-space: pre-wrap;
+    }
+
+    .ad-detail-rating-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding-top: 16px;
+        border-top: 0.5px solid rgba(67, 84, 80, 0.6);
+    }
+
+    .ad-detail-rating-label {
+        font-size: 14px;
+        color: #8A9593;
+    }
+
+    .ad-detail-stars {
+        display: flex;
+        gap: 4px;
+    }
+
+    .ad-detail-star {
+        font-size: 28px;
+        cursor: pointer;
+        color: #435450;
+        transition: all 0.2s ease;
+        background: none;
+        border: none;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .ad-detail-star:hover {
+        transform: scale(1.1);
+    }
+
+    .ad-detail-star.active {
+        color: #f5a623;
+    }
+
+    .ad-detail-rating-value {
+        font-size: 14px;
+        color: #f5a623;
+        font-weight: 600;
+    }
+
 
 
     
@@ -4152,7 +4356,6 @@ async def privacy_page():
     </html>
     """
 
-
 @app.get("/market/{telegram_id}", response_class=HTMLResponse)
 async def public_market_page(telegram_id: int):
     return f"""
@@ -4178,38 +4381,77 @@ async def public_market_page(telegram_id: int):
         let currentTab = 'services';
         let telegramId = {telegram_id};
 
+        // ТЕСТОВЫЕ ОБЪЯВЛЕНИЯ
         const TEST_ADS = [
             {{
                 id: 1,
                 title: "Скидка на персональные тренировки",
-                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
+                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!\\n\\nПодробности:\\n- Индивидуальный подход\\n- Профессиональный тренер\\n- Современное оборудование",
                 price: 1200,
                 status: "active",
-                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                rating: 4.5,
+                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
             }},
             {{
                 id: 2,
                 title: "Новый курс по йоге",
-                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
+                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!\\n\\nДля начинающих и продолжающих",
                 price: 800,
                 status: "active",
-                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                rating: 4.8,
+                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
             }},
             {{
                 id: 3,
                 title: "Спецпредложение",
-                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
+                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!\\n\\nВключает:\\n- Неограниченные тренировки\\n- Доступ к тренажерному залу\\n- Консультация тренера",
                 price: 1500,
                 status: "active",
-                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                rating: 4.2,
+                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
             }}
         ];
+
+        // Данные для оценок (хранятся в localStorage)
+        function getAdRating(adId) {{
+            const ratings = JSON.parse(localStorage.getItem('ad_ratings') || '{{}}');
+            return ratings[adId] || null;
+        }}
+
+        function setAdRating(adId, rating) {{
+            const ratings = JSON.parse(localStorage.getItem('ad_ratings') || '{{}}');
+            ratings[adId] = rating;
+            localStorage.setItem('ad_ratings', JSON.stringify(ratings));
+        }}
 
         function renderStars(rating) {{
             const full = Math.floor(rating);
             let s = '';
             for (let i = 0; i < 5; i++) s += i < full ? '★' : '☆';
             return s + ' ' + rating.toFixed(1);
+        }}
+
+        function renderStarsHtml(rating, interactive = false, adId = null) {{
+            const full = Math.floor(rating);
+            const hasHalf = rating % 1 >= 0.5;
+            let html = '';
+            for (let i = 1; i <= 5; i++) {{
+                let star = '☆';
+                if (i <= full) {{
+                    star = '★';
+                }} else if (i === full + 1 && hasHalf) {{
+                    star = '★';
+                }}
+                if (interactive && adId) {{
+                    html += `<button class="ad-detail-star ${{i <= (getAdRating(adId) || 0) ? 'active' : ''}}" onclick="setRating(${{adId}}, ${{i}})">★</button>`;
+                }} else {{
+                    html += `<span class="ad-detail-star ${{i <= rating ? 'active' : ''}}">★</span>`;
+                }}
+            }}
+            return html;
         }}
 
         function renderPublicPage() {{
@@ -4224,7 +4466,6 @@ async def public_market_page(telegram_id: int):
                 : '<div class="market-photo-placeholder">🏪</div>';
 
             document.getElementById('main-content').innerHTML = `
-          
                 <div class="market-header-block">
                     <div class="market-info-row">
                         <div class="market-photo-wrapper">
@@ -4232,16 +4473,13 @@ async def public_market_page(telegram_id: int):
                         </div>
                         <div class="market-info-wrapper">
                             <div class="market-name">${{businessData.business_name}}</div>
-                            <div class="market-username">@{{
-                                businessData.username || 'Пользователь'
-                            }}</div>
+                            <div class="market-username">@${{businessData.username || 'Пользователь'}}</div>
                             <div class="market-rating">${{renderStars(businessData.business_rating)}}</div>
                         </div>
                     </div>
                     <div class="market-address">📍 ${{businessData.business_address}}</div>
                 </div>
 
-                <!-- Меню квадратиками -->
                 <div class="market-menu-grid">
                     <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
                         <span class="market-menu-label">Объявления</span>
@@ -4258,10 +4496,8 @@ async def public_market_page(telegram_id: int):
                     <div class="market-menu-item" data-tab="events" onclick="switchMarketTab('events')">
                         <span class="market-menu-label">События</span>
                     </div>
-                    
                 </div>
 
-                <!-- Контент -->
                 <div id="market-content">
                     ${{renderTabContent('services')}}
                 </div>
@@ -4282,20 +4518,46 @@ async def public_market_page(telegram_id: int):
             }} else if (tab === 'events') {{
                 return '<div class="empty">События временно не доступны</div>';
             }} else if (tab === 'ads') {{
+                console.log('📊 Рендерим объявления, количество:', adsList.length);
                 if (adsList && adsList.length) {{
-                    return adsList.map(ad => `
-                        <div class="market-ad-item">
-                            <div class="market-ad-title">${{ad.title}}</div>
-                            <div class="market-ad-meta">${{ad.description || 'Без описания'}}</div>
-                            ${{ad.price ? `<div class="market-ad-price">${{ad.price}} ₽</div>` : ''}}
-                            <div class="market-ad-status">${{ad.status === 'active' ? '🟢 Активно' : '⚪ ' + ad.status}}</div>
+                    return `
+                        <div class="market-ads-container">
+                            ${{adsList.map(ad => {{
+                                const createdDate = ad.created_at ? new Date(ad.created_at).toLocaleDateString('ru-RU') : new Date().toLocaleDateString('ru-RU');
+                                const subtitle = ad.description ? ad.description.split('\\n')[0] : 'Без подзаголовка';
+                                const rating = ad.rating || 0;
+                                
+                                // Фото
+                                const photoHtml = ad.photo_url 
+                                    ? `<img class="market-ad-card-image" src="${{ad.photo_url}}" alt="${{ad.title}}">`
+                                    : `<div class="market-ad-card-image-placeholder">📷</div>`;
+                                
+                                return `
+                                    <div class="market-ad-card">
+                                        ${{photoHtml}}
+                                        <div class="market-ad-card-body">
+                                            <div class="market-ad-card-title">${{ad.title}}</div>
+                                            <div class="market-ad-card-subtitle">${{subtitle}}</div>
+                                            <div class="market-ad-card-footer">
+                                                <span class="market-ad-card-date">📅 ${{createdDate}}</span>
+                                                <span class="market-ad-card-rating">${{renderStars(rating)}}</span>
+                                                <button class="market-ad-card-btn" onclick="viewAd(${{ad.id}})">Посмотреть</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }}).join('')}}
                         </div>
-                    `).join('');
+                    `;
                 }} else {{
                     return '<div class="empty">Объявлений пока нет</div>';
                 }}
             }}
             return '';
+        }}
+
+        function viewAd(adId) {{
+            window.location.href = `/market/ad/${{telegramId}}/${{adId}}`;
         }}
 
         function switchMarketTab(tab) {{
@@ -4313,9 +4575,8 @@ async def public_market_page(telegram_id: int):
                     fetch(`/api/ads/${{telegramId}}`).then(r => r.json()),
                 ]);
                 
-                // ЕСЛИ БИЗНЕС НЕ НАЙДЕН - СОЗДАЕМ ТЕСТОВЫЙ
                 if (!biz || !biz.has_business) {{
-                    console.log('🔧 Создаем тестовый бизнес для публичной страницы...');
+                    console.log('🔧 Создаем тестовый бизнес...');
                     businessData = {{
                         has_business: true,
                         business_name: "Тестовый Маркет",
@@ -4359,20 +4620,16 @@ async def public_market_page(telegram_id: int):
                     servicesList = svc.services || [];
                 }}
 
-                // Загружаем объявления
                 if (ads.ads && ads.ads.length > 0) {{
                     adsList = ads.ads;
                     console.log('✅ Загружены реальные объявления:', adsList.length);
                 }} else {{
-                    // ЕСЛИ НЕТ ОБЪЯВЛЕНИЙ - ИСПОЛЬЗУЕМ ТЕСТОВЫЕ
                     adsList = TEST_ADS;
                     console.log('📢 Используем тестовые объявления:', adsList.length);
                 }}
 
-
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
-                // ПРИ ОШИБКЕ - СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС
                 businessData = {{
                     has_business: true,
                     business_name: "Тестовый Маркет (оффлайн)",
@@ -4394,6 +4651,7 @@ async def public_market_page(telegram_id: int):
                         photo_url: null
                     }}
                 ];
+                adsList = TEST_ADS;
             }}
         }}
 
@@ -5097,3 +5355,176 @@ async def update_ad(ad_id: int, body: dict):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+
+@app.get("/market/ad/{telegram_id}/{ad_id}", response_class=HTMLResponse)
+async def view_ad_page(telegram_id: int, ad_id: int):
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Объявление</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" id="main-content" style="padding-top: 0;"></div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+        {SERVICE_HELPERS_JS}
+
+        const telegramId = {telegram_id};
+        const adId = {ad_id};
+
+        // ТЕСТОВЫЕ ДАННЫЕ
+        const TEST_ADS = [
+            {{
+                id: 1,
+                title: "Скидка на персональные тренировки",
+                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!\\n\\nПодробности:\\n- Индивидуальный подход\\n- Профессиональный тренер\\n- Современное оборудование",
+                price: 1200,
+                status: "active",
+                rating: 4.5,
+                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
+            }},
+            {{
+                id: 2,
+                title: "Новый курс по йоге",
+                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!\\n\\nДля начинающих и продолжающих",
+                price: 800,
+                status: "active",
+                rating: 4.8,
+                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
+            }},
+            {{
+                id: 3,
+                title: "Спецпредложение",
+                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!\\n\\nВключает:\\n- Неограниченные тренировки\\n- Доступ к тренажерному залу\\n- Консультация тренера",
+                price: 1500,
+                status: "active",
+                rating: 4.2,
+                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                photo_url: null
+            }}
+        ];
+
+        let adData = null;
+        let userRating = 0;
+
+        function getAdRating(adId) {{
+            const ratings = JSON.parse(localStorage.getItem('ad_ratings') || '{{}}');
+            return ratings[adId] || null;
+        }}
+
+        function setAdRating(adId, rating) {{
+            const ratings = JSON.parse(localStorage.getItem('ad_ratings') || '{{}}');
+            ratings[adId] = rating;
+            localStorage.setItem('ad_ratings', JSON.stringify(ratings));
+            userRating = rating;
+            renderAdDetail();
+        }}
+
+        function renderAdDetail() {{
+            if (!adData) {{
+                document.getElementById('main-content').innerHTML = 
+                    '<div class="error">Объявление не найдено</div>';
+                return;
+            }}
+
+            const createdDate = adData.created_at ? new Date(adData.created_at).toLocaleDateString('ru-RU') : new Date().toLocaleDateString('ru-RU');
+            const rating = adData.rating || 0;
+            const userRatingValue = getAdRating(adId) || 0;
+            
+            // Фото
+            const photoHtml = adData.photo_url 
+                ? `<img class="ad-detail-image" src="${{adData.photo_url}}" alt="${{adData.title}}">`
+                : `<div class="ad-detail-image-placeholder">📷</div>`;
+            
+            // Звезды для оценки
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {{
+                const isActive = i <= userRatingValue ? 'active' : '';
+                starsHtml += `<button class="ad-detail-star ${{isActive}}" onclick="setRating(${{adId}}, ${{i}})">★</button>`;
+            }}
+
+            document.getElementById('main-content').innerHTML = `
+                <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'" style="position:absolute; top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:12px;">
+                    ← Назад
+                </button>
+                <div class="ad-detail-page">
+                    ${{photoHtml}}
+                    <div class="ad-detail-content">
+                        <div class="ad-detail-title">${{adData.title}}</div>
+                        ${{adData.price ? `<div style="font-size:18px; font-weight:600; color:#f5a623; margin-bottom:8px;">${{adData.price}} ₽</div>` : ''}}
+                        <div class="ad-detail-meta">
+                            <span class="ad-detail-date">📅 ${{createdDate}}</span>
+                            <span class="ad-detail-rating">${{renderStars(rating)}}</span>
+                        </div>
+                        <div class="ad-detail-description">${{adData.description || 'Описание отсутствует'}}</div>
+                        <div class="ad-detail-rating-section">
+                            <span class="ad-detail-rating-label">Оцените объявление:</span>
+                            <div class="ad-detail-stars">
+                                ${{starsHtml}}
+                            </div>
+                            ${{userRatingValue > 0 ? `<span class="ad-detail-rating-value">${{userRatingValue}}.0</span>` : ''}}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }}
+
+        function setRating(adId, rating) {{
+            setAdRating(adId, rating);
+            tg.showAlert(`Вы поставили оценку ${{rating}} из 5!`);
+        }}
+
+        function renderStars(rating) {{
+            const full = Math.floor(rating);
+            let s = '';
+            for (let i = 0; i < 5; i++) s += i < full ? '★' : '☆';
+            return s + ' ' + rating.toFixed(1);
+        }}
+
+        async function loadAdData() {{
+            try {{
+                // Сначала пробуем загрузить с сервера
+                const response = await fetch(`/api/ads/get/${{adId}}`);
+                if (response.ok) {{
+                    const data = await response.json();
+                    if (data.ad) {{
+                        adData = data.ad;
+                        console.log('✅ Загружено реальное объявление');
+                        return;
+                    }}
+                }}
+                
+                // Если не нашли - ищем в тестовых
+                const found = TEST_ADS.find(a => a.id === adId);
+                if (found) {{
+                    adData = found;
+                    console.log('📢 Используем тестовое объявление');
+                }} else {{
+                    adData = TEST_ADS[0];
+                    console.log('📢 Используем первое тестовое объявление');
+                }}
+            }} catch(e) {{
+                console.error('Ошибка загрузки:', e);
+                adData = TEST_ADS[0];
+            }}
+            renderAdDetail();
+        }}
+
+        async function init() {{
+            await loadAdData();
+        }}
+        init();
+        </script>
+    </body>
+    </html>
+    """
