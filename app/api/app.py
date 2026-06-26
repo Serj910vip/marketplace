@@ -4777,6 +4777,7 @@ async def public_market_page(telegram_id: int):
     </html>
     """
 
+
 @app.get("/ads", response_class=HTMLResponse)
 async def ads_page():
     return f"""
@@ -4819,7 +4820,7 @@ async def ads_page():
 
                 <!-- Список объявлений -->
                 <div class="ads-list-container" id="ads-list-container">
-                    <div class="ads-empty">Загрузка...</div>
+                    <div class="ads-empty">Список объявлений пуст</div>
                 </div>
             </div>
         </div>
@@ -4829,11 +4830,9 @@ async def ads_page():
         let allAds = [];
         let filteredAds = [];
         let currentFilter = 'active';
-        let telegramId = tgUser?.id;
+        let telegramId = tgUser?.id || 123456789;
 
-        console.log('👤 tgUser:', tgUser);
-        console.log('🆔 telegramId:', telegramId);
-
+        // ФИЛЬТР
         function filterAds(filter) {{
             currentFilter = filter;
             
@@ -4849,6 +4848,7 @@ async def ads_page():
             renderAds();
         }}
 
+        // ОТОБРАЖЕНИЕ
         function renderAds() {{
             const container = document.getElementById('ads-list-container');
             const countElement = document.getElementById('ads-count');
@@ -4891,65 +4891,66 @@ async def ads_page():
             window.location.href = `/ad/edit/${{adId}}`;
         }}
 
+        // ЗАГРУЗКА ДАННЫХ
         async function loadAds() {{
             try {{
                 const response = await fetch(`/api/ads/${{telegramId}}`);
-                console.log('📡 Ответ сервера статус:', response.status);
-                
                 if (response.ok) {{
                     const data = await response.json();
-                    console.log('📦 Данные с сервера:', data);
-                    
                     if (data.ads && data.ads.length > 0) {{
+                        // РЕАЛЬНЫЕ ОБЪЯВЛЕНИЯ
                         allAds = data.ads.map(ad => ({{
                             ...ad,
                             hidden: ad.hidden || false
-                        }}));
-                        console.log('✅ Загружены РЕАЛЬНЫЕ объявления:', allAds.length);
+                        }));
+                        console.log('✅ Реальные объявления:', allAds.length);
                     }} else {{
-                        allAds = [];
-                        console.log('ℹ️ На сервере нет объявлений');
+                        // ТЕСТОВЫЕ (если на сервере пусто)
+                        allAds = [
+                            {{
+                                id: 1,
+                                title: "Скидка на персональные тренировки",
+                                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
+                                price: 1200,
+                                status: "active",
+                                hidden: false,
+                                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                            }},
+                            {{
+                                id: 2,
+                                title: "Новый курс по йоге",
+                                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
+                                price: 800,
+                                status: "active",
+                                hidden: false,
+                                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                            }},
+                            {{
+                                id: 3,
+                                title: "Спецпредложение",
+                                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
+                                price: 1500,
+                                status: "active",
+                                hidden: true,
+                                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                            }}
+                        ];
+                        console.log('📢 Тестовые объявления');
                     }}
                 }} else {{
                     allAds = [];
-                    console.log('⚠️ Ошибка сервера:', response.status);
+                    console.log('⚠️ Ошибка сервера');
                 }}
             }} catch(e) {{
-                console.log('❌ Ошибка загрузки:', e);
+                console.log('❌ Ошибка:', e);
                 allAds = [];
             }}
             
-            // Всегда показываем активные по умолчанию
+            // Показываем активные по умолчанию
             filterAds('active');
         }}
 
         async function init() {{
-            if (!telegramId) {{
-                console.log('⚠️ Нет telegramId, используем тестовый режим');
-                // Если нет tgUser - показываем тестовые данные ТОЛЬКО ДЛЯ РАЗРАБОТКИ
-                allAds = [
-                    {{
-                        id: 1,
-                        title: "Тестовое объявление 1",
-                        description: "Это тестовое объявление для разработки",
-                        price: 1000,
-                        status: "active",
-                        hidden: false,
-                        created_at: new Date().toISOString()
-                    }},
-                    {{
-                        id: 2,
-                        title: "Тестовое объявление 2",
-                        description: "Еще одно тестовое объявление",
-                        price: 2000,
-                        status: "active",
-                        hidden: false,
-                        created_at: new Date().toISOString()
-                    }}
-                ];
-                filterAds('active');
-                return;
-            }}
             await loadAds();
         }}
         init();
@@ -4957,6 +4958,9 @@ async def ads_page():
     </body>
     </html>
     """
+
+
+
 
 @app.get("/ad/edit/{ad_id}", response_class=HTMLResponse)
 async def edit_ad_page(ad_id: int):
