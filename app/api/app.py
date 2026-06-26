@@ -4901,7 +4901,7 @@ async def ads_page():
                         // РЕАЛЬНЫЕ ОБЪЯВЛЕНИЯ
                         allAds = data.ads.map(ad => ({{
                             ...ad,
-                            hidden: ad.hidden || false
+                            hidden: false
                         }}));
                         console.log('✅ Реальные объявления:', allAds.length);
                     }} else {{
