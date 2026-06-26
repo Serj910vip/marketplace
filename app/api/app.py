@@ -2236,7 +2236,6 @@ COMMON_STYLES = """
         font-weight: 600;
     }
 
-
     /* ===== СТИЛИ ДЛЯ ФИЛЬТРА ОБЪЯВЛЕНИЙ ===== */
     .ads-filter-container {
         display: flex;
@@ -2302,7 +2301,6 @@ COMMON_STYLES = """
         color: #ff6b6b;
     }
 
-    /* Стиль для ползунка (switch) */
     .switch {
         position: relative;
         display: inline-block;
@@ -2347,11 +2345,6 @@ COMMON_STYLES = """
 
     .switch input:checked + .slider:before {
         transform: translateX(22px);
-    }
-
-    .switch input:disabled + .slider {
-        opacity: 0.5;
-        cursor: not-allowed;
     }
 
 
@@ -4783,6 +4776,7 @@ async def public_market_page(telegram_id: int):
     </html>
     """
 
+
 @app.get("/ads", response_class=HTMLResponse)
 async def ads_page():
     return f"""
@@ -4825,60 +4819,25 @@ async def ads_page():
 
                 <!-- Список объявлений -->
                 <div class="ads-list-container" id="ads-list-container">
-                    <div class="ads-empty">Загрузка...</div>
+                    <div class="ads-empty">Список объявлений пуст</div>
                 </div>
             </div>
         </div>
         <script>
         {WEBAPP_INIT}
 
-        console.log('✅ СТРАНИЦА ОБЪЯВЛЕНИЙ ЗАГРУЖЕНА!');
-        console.log('👤 tgUser:', tgUser);
-
         let allAds = [];
         let filteredAds = [];
         let currentFilter = 'active';
         let telegramId = tgUser?.id || 123456789;
 
-        // ТЕСТОВЫЕ ДАННЫЕ
-        const TEST_ADS = [
-            {{
-                id: 1,
-                title: "Скидка на персональные тренировки",
-                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
-                price: 1200,
-                status: "active",
-                hidden: false,
-                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-            }},
-            {{
-                id: 2,
-                title: "Новый курс по йоге",
-                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
-                price: 800,
-                status: "active",
-                hidden: false,
-                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-            }},
-            {{
-                id: 3,
-                title: "Спецпредложение",
-                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
-                price: 1500,
-                status: "active",
-                hidden: true,
-                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-            }}
-        ];
 
         function filterAds(filter) {{
             currentFilter = filter;
             
-            // Обновляем активную кнопку
             document.getElementById('filter-active').classList.toggle('active', filter === 'active');
             document.getElementById('filter-hidden').classList.toggle('active', filter === 'hidden');
             
-            // Фильтруем
             if (filter === 'active') {{
                 filteredAds = allAds.filter(ad => !ad.hidden);
             }} else {{
@@ -4891,8 +4850,6 @@ async def ads_page():
         function renderAds() {{
             const container = document.getElementById('ads-list-container');
             const countElement = document.getElementById('ads-count');
-            
-            console.log('📊 Рендерим объявления, количество:', filteredAds.length, 'фильтр:', currentFilter);
             
             countElement.textContent = `У вас ${{filteredAds.length}} объявлений`;
             
@@ -4908,17 +4865,20 @@ async def ads_page():
                 const statusText = ad.hidden ? '🔴 Скрыто' : '🟢 Активно';
                 
                 return `
-                    <div class="ad-card">
-                        <div class="ad-card-header">
-                            <div class="ad-card-title-block">
-                                <div class="ad-card-title">${{ad.title}}</div>
-                                <div class="ad-card-subtitle">${{subtitle}}</div>
+                    <div class="add-item">
+                        <div class="add-item-header">
+                            <div class="add-item-title-block">
+                                <div class="add-item-title">${{ad.title}}</div>
+                                <div class="add-item-subtitle">${{subtitle}}</div>
                             </div>
-                            <div class="ad-card-number">#${{adNumber}}</div>
+                            <div class="add-item-title-block">
+                                <div class="add-item-number">#${{adNumber}}</div>
+                                <div class="add-item-date">📅 ${{createdDate}} · ${{statusText}}</div>
+                            </div>
                         </div>
-                        <div class="ad-card-date">📅 ${{createdDate}} · ${{statusText}}</div>
-                        <div class="ad-card-actions">
-                            <button class="ad-card-btn ad-card-btn-edit" onclick="editAd(${{ad.id}})">✏️ Редактировать</button>
+                        
+                        <div class="add-item-actions">
+                            <button class="add-item-btn add-item-btn-edit" onclick="editAd(${{ad.id}})">Редактировать</button>
                         </div>
                     </div>
                 `;
@@ -4941,19 +4901,65 @@ async def ads_page():
                         }}));
                         console.log('✅ Загружены реальные объявления:', allAds.length);
                     }} else {{
-                        allAds = TEST_ADS;
-                        console.log('📢 Используем тестовые объявления:', allAds.length);
+                        // Тестовые данные
+                        allAds = [
+                            {{
+                                id: 1,
+                                title: "Скидка на персональные тренировки",
+                                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
+                                price: 1200,
+                                status: "active",
+                                hidden: false,
+                                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                            }},
+                            {{
+                                id: 2,
+                                title: "Новый курс по йоге",
+                                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
+                                price: 800,
+                                status: "active",
+                                hidden: false,
+                                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                            }},
+                            {{
+                                id: 3,
+                                title: "Спецпредложение",
+                                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
+                                price: 1500,
+                                status: "active",
+                                hidden: true,
+                                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                            }}
+                        ];
                     }}
                 }} else {{
-                    allAds = TEST_ADS;
-                    console.log('📢 Используем тестовые объявления (ошибка сервера)');
+                    // Если сервер вернул ошибку
+                    allAds = [
+                        {{
+                            id: 1,
+                            title: "Скидка на персональные тренировки",
+                            description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
+                            price: 1200,
+                            status: "active",
+                            hidden: false,
+                            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                        }}
+                    ];
                 }}
             }} catch(e) {{
-                console.log('❌ Ошибка загрузки, используем тестовые данные');
-                allAds = TEST_ADS;
+                console.log('Используем тестовые данные');
+                allAds = [
+                    {{
+                        id: 1,
+                        title: "Скидка на персональные тренировки",
+                        description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!",
+                        price: 1200,
+                        status: "active",
+                        hidden: false,
+                        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                    }}
+                ];
             }}
-            
-            // Применяем фильтр по умолчанию
             filterAds('active');
         }}
 
@@ -4965,6 +4971,7 @@ async def ads_page():
     </body>
     </html>
     """
+
 
 @app.get("/ad/edit/{ad_id}", response_class=HTMLResponse)
 async def edit_ad_page(ad_id: int):
@@ -4992,6 +4999,20 @@ async def edit_ad_page(ad_id: int):
                     <div id="loading" style="text-align:center;color:#8A9593;padding:40px 0;">Загрузка данных...</div>
                     
                     <div id="form-container" style="display:none;">
+
+                        <!-- ===== ПОЛЗУНОК СКРЫТИЯ ===== -->
+                        <div class="ad-field-group">
+                            <label class="ad-field-label">Видимость объявления</label>
+                            <div class="toggle-container">
+                                <span class="toggle-label">Показывать объявление</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="ad-hidden-toggle" onchange="toggleHidden(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="ad-hidden" value="false">
                         <!-- Заголовок -->
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок объявления:</label>
@@ -5012,7 +5033,7 @@ async def edit_ad_page(ad_id: int):
 
                         <!-- Загрузите фото -->
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Загрузите фото:</label>
+                            <label class="ad-field-label">Загрузите фото: (минимум одно фото)</label>
                             <div class="ad-photo-upload-box" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">
                                 📷 ➕
                             </div>
@@ -5020,26 +5041,41 @@ async def edit_ad_page(ad_id: int):
                             <div class="ad-photo-hint">Нажмите, чтобы загрузить новое фото (до 3 МБ)</div>
                         </div>
 
-                        <!-- ===== ПОЛЗУНОК СКРЫТИЯ ===== -->
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Видимость объявления</label>
-                            <div class="toggle-container">
-                                <span class="toggle-label">Показывать объявление</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="ad-hidden-toggle" onchange="toggleHidden(this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
-                            </div>
+                        <!-- Категория -->
+                        <div class="ad-field-group" style="margin-top: 8px;">
+                            <label class="ad-field-label">Категория</label>
+                            <select class="ad-field-input" id="ad-category">
+                                <option value="">Выберите категорию</option>
+                                <option value="Услуги">Услуги</option>
+                                <option value="Товары">Товары</option>
+                                <option value="Аренда">Аренда</option>
+                                <option value="События">События</option>
+                                <option value="Работа">Работа</option>
+                                <option value="Обучение">Обучение</option>
+                                <option value="Другое">Другое</option>
+                            </select>
                         </div>
 
-                        <!-- Статус (скрытый) -->
-                        <input type="hidden" id="ad-hidden" value="false">
+                        <!-- Цена -->
+                        <div class="ad-field-group">
+                            <label class="ad-field-label">Цена (₽)</label>
+                            <input class="ad-field-input" id="ad-price" type="number" min="0" placeholder="0">
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="ad-field-group">
+                            <label class="ad-field-label">Статус</label>
+                            <select class="ad-field-input" id="ad-status">
+                                <option value="active">🟢 Активно</option>
+                                <option value="paused">⏸ Приостановлено</option>
+                                <option value="archived">📦 Архив</option>
+                            </select>
+                        </div>
                         
                         <!-- Кнопки -->
                         <div style="display:flex; gap:12px; margin-top:8px;">
-                            <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">💾 Сохранить изменения</button>
-                            <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">🗑️ Удалить</button>
+                            <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
+                            <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
                         </div>
                     </div>
                 </div>
@@ -5062,23 +5098,12 @@ async def edit_ad_page(ad_id: int):
             }});
         }}
 
-        function toggleHidden(checked) {{
-            const status = document.getElementById('hidden-status');
-            const hiddenInput = document.getElementById('ad-hidden');
-            if (checked) {{
-                status.textContent = '🔴 Скрыто';
-                status.className = 'toggle-status inactive';
-                hiddenInput.value = 'true';
-            }} else {{
-                status.textContent = '🟢 Активно';
-                status.className = 'toggle-status active';
-                hiddenInput.value = 'false';
-            }}
-        }}
-
         async function loadAdData() {{
             try {{
                 const response = await fetch(`/api/ads/get/${{currentAdId}}`);
+                
+                
+
                 if (response.ok) {{
                     const data = await response.json();
                     currentAdData = data.ad;
@@ -5097,17 +5122,17 @@ async def edit_ad_page(ad_id: int):
                         document.getElementById('ad-description').value = desc;
                     }}
                     
-                    // Устанавливаем состояние ползунка
-                    const isHidden = currentAdData.hidden || false;
-                    const toggle = document.getElementById('ad-hidden-toggle');
-                    toggle.checked = isHidden;
-                    toggleHidden(isHidden);
                     
                     // Показываем фото если есть
                     if (currentAdData.photo_url) {{
                         const box = document.getElementById('ad-photo-box');
                         box.innerHTML = `<img src="${{currentAdData.photo_url}}" alt="Фото">`;
                     }}
+
+                    const isHidden = currentAdData.hidden || false;
+                    const toggle = document.getElementById('ad-hidden-toggle');
+                    toggle.checked = isHidden;
+                    toggleHidden(isHidden);
                     
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('form-container').style.display = 'block';
@@ -5123,6 +5148,7 @@ async def edit_ad_page(ad_id: int):
 
         async function updateAd() {{
             const title = document.getElementById('ad-title').value.trim();
+            const hidden = document.getElementById('ad-hidden').value === 'true';
             if (!title) {{
                 tg.showAlert('Введите заголовок объявления');
                 return;
@@ -5130,7 +5156,6 @@ async def edit_ad_page(ad_id: int):
 
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
-            const hidden = document.getElementById('ad-hidden').value === 'true';
 
             // Формируем полное описание
             let fullDescription = description;
@@ -5146,7 +5171,8 @@ async def edit_ad_page(ad_id: int):
                         title: title,
                         description: fullDescription || null,
                         photo_url: adPhoto || currentAdData?.photo_url || null,
-                        hidden: hidden
+                        hidden: hidden,
+                   
                     }})
                 }});
 
@@ -5176,6 +5202,20 @@ async def edit_ad_page(ad_id: int):
                     tg.showAlert('❌ Ошибка: ' + e.message);
                 }}
             }});
+        }}
+
+        function toggleHidden(checked) {{
+            const status = document.getElementById('hidden-status');
+            const hiddenInput = document.getElementById('ad-hidden');
+            if (checked) {{
+                status.textContent = '🔴 Скрыто';
+                status.className = 'toggle-status inactive';
+                hiddenInput.value = 'true';
+            }} else {{
+                status.textContent = '🟢 Активно';
+                status.className = 'toggle-status active';
+                hiddenInput.value = 'false';
+            }}
         }}
 
         function init() {{
@@ -5490,7 +5530,7 @@ async def update_ad(ad_id: int, body: dict):
             if "status" in body:
                 ad.status = body["status"]
             if "hidden" in body:
-                ad.hidden = body["hidden"] 
+                ad.hidden = body["hidden"]
             
             await session.commit()
             await session.refresh(ad)
