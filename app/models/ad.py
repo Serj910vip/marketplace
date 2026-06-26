@@ -12,6 +12,7 @@ class Ad(Base):
     photo_url = Column(String(500), nullable=True)
     category = Column(String(100), nullable=True)
     price = Column(Float, nullable=True)
-    status = Column(String(20), default="active")  # active, paused, archived
+    status = Column(String(20), default="active")  #active, paused, archived
+    hidden = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
