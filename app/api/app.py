@@ -4902,7 +4902,7 @@ async def ads_page():
                         allAds = data.ads.map(ad => ({{
                             ...ad,
                             hidden: ad.hidden || false
-                        }));
+                        }}));
                         console.log('✅ Реальные объявления:', allAds.length);
                     }} else {{
                         // ТЕСТОВЫЕ (если на сервере пусто)
