@@ -4898,7 +4898,7 @@ async def ads_page():
                     if (data.ads && data.ads.length > 0) {{
                         allAds = data.ads.map(ad => ({{
                             ...ad,
-                            hidden: ad.hidden || false
+                            hidden: false
                         }}));
                         console.log('✅ Загружены реальные объявления:', allAds.length);
                     }} else {{
