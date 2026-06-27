@@ -5500,34 +5500,16 @@ async def get_ad(ad_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # ===== UPDATE объявления =====
 @app.put("/api/ads/update/{ad_id}")
 async def update_ad(ad_id: int, body: dict):
     try:
         async with AsyncSessionLocal() as session:
             ad_repo = AdRepository(session)
-            ad = await ad_repo.get_by_id(ad_id)
+            ad = await ad_repo.update(ad_id, body)
             if not ad:
                 raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            # Обновляем поля
-            if "title" in body:
-                ad.title = body["title"]
-            if "description" in body:
-                ad.description = body["description"]
-            if "photo_url" in body:
-                ad.photo_url = body["photo_url"]
-            if "category" in body:
-                ad.category = body["category"]
-            if "price" in body:
-                ad.price = body["price"]
-            if "status" in body:
-                ad.status = body["status"]
-            if "hidden" in body:
-                ad.hidden = body["hidden"]
-            
-            await session.commit()
-            await session.refresh(ad)
             
             return JSONResponse({
                 "success": True,
@@ -5547,8 +5529,6 @@ async def update_ad(ad_id: int, body: dict):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-
 
 
 @app.get("/market/ad/{telegram_id}/{ad_id}", response_class=HTMLResponse)

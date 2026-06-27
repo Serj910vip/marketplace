@@ -36,7 +36,7 @@ class AdRepository:
             category=category,
             price=price,
             status=status,
-             hidden=hidden
+            hidden=hidden
         )
         self.session.add(ad)
         await self.session.commit()
@@ -58,3 +58,28 @@ class AdRepository:
             await self.session.commit()
             return True
         return False
+    
+    async def update(self, ad_id: int, data: dict):
+        ad = await self.get_by_id(ad_id)
+        if not ad:
+            return None
+        
+        # Обновляем поля
+        if "title" in data:
+            ad.title = data["title"]
+        if "description" in data:
+            ad.description = data["description"]
+        if "photo_url" in data:
+            ad.photo_url = data["photo_url"]
+        if "category" in data:
+            ad.category = data["category"]
+        if "price" in data:
+            ad.price = data["price"]
+        if "status" in data:
+            ad.status = data["status"]
+        if "hidden" in data:
+            ad.hidden = data["hidden"]
+        
+        await self.session.commit()
+        await self.session.refresh(ad)
+        return ad
