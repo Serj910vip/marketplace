@@ -2319,7 +2319,7 @@ COMMON_STYLES = """
     .ads-filter-btn {
         width: 158px;
         height: 38px;
-        border-radius: 12px;
+        border-radius: 10px;
         border: 0.5px solid rgba(0, 115, 255, 0.4);
         background: rgba(0, 58, 129, 0.2);
         color: #8A9593;
@@ -4981,8 +4981,8 @@ async def ads_page():
 
                 <!-- ФИЛЬТР -->
                 <div class="ads-filter-container">
-                    <button class="ads-filter-btn active" id="filter-active" onclick="filterAds('active')">🟢 Активные</button>
-                    <button class="ads-filter-btn" id="filter-hidden" onclick="filterAds('hidden')">🔴 Скрытые</button>
+                    <button class="ads-filter-btn active" id="filter-active" onclick="filterAds('active')">Активные</button>
+                    <button class="ads-filter-btn" id="filter-hidden" onclick="filterAds('hidden')">Скрытые</button>
                 </div>
 
                 <!-- Счетчик объявлений -->
@@ -5000,7 +5000,7 @@ async def ads_page():
         let allAds = [];
         let filteredAds = [];
         let currentFilter = 'active';
-        let telegramId = tgUser?.id || 123456789;
+        let telegramId = tgUser?.id || 552386150;
 
         // ФИЛЬТР
         function filterAds(filter) {{
