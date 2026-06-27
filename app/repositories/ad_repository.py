@@ -64,3 +64,14 @@ class AdRepository:
         await self.session.commit()
         await self.session.refresh(ad)
         return ad
+    
+    async def get_active_by_user_id(self, user_id: int):
+        result = await self.session.execute(
+            select(Ad)
+            .where(
+                Ad.user_id == user_id,
+                Ad.hidden == False
+            )
+            .order_by(desc(Ad.created_at))
+        )
+        return result.scalars().all()

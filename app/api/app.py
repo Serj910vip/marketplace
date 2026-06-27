@@ -4681,7 +4681,7 @@ async def public_market_page(telegram_id: int):
                 const [biz, svc, ads] = await Promise.all([
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
-                    fetch(`/api/ads/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/market/ads/${{telegramId}}`).then(r => r.json()),
                 ]);
                 
                 if (!biz || !biz.has_business) {{
@@ -5645,3 +5645,34 @@ async def update_ad(ad_id: int, body: AdUpdateRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.get("/api/market/ads/{telegram_id}")
+async def get_market_ads(telegram_id: int):
+    try:
+        async with AsyncSessionLocal() as session:
+            user_repo = UserRepository(session)
+            user = await user_repo.get_by_telegram_id(telegram_id)
+
+            if not user:
+                return JSONResponse({"ads": []})
+
+            ad_repo = AdRepository(session)
+            ads = await ad_repo.get_active_by_user_id(user.id)
+
+            return JSONResponse({
+                "ads": [
+                    {
+                        "id": ad.id,
+                        "title": ad.title,
+                        "description": ad.description,
+                        "photo_url": ad.photo_url,
+                        "created_at": ad.created_at.isoformat() if ad.created_at else None
+                    }
+                    for ad in ads
+                ]
+            })
+
+    except Exception as e:
+        return JSONResponse({"ads": [], "error": str(e)})
