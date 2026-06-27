@@ -4575,6 +4575,11 @@ async def public_market_page(telegram_id: int):
                 : '<div class="market-photo-placeholder">🏪</div>';
 
             document.getElementById('main-content').innerHTML = `
+                <button class="back-link-white"
+                        onclick="goBack()"
+                        style="position:absolute; top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:12px;">
+                    ← Назад
+                </button>
                 <div class="market-header-block">
                     <div class="market-info-row">
                         <div class="market-photo-wrapper">
@@ -4767,6 +4772,14 @@ async def public_market_page(telegram_id: int):
         async function init() {{
             await loadMarketData();
             renderPublicPage();
+        }}
+
+        function goBack() {{
+            if (history.length > 1) {{
+                history.back();
+            }} else {{
+                window.location.href = `/main/${{telegramId}}`;
+            }}
         }}
         init();
         </script>
