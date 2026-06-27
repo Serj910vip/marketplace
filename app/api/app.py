@@ -21,7 +21,7 @@ from app.repositories.booking_repository import BookingRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
-from app.repositories.ad_repository import AdRepository
+from app.repositories.ad_repository import AdRepository, photos_from_ad
 from app.services.file_service import save_file
 
 
@@ -75,6 +75,33 @@ class AdUpdateRequest(BaseModel):
     description: Optional[str] = None
     photo_url: Optional[str] = None
     hidden: bool = False
+
+
+def _ad_to_dict(ad: Ad) -> dict:
+    photo_list = photos_from_ad(ad)
+    return {
+        "id": ad.id,
+        "title": ad.title,
+        "description": ad.description,
+        "photo_url": photo_list[0] if photo_list else ad.photo_url,
+        "photos": photo_list,
+        "hidden": ad.hidden,
+        "created_at": ad.created_at.isoformat() if ad.created_at else None,
+    }
+
+
+def _parse_hidden(value: str | bool) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).lower() in ("true", "1", "yes")
+
+
+async def _save_upload_files(files: list[UploadFile]) -> list[str]:
+    urls: list[str] = []
+    for file in files:
+        if file and file.filename:
+            urls.append(await save_file(file))
+    return urls
 
 def _format_address(city: str | None, region: str | None, country: str | None) -> str:
     parts = [p for p in (city, region, country) if p]
@@ -1895,6 +1922,35 @@ COMMON_STYLES = """
         margin-top: 6px;
         text-align: center;
     }
+    .ad-photos-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .ad-photo-block {
+        position: relative;
+    }
+    .ad-photo-block .ad-photo-upload-box {
+        height: 120px;
+        font-size: 32px;
+    }
+    .ad-photo-remove {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.65);
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        z-index: 2;
+    }
+    .ad-photo-add {
+        border-style: dashed;
+    }
     .ad-input-file {
         display: none;
     }
@@ -2375,7 +2431,7 @@ WEBAPP_INIT = """
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-    const tgUser = tg.initDataUnsafe.user;
+    let tgUser = tg.initDataUnsafe.user;
 """
 
 
@@ -2462,6 +2518,98 @@ SERVICE_HELPERS_JS = """
         const reader = new FileReader();
         reader.onload = e => callback(e.target.result);
         reader.readAsDataURL(file);
+    }
+"""
+
+AD_PHOTOS_JS = """
+    const MAX_AD_PHOTOS = 10;
+    let adPhotoItems = [];
+
+    function initAdPhotosFromUrls(urls) {
+        adPhotoItems = (urls || []).filter(Boolean).map(url => ({ kind: 'existing', url }));
+        renderAdPhotoBlocks();
+    }
+
+    function renderAdPhotoBlocks() {
+        const grid = document.getElementById('ad-photos-grid');
+        if (!grid) return;
+
+        let html = adPhotoItems.map((item, index) => {
+            const src = item.kind === 'existing' ? item.url : item.preview;
+            return `
+                <div class="ad-photo-block">
+                    <div class="ad-photo-upload-box" onclick="replaceAdPhoto(${index})">
+                        <img src="${src}" alt="Фото">
+                    </div>
+                    <button type="button" class="ad-photo-remove" onclick="removeAdPhoto(${index})">✕</button>
+                </div>
+            `;
+        }).join('');
+
+        if (adPhotoItems.length < MAX_AD_PHOTOS) {
+            html += `
+                <div class="ad-photo-block">
+                    <div class="ad-photo-upload-box ad-photo-add" onclick="addAdPhotoSlot()">📷 ➕</div>
+                </div>
+            `;
+        }
+
+        grid.innerHTML = html;
+    }
+
+    let adPhotoReplaceIndex = null;
+
+    function addAdPhotoSlot() {
+        adPhotoReplaceIndex = null;
+        document.getElementById('ad-photo-input').click();
+    }
+
+    function replaceAdPhoto(index) {
+        adPhotoReplaceIndex = index;
+        document.getElementById('ad-photo-input').click();
+    }
+
+    function removeAdPhoto(index) {
+        adPhotoItems.splice(index, 1);
+        renderAdPhotoBlocks();
+    }
+
+    function onAdPhotoSelected(input) {
+        const file = input.files[0];
+        input.value = '';
+        if (!file) return;
+
+        if (file.size > 3 * 1024 * 1024) {
+            tg.showAlert('Фото не больше 3 МБ');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            const item = { kind: 'new', file, preview: e.target.result };
+            if (adPhotoReplaceIndex !== null) {
+                adPhotoItems[adPhotoReplaceIndex] = item;
+                adPhotoReplaceIndex = null;
+            } else {
+                adPhotoItems.push(item);
+            }
+            renderAdPhotoBlocks();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function appendAdPhotosToFormData(formData) {
+        const kept = adPhotoItems
+            .filter(item => item.kind === 'existing')
+            .map(item => item.url);
+        formData.append('existing_photos', JSON.stringify(kept));
+        adPhotoItems
+            .filter(item => item.kind === 'new')
+            .forEach(item => formData.append('files', item.file));
+    }
+
+    function hasAdPhotos() {
+        return adPhotoItems.length > 0;
     }
 """
 
@@ -4919,39 +5067,8 @@ async def ads_page():
                 const response = await fetch(`/api/ads/${{telegramId}}`);
                 if (response.ok) {{
                     const data = await response.json();
-                    if (data.ads && data.ads.length > 0) {{
-                        // РЕАЛЬНЫЕ ОБЪЯВЛЕНИЯ
-                        allAds = data.ads.map(ad => ({{
-                            ...ad,
-                        }}));
-                        console.log('✅ Реальные объявления:', allAds.length);
-                    }} else {{
-                        // ТЕСТОВЫЕ (если на сервере пусто)
-                        allAds = [
-                            {{
-                                id: 1,
-                                title: "Скидка на персональные тренировки",
-                                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
-                                hidden: false,
-                                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-                            }},
-                            {{
-                                id: 2,
-                                title: "Новый курс по йоге",
-                                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
-                                hidden: false,
-                                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-                            }},
-                            {{
-                                id: 3,
-                                title: "Спецпредложение",
-                                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
-                                hidden: true,
-                                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-                            }}
-                        ];
-                        console.log('📢 Тестовые объявления');
-                    }}
+                    allAds = data.ads || [];
+                    console.log('✅ Объявления:', allAds.length);
                 }} else {{
                     allAds = [];
                     console.log('⚠️ Ошибка сервера');
@@ -4960,8 +5077,7 @@ async def ads_page():
                 console.log('❌ Ошибка:', e);
                 allAds = [];
             }}
-            
-            // Показываем активные по умолчанию
+
             filterAds('active');
         }}
 
@@ -4990,63 +5106,52 @@ async def edit_ad_page(ad_id: int):
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                <!-- Верхний блок с шапкой -->
                 <div class="ad-header-block">
                     <div class="ad-header-row">
-                        <button class="back-link-white" onclick="history.back()">← Назад</button>
+                        <button class="back-link-white" onclick="window.location.href='/ads'">← Назад</button>
                         <span class="ad-header-title">Редактирование объявления</span>
                     </div>
                 </div>
 
-                <!-- ===== ГЛАВНЫЙ БЛОК С ФОРМОЙ ===== -->
                 <div class="ad-create-main-block" style="margin-top: 20px;">
                     <div id="loading" style="text-align:center;color:#8A9593;padding:40px 0;">Загрузка данных...</div>
-                    
-                    <div id="form-container" style="display:none;">
 
-                        <!-- ===== ПОЛЗУНОК СКРЫТИЯ ===== -->
+                    <div id="form-container" style="display:none;">
                         <div class="ad-field-group">
                             <label class="ad-field-label">Видимость объявления</label>
                             <div class="toggle-container">
                                 <span class="toggle-label">Показывать объявление</span>
                                 <label class="switch">
-                                    <input type="checkbox" id="ad-hidden-toggle" onchange="toggleHidden(this.checked)">
+                                    <input type="checkbox" id="ad-visible-toggle" onchange="toggleHidden(this.checked)">
                                     <span class="slider"></span>
                                 </label>
                                 <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
                             </div>
                         </div>
                         <input type="hidden" id="ad-hidden" value="false">
-                        <!-- Заголовок -->
+
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок объявления:</label>
                             <input class="ad-field-input" id="ad-title" type="text" placeholder="Введите заголовок" maxlength="200">
                         </div>
 
-                        <!-- Подзаголовок -->
                         <div class="ad-field-group">
                             <label class="ad-field-label">Подзаголовок объявления:</label>
                             <input class="ad-field-input" id="ad-subtitle" type="text" placeholder="Краткое описание" maxlength="100">
                         </div>
 
-                        <!-- Содержание -->
                         <div class="ad-field-group">
                             <label class="ad-field-label">Содержание объявления:</label>
                             <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
                         </div>
 
-                        <!-- Загрузите фото -->
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Загрузите фото: (минимум одно фото)</label>
-                            <div class="ad-photo-upload-box" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">
-                                📷 ➕
-                            </div>
-                            <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
-                            <div class="ad-photo-hint">Нажмите, чтобы загрузить новое фото (до 3 МБ)</div>
+                            <label class="ad-field-label">Фотографии объявления</label>
+                            <div class="ad-photos-grid" id="ad-photos-grid"></div>
+                            <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelected(this)">
+                            <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
                         </div>
 
-                        
-                        <!-- Кнопки -->
                         <div style="display:flex; gap:12px; margin-top:8px;">
                             <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
                             <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
@@ -5058,81 +5163,60 @@ async def edit_ad_page(ad_id: int):
 
         <script>
         {WEBAPP_INIT}
-        {SERVICE_HELPERS_JS}
+        {AD_PHOTOS_JS}
 
-        let adPhotoFile = null;
         let currentAdId = {ad_id};
         let currentAdData = null;
 
-        function onAdPhotoSelect(input) {{
-            const file = input.files[0];
-            if (!file) return;
-
-            // сохраняем файл
-            adPhotoFile = file;
-
-            // проверка размера
-            if (adPhotoFile.size > 3 * 1024 * 1024) {{
-                tg.showAlert("Фото слишком большое (макс 3MB)");
-                adPhotoFile = null;
-                input.value = "";
-                return;
+        function toggleHidden(isVisible) {{
+            const status = document.getElementById('hidden-status');
+            const hiddenInput = document.getElementById('ad-hidden');
+            if (isVisible) {{
+                status.textContent = '🟢 Активно';
+                status.className = 'toggle-status active';
+                hiddenInput.value = 'false';
+            }} else {{
+                status.textContent = '🔴 Скрыто';
+                status.className = 'toggle-status inactive';
+                hiddenInput.value = 'true';
             }}
-
-            const reader = new FileReader();
-            reader.onload = e => {{
-                const box = document.getElementById('ad-photo-box');
-                box.innerHTML = `<img src="${{e.target.result}}">`;
-            }};
-
-            reader.readAsDataURL(adPhotoFile);
-
-            // очищаем input (можно повторно выбрать тот же файл)
-            input.value = "";
         }}
 
         async function loadAdData() {{
             try {{
                 const response = await fetch(`/api/ads/get/${{currentAdId}}`);
-                
-                
-
-                if (response.ok) {{
-                    const data = await response.json();
-                    currentAdData = data.ad;
-                    
-                    // Заполняем поля
-                    document.getElementById('ad-title').value = currentAdData.title || '';
-                    
-                    // Разбиваем описание на подзаголовок и содержание
-                    const desc = currentAdData.description || '';
-                    const parts = desc.split('\\n\\n');
-                    if (parts.length > 1) {{
-                        document.getElementById('ad-subtitle').value = parts[0] || '';
-                        document.getElementById('ad-description').value = parts.slice(1).join('\\n\\n') || '';
-                    }} else {{
-                        document.getElementById('ad-subtitle').value = '';
-                        document.getElementById('ad-description').value = desc;
-                    }}
-                    
-                    
-                    // Показываем фото если есть
-                    if (currentAdData.photo_url) {{
-                        const box = document.getElementById('ad-photo-box');
-                        box.innerHTML = `<img src="${{currentAdData.photo_url}}" alt="Фото">`;
-                    }}
-
-                    const isHidden = currentAdData.hidden || false;
-                    const toggle = document.getElementById('ad-hidden-toggle');
-                    toggle.checked = isHidden;
-                    toggleHidden(isHidden);
-                    
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('form-container').style.display = 'block';
-                }} else {{
-                    document.getElementById('loading').innerHTML = '❌ Ошибка загрузки объявления';
+                if (!response.ok) {{
+                    document.getElementById('loading').innerHTML = '❌ Объявление не найдено';
                     tg.showAlert('Не удалось загрузить объявление');
+                    return;
                 }}
+
+                const data = await response.json();
+                currentAdData = data.ad;
+
+                document.getElementById('ad-title').value = currentAdData.title || '';
+
+                const desc = currentAdData.description || '';
+                const parts = desc.split('\\n\\n');
+                if (parts.length > 1) {{
+                    document.getElementById('ad-subtitle').value = parts[0] || '';
+                    document.getElementById('ad-description').value = parts.slice(1).join('\\n\\n') || '';
+                }} else {{
+                    document.getElementById('ad-subtitle').value = '';
+                    document.getElementById('ad-description').value = desc;
+                }}
+
+                const photos = currentAdData.photos && currentAdData.photos.length
+                    ? currentAdData.photos
+                    : (currentAdData.photo_url ? [currentAdData.photo_url] : []);
+                initAdPhotosFromUrls(photos);
+
+                const isHidden = currentAdData.hidden || false;
+                document.getElementById('ad-visible-toggle').checked = !isHidden;
+                toggleHidden(!isHidden);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('form-container').style.display = 'block';
             }} catch(e) {{
                 document.getElementById('loading').innerHTML = '❌ Ошибка: ' + e.message;
                 tg.showAlert('Ошибка загрузки: ' + e.message);
@@ -5141,51 +5225,63 @@ async def edit_ad_page(ad_id: int):
 
         async function updateAd() {{
             const title = document.getElementById('ad-title').value.trim();
-            const hidden = document.getElementById('ad-hidden').value === 'true';
+            if (!title) {{
+                tg.showAlert('Введите заголовок объявления');
+                return;
+            }}
 
+            const hidden = document.getElementById('ad-hidden').value === 'true';
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
 
             let fullDescription = description;
             if (subtitle) {{
-                fullDescription = subtitle + (description ? '\n\n' + description : '');
+                fullDescription = subtitle + (description ? '\\n\\n' + description : '');
+            }}
+
+            if (!hasAdPhotos()) {{
+                tg.showAlert('Добавьте хотя бы одно фото');
+                return;
             }}
 
             const formData = new FormData();
-            formData.append("title", title);
-            formData.append("description", fullDescription || "");
-            formData.append("hidden", hidden);
-
-            if (adPhotoFile) {{
-                formData.append("file", adPhotoFile);
-            }}
+            formData.append('title', title);
+            formData.append('description', fullDescription || '');
+            formData.append('hidden', hidden ? 'true' : 'false');
+            appendAdPhotosToFormData(formData);
 
             try {{
                 const response = await fetch(`/api/ads/update/${{currentAdId}}`, {{
-                    method: "PUT",
+                    method: 'PUT',
                     body: formData
                 }});
 
-                if (!response.ok) throw new Error("Ошибка сохранения");
+                if (!response.ok) {{
+                    const err = await response.json().catch(() => ({{}}));
+                    throw new Error(err.detail || 'Ошибка сохранения');
+                }}
 
-                tg.showAlert("✅ Изменения сохранены!", () => {{
-                    window.location.href = "/ads";
+                tg.showAlert('✅ Изменения сохранены!', () => {{
+                    window.location.href = '/ads';
                 }});
-
             }} catch (e) {{
-                tg.showAlert("❌ Ошибка: " + e.message);
+                tg.showAlert('❌ Ошибка: ' + e.message);
             }}
         }}
 
-        async function deleteAd() {{
-            tg.showAlert('Вы уверены, что хотите удалить это объявление?', async () => {{
+        function deleteAd() {{
+            tg.showConfirmPopup({{
+                title: 'Удаление',
+                message: 'Удалить это объявление?',
+                buttons: [
+                    {{type: 'cancel'}},
+                    {{id: 'delete', type: 'destructive', text: 'Удалить'}}
+                ]
+            }}, async (buttonId) => {{
+                if (buttonId !== 'delete') return;
                 try {{
-                    const response = await fetch(`/api/ads/${{currentAdId}}`, {{
-                        method: 'DELETE'
-                    }});
-                    
+                    const response = await fetch(`/api/ads/${{currentAdId}}`, {{ method: 'DELETE' }});
                     if (!response.ok) throw new Error('Ошибка удаления');
-                    
                     tg.showAlert('✅ Объявление удалено!', () => {{
                         window.location.href = '/ads';
                     }});
@@ -5195,27 +5291,10 @@ async def edit_ad_page(ad_id: int):
             }});
         }}
 
-        function toggleHidden(checked) {{
-            const status = document.getElementById('hidden-status');
-            const hiddenInput = document.getElementById('ad-hidden');
-            if (checked) {{
-                status.textContent = '🔴 Скрыто';
-                status.className = 'toggle-status inactive';
-                hiddenInput.value = 'true';
-            }} else {{
-                status.textContent = '🟢 Активно';
-                status.className = 'toggle-status active';
-                hiddenInput.value = 'false';
-            }}
-        }}
-
         function init() {{
             if (!tgUser) {{
-                tgUser = {{
-                    id: 552386150,
-                    username: 'test_user',
-                    first_name: 'Тестовый'
-                }};
+                document.getElementById('loading').innerHTML = '❌ Откройте через Telegram';
+                return;
             }}
             loadAdData();
         }}
@@ -5270,14 +5349,12 @@ async def create_ad_page():
                         <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
                     </div>
 
-                    <!-- Загрузите фото -->
+                    <!-- Фотографии -->
                     <div class="ad-field-group">
-                        <label class="ad-field-label">Загрузите фото: (минимум одно фото)</label>
-                        <div class="ad-photo-upload-box" id="ad-photo-box" onclick="document.getElementById('ad-photo-input').click()">
-                            📷 ➕ 
-                        </div>
-                        <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelect(this)">
-                        <div class="ad-photo-hint">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                        <label class="ad-field-label">Фотографии объявления (минимум одно)</label>
+                        <div class="ad-photos-grid" id="ad-photos-grid"></div>
+                        <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelected(this)">
+                        <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
                     </div>
                      <!-- Кнопка создания -->
                     <button class="ad-btn-create" onclick="createAd()">Создать объявление</button>
@@ -5289,20 +5366,7 @@ async def create_ad_page():
 
         <script>
         {WEBAPP_INIT}
-        {SERVICE_HELPERS_JS}
-
-        let adPhotoFile = null;
-
-        function onAdPhotoSelect(input) {{
-            adPhotoFile = input.files[0];
-
-            const reader = new FileReader();
-            reader.onload = e => {{
-                const box = document.getElementById('ad-photo-box');
-                box.innerHTML = `<img src="${{e.target.result}}">`;
-            }};
-            reader.readAsDataURL(adPhotoFile);
-        }}
+        {AD_PHOTOS_JS}
 
         async function createAd() {{
             const title = document.getElementById('ad-title').value.trim();
@@ -5314,41 +5378,36 @@ async def create_ad_page():
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
 
-
-            // Формируем полное описание (подзаголовок + содержание)
             let fullDescription = description;
             if (subtitle) {{
                 fullDescription = subtitle + (description ? '\\n\\n' + description : '');
             }}
 
+            if (!hasAdPhotos()) {{
+                tg.showAlert('Добавьте хотя бы одно фото');
+                return;
+            }}
+
             try {{
                 const formData = new FormData();
-
-                formData.append("telegram_id", tgUser.id);
-                formData.append("title", title);
-
+                formData.append('telegram_id', tgUser.id);
+                formData.append('title', title);
                 if (fullDescription) {{
-                    formData.append("description", fullDescription);
+                    formData.append('description', fullDescription);
                 }}
+                formData.append('hidden', 'false');
+                appendAdPhotosToFormData(formData);
 
-                formData.append("hidden", false);
-
-                if (adPhotoFile) {{
-                    formData.append("file", adPhotoFile);
-                }}
-
-                if (!adPhotoFile) {{
-                    tg.showAlert("Добавьте фото");
-                    return;
-                }}
-
-                const response = await fetch("/api/ads/create", {{
-                    method: "POST",
+                const response = await fetch('/api/ads/create', {{
+                    method: 'POST',
                     body: formData
                 }});
 
-                if (!response.ok) throw new Error('Ошибка создания');
-                
+                if (!response.ok) {{
+                    const err = await response.json().catch(() => ({{}}));
+                    throw new Error(err.detail || 'Ошибка создания');
+                }}
+
                 tg.showAlert('✅ Объявление создано!', () => {{
                     window.location.href = '/ads';
                 }});
@@ -5359,13 +5418,10 @@ async def create_ad_page():
 
         function init() {{
             if (!tgUser) {{
-                // Тестовый пользователь для разработки
-                tgUser = {{
-                    id: 552386150,
-                    username: 'test_user',
-                    first_name: 'Тестовый'
-                }};
+                tg.showAlert('Откройте через Telegram');
+                return;
             }}
+            initAdPhotosFromUrls([]);
         }}
         init();
         </script>
@@ -5382,34 +5438,24 @@ async def get_ads(telegram_id: int):
             user = await user_repo.get_by_telegram_id(telegram_id)
             if not user:
                 return JSONResponse({"ads": []})
-            
+
             ad_repo = AdRepository(session)
             ads = await ad_repo.get_by_user_id(user.id)
-            
+
             return JSONResponse({
-                "ads": [
-                    {
-                        "id": ad.id,
-                        "title": ad.title,
-                        "description": ad.description,
-                        "photo_url": ad.photo_url,
-                        "hidden": ad.hidden, 
-                        "created_at": ad.created_at.isoformat() if ad.created_at else None
-                    }
-                    for ad in ads
-                ]
+                "ads": [_ad_to_dict(ad) for ad in ads]
             })
     except Exception as e:
         return JSONResponse({"ads": [], "error": str(e)})
 
-# ===== CREATE объявления =====
+
 @app.post("/api/ads/create")
 async def create_ad(
     telegram_id: int = Form(...),
     title: str = Form(...),
     description: str = Form(None),
-    hidden: bool = Form(False),
-    file: UploadFile = File(None)
+    hidden: str = Form("false"),
+    files: list[UploadFile] = File(default=[]),
 ):
     async with AsyncSessionLocal() as session:
         user_repo = UserRepository(session)
@@ -5418,39 +5464,22 @@ async def create_ad(
         if not user:
             raise HTTPException(status_code=404, detail="Пользователь не найден")
 
-        photo_url = None
-
-        # 📌 сохраняем файл если он есть
-        if file:
-            upload_dir = Path("uploads")
-            upload_dir.mkdir(exist_ok=True)
-
-            ext = file.filename.split(".")[-1]
-            filename = f"{uuid.uuid4()}.{ext}"
-            file_path = upload_dir / filename
-
-            with open(file_path, "wb") as f:
-                f.write(await file.read())
-
-            photo_url = f"/uploads/{filename}"
+        photo_urls = await _save_upload_files(files)
+        if not photo_urls:
+            raise HTTPException(status_code=400, detail="Добавьте хотя бы одно фото")
 
         ad_repo = AdRepository(session)
-
         ad = await ad_repo.create(
             user_id=user.id,
-            title=title,
+            title=title.strip(),
             description=description,
-            photo_url=photo_url,
-            hidden=hidden
+            photos=photo_urls,
+            hidden=_parse_hidden(hidden),
         )
 
         return {
             "success": True,
-            "ad": {
-                "id": ad.id,
-                "title": ad.title,
-                "photo_url": ad.photo_url
-            }
+            "ad": _ad_to_dict(ad),
         }
 
 
@@ -5482,65 +5511,55 @@ async def get_ad(ad_id: int):
             ad = await ad_repo.get_by_id(ad_id)
             if not ad:
                 raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            return JSONResponse({
-                "ad": {
-                    "id": ad.id,
-                    "title": ad.title,
-                    "description": ad.description,
-                    "photo_url": ad.photo_url,
-                    "hidden": ad.hidden,
-                    "created_at": ad.created_at.isoformat() if ad.created_at else None
-                }
-            })
+
+            return JSONResponse({"ad": _ad_to_dict(ad)})
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ===== UPDATE объявления =====
 @app.put("/api/ads/update/{ad_id}")
 async def update_ad(
     ad_id: int,
     title: str = Form(...),
     description: str = Form(None),
-    hidden: bool = Form(False),
-    file: UploadFile = File(None),
+    hidden: str = Form("false"),
+    existing_photos: str = Form("[]"),
+    files: list[UploadFile] = File(default=[]),
 ):
     try:
         async with AsyncSessionLocal() as session:
             ad_repo = AdRepository(session)
-            
-            # Получаем объявление
             ad = await ad_repo.get_by_id(ad_id)
             if not ad:
                 raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            # Обновляем поля
-            ad.title = title
-            ad.description = description
-            ad.hidden = hidden
-            
-            # Если есть новое фото — сохраняем
-            if file:
-                ad.photo_url = await save_file(file)
-            
-            await session.commit()
-            await session.refresh(ad)
-            
+
+            try:
+                kept_photos = json.loads(existing_photos)
+                if not isinstance(kept_photos, list):
+                    kept_photos = []
+            except json.JSONDecodeError:
+                kept_photos = []
+
+            new_photos = await _save_upload_files(files)
+            final_photos = kept_photos + new_photos
+
+            if not final_photos:
+                raise HTTPException(status_code=400, detail="Добавьте хотя бы одно фото")
+
+            updated = await ad_repo.update(ad_id, {
+                "title": title.strip(),
+                "description": description,
+                "hidden": _parse_hidden(hidden),
+                "photos": final_photos,
+            })
+
             return JSONResponse({
                 "success": True,
-                "ad": {
-                    "id": ad.id,
-                    "title": ad.title,
-                    "description": ad.description,
-                    "photo_url": ad.photo_url,
-                    "hidden": ad.hidden,
-                    "created_at": ad.created_at.isoformat() if ad.created_at else None
-                }
+                "ad": _ad_to_dict(updated),
             })
-            
+
     except HTTPException:
         raise
     except Exception as e:
@@ -5725,16 +5744,7 @@ async def get_market_ads(telegram_id: int):
             ads = await ad_repo.get_active_by_user_id(user.id)
 
             return JSONResponse({
-                "ads": [
-                    {
-                        "id": ad.id,
-                        "title": ad.title,
-                        "description": ad.description,
-                        "photo_url": ad.photo_url,
-                        "created_at": ad.created_at.isoformat() if ad.created_at else None
-                    }
-                    for ad in ads
-                ]
+                "ads": [_ad_to_dict(ad) for ad in ads]
             })
 
     except Exception as e:

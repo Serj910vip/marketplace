@@ -5,6 +5,7 @@ from app.database.base import Base
 from app.models.user import User
 from app.models.service import Service
 from app.models.booking import Booking
+from app.models.ad import Ad
 
 async def reset_database():
     async with engine.begin() as conn:
