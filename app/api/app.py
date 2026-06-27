@@ -5161,7 +5161,7 @@ async def edit_ad_page(ad_id: int):
             }}
 
             try {{
-                const response = await fetch(`/api/ads/update/${currentAdId}`, {{
+                const response = await fetch(`/api/ads/update/${{currentAdId}}`, {{
                     method: "PUT",
                     body: formData
                 }});
