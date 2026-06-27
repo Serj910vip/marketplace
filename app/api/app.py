@@ -5126,6 +5126,7 @@ async def edit_ad_page(ad_id: int):
                                     <input type="checkbox" id="ad-visible-toggle" onchange="toggleHidden(this.checked)">
                                     <span class="slider"></span>
                                 </label>
+                                <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
                             </div>
                         </div>
                         <input type="hidden" id="ad-hidden" value="false">
@@ -5152,7 +5153,10 @@ async def edit_ad_page(ad_id: int):
                             <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
                         </div>
 
-                      
+                        <div style="display:flex; gap:12px; margin-top:8px;">
+                            <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
+                            <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
+                        </div>
                     </div>
                 </div>
             </div>
