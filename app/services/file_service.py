@@ -1,18 +1,19 @@
-import os
 import uuid
+from pathlib import Path
 
-UPLOAD_DIR = "/opt/marketplace/uploads"
-BASE_URL = "https://157.230.251.102/uploads"
+from fastapi import UploadFile
 
-async def save_file(file) -> str:
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+async def save_file(file: UploadFile) -> str:
     content = await file.read()
+    ext = file.filename.split(".")[-1] if file.filename and "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    file_path = UPLOAD_DIR / filename
 
-    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
-    name = f"{uuid.uuid4().hex}.{ext}"
-
-    path = os.path.join(UPLOAD_DIR, name)
-
-    with open(path, "wb") as f:
+    with open(file_path, "wb") as f:
         f.write(content)
 
-    return f"{BASE_URL}/{name}"
+    return f"/uploads/{filename}"
