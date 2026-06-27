@@ -2376,8 +2376,8 @@ COMMON_STYLES = """
     .switch {
         position: relative;
         display: inline-block;
-        width: 50px;
-        height: 28px;
+        width: 63px;
+        height: 25px;
         flex-shrink: 0;
     }
 
@@ -2394,19 +2394,20 @@ COMMON_STYLES = """
         left: 0;
         right: 0;
         bottom: 0;
-        background: #435450;
+        background: rgba(0, 58, 129, 0.3);
         transition: .3s;
-        border-radius: 34px;
+        border-radius: 10px;
+        border: 1px solid #0073FF;
     }
 
     .slider:before {
         position: absolute;
         content: "";
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background: #FFFFFF;
+        height: 23px;
+        width: 32px;
+        left: 3px;
+        bottom: 1px;
+        background: #0073FF;
         transition: .3s;
         border-radius: 50%;
     }
