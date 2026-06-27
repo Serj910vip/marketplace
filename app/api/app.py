@@ -1956,13 +1956,13 @@ COMMON_STYLES = """
     }
 
     .ad-btn-create {
-        width: 100%;
-        padding: 16px;
-        background: #003A81;
+        width: 158px;
+        padding: 0px;
+        background: rgba(0, 58, 129, 0.3);
         border: 0.5px solid #0073FF;
         border-radius: 10px;
         color: #FFFFFF;
-        font-size: 20px;
+        font-size: 10px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -2348,9 +2348,7 @@ COMMON_STYLES = """
         gap: 12px;
         margin-top: 8px;
         padding: 12px 16px;
-        background: rgba(0, 58, 129, 0.2);
-        border-radius: 12px;
-        border: 0.5px solid rgba(0, 115, 255, 0.4);
+        
     }
 
     .toggle-label {
@@ -2376,9 +2374,10 @@ COMMON_STYLES = """
     .switch {
         position: relative;
         display: inline-block;
-        width: 50px;
-        height: 28px;
+        width: 63px;
+        height: 25px;
         flex-shrink: 0;
+        margin-left: 65px;
     }
 
     .switch input {
@@ -2394,19 +2393,20 @@ COMMON_STYLES = """
         left: 0;
         right: 0;
         bottom: 0;
-        background: #435450;
+        background: rgba(0, 58, 129, 0.3);
         transition: .3s;
-        border-radius: 34px;
+        border-radius: 10px;
+        border: 1px solid #0073FF;
     }
 
     .slider:before {
         position: absolute;
         content: "";
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background: #FFFFFF;
+        height: 23px;
+        width: 32px;
+        left: 3px;
+        bottom: 1px;
+        background: #0073FF;
         transition: .3s;
         border-radius: 50%;
     }
@@ -5125,7 +5125,10 @@ async def edit_ad_page(ad_id: int):
                                     <input type="checkbox" id="ad-visible-toggle" onchange="toggleHidden(this.checked)">
                                     <span class="slider"></span>
                                 </label>
-                                <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
+                            </div>
+                            <div style="display:flex; gap:12px; margin-top:8px;">
+                                <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
+                                <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
                             </div>
                         </div>
                         <input type="hidden" id="ad-hidden" value="false">
@@ -5152,10 +5155,7 @@ async def edit_ad_page(ad_id: int):
                             <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
                         </div>
 
-                        <div style="display:flex; gap:12px; margin-top:8px;">
-                            <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
-                            <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
-                        </div>
+                      
                     </div>
                 </div>
             </div>
