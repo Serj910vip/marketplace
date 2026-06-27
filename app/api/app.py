@@ -61,6 +61,12 @@ class AdCreateRequest(BaseModel):
     status: str = "active"
     hidden: bool = False 
 
+class AdUpdateRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+    photo_url: Optional[str] = None
+    hidden: bool = False
+
 def _format_address(city: str | None, region: str | None, country: str | None) -> str:
     parts = [p for p in (city, region, country) if p]
     return ", ".join(parts) if parts else "Не указан"
@@ -4901,7 +4907,6 @@ async def ads_page():
                         // РЕАЛЬНЫЕ ОБЪЯВЛЕНИЯ
                         allAds = data.ads.map(ad => ({{
                             ...ad,
-                            hidden: false
                         }}));
                         console.log('✅ Реальные объявления:', allAds.length);
                     }} else {{
@@ -5700,3 +5705,33 @@ async def view_ad_page(telegram_id: int, ad_id: int):
     </body>
     </html>
     """
+
+
+@app.put("/api/ads/update/{ad_id}")
+async def update_ad(ad_id: int, body: AdUpdateRequest):
+    try:
+        async with AsyncSessionLocal() as session:
+            ad_repo = AdRepository(session)
+
+            ad = await ad_repo.update(ad_id, {
+                "title": body.title,
+                "description": body.description,
+                "photo_url": body.photo_url,
+                "hidden": body.hidden,
+            })
+
+            if not ad:
+                raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+            return JSONResponse({
+                "success": True,
+                "ad": {
+                    "id": ad.id,
+                    "hidden": ad.hidden
+                }
+            })
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
