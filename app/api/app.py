@@ -5511,31 +5511,25 @@ async def update_ad(
     try:
         async with AsyncSessionLocal() as session:
             ad_repo = AdRepository(session)
-
-            photo_url = None
-
-            # если пришло новое фото
-            if file:
-                content = await file.read()
-
-                # TODO: сохранить файл (S3 / disk)
-                photo_url = save_file(content, file.filename)
-
-            body = {
-                "title": title,
-                "description": description,
-                "hidden": hidden,
-            }
-
-            if photo_url:
-                body["photo_url"] = photo_url
-
-            ad = await ad_repo.update(ad_id, body)
-
+            
+            # Получаем объявление
+            ad = await ad_repo.get_by_id(ad_id)
             if not ad:
                 raise HTTPException(status_code=404, detail="Объявление не найдено")
-
-            return {
+            
+            # Обновляем поля
+            ad.title = title
+            ad.description = description
+            ad.hidden = hidden
+            
+            # Если есть новое фото — сохраняем
+            if file:
+                ad.photo_url = await save_file(file)
+            
+            await session.commit()
+            await session.refresh(ad)
+            
+            return JSONResponse({
                 "success": True,
                 "ad": {
                     "id": ad.id,
@@ -5545,8 +5539,8 @@ async def update_ad(
                     "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
-            }
-
+            })
+            
     except HTTPException:
         raise
     except Exception as e:
@@ -5714,36 +5708,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
     </body>
     </html>
     """
-
-
-@app.put("/api/ads/update/{ad_id}")
-async def update_ad(ad_id: int, body: AdUpdateRequest):
-    try:
-        async with AsyncSessionLocal() as session:
-            ad_repo = AdRepository(session)
-
-            ad = await ad_repo.update(ad_id, {
-                "title": body.title,
-                "description": body.description,
-                "photo_url": body.photo_url,
-                "hidden": body.hidden,
-            })
-
-            if not ad:
-                raise HTTPException(status_code=404, detail="Объявление не найдено")
-
-            return JSONResponse({
-                "success": True,
-                "ad": {
-                    "id": ad.id,
-                    "hidden": ad.hidden
-                }
-            })
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 
