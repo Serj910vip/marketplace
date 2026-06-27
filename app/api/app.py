@@ -461,7 +461,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -16px;
+        margin-top: 17px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
