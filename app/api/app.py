@@ -22,6 +22,8 @@ from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
 from app.repositories.ad_repository import AdRepository
+from uploads import save_file
+
 
 from fastapi.staticfiles import StaticFiles
 
@@ -5058,16 +5060,35 @@ async def edit_ad_page(ad_id: int):
         {WEBAPP_INIT}
         {SERVICE_HELPERS_JS}
 
-        let adPhoto = null;
+        let adPhotoFile = null;
         let currentAdId = {ad_id};
         let currentAdData = null;
 
         function onAdPhotoSelect(input) {{
-            readPhotoFile(input, dataUrl => {{
-                adPhoto = dataUrl;
+            const file = input.files[0];
+            if (!file) return;
+
+            // сохраняем файл
+            adPhotoFile = file;
+
+            // проверка размера
+            if (adPhotoFile.size > 3 * 1024 * 1024) {{
+                tg.showAlert("Фото слишком большое (макс 3MB)");
+                adPhotoFile = null;
+                input.value = "";
+                return;
+            }}
+
+            const reader = new FileReader();
+            reader.onload = e => {{
                 const box = document.getElementById('ad-photo-box');
-                box.innerHTML = `<img src="${{dataUrl}}" alt="Фото">`;
-            }});
+                box.innerHTML = `<img src="${{e.target.result}}">`;
+            }};
+
+            reader.readAsDataURL(adPhotoFile);
+
+            // очищаем input (можно повторно выбрать тот же файл)
+            input.value = "";
         }}
 
         async function loadAdData() {{
@@ -5121,40 +5142,38 @@ async def edit_ad_page(ad_id: int):
         async function updateAd() {{
             const title = document.getElementById('ad-title').value.trim();
             const hidden = document.getElementById('ad-hidden').value === 'true';
-            if (!title) {{
-                tg.showAlert('Введите заголовок объявления');
-                return;
-            }}
 
             const subtitle = document.getElementById('ad-subtitle').value.trim();
             const description = document.getElementById('ad-description').value.trim();
 
-            // Формируем полное описание
             let fullDescription = description;
             if (subtitle) {{
-                fullDescription = subtitle + (description ? '\\n\\n' + description : '');
+                fullDescription = subtitle + (description ? '\n\n' + description : '');
+            }}
+
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("description", fullDescription || "");
+            formData.append("hidden", hidden);
+
+            if (adPhotoFile) {{
+                formData.append("file", adPhotoFile);
             }}
 
             try {{
-                const response = await fetch(`/api/ads/update/${{currentAdId}}`, {{
-                    method: 'PUT',
-                    headers: {{'Content-Type': 'application/json'}},
-                    body: JSON.stringify({{
-                        title: title,
-                        description: fullDescription || null,
-                        photo_url: adPhoto || currentAdData?.photo_url || null,
-                        hidden: hidden,
-                   
-                    }})
+                const response = await fetch(`/api/ads/update/${currentAdId}`, {{
+                    method: "PUT",
+                    body: formData
                 }});
 
-                if (!response.ok) throw new Error('Ошибка сохранения');
-                
-                tg.showAlert('✅ Изменения сохранены!', () => {{
-                    window.location.href = '/ads';
+                if (!response.ok) throw new Error("Ошибка сохранения");
+
+                tg.showAlert("✅ Изменения сохранены!", () => {{
+                    window.location.href = "/ads";
                 }});
-            }} catch(e) {{
-                tg.showAlert('❌ Ошибка: ' + e.message);
+
+            }} catch (e) {{
+                tg.showAlert("❌ Ошибка: " + e.message);
             }}
         }}
 
@@ -5279,8 +5298,8 @@ async def create_ad_page():
 
             const reader = new FileReader();
             reader.onload = e => {{
-                document.getElementById('ad-photo-box').innerHTML =
-                    `<img src="${{e.target.result}}" alt="Фото">`;
+                const box = document.getElementById('ad-photo-box');
+                box.innerHTML = `<img src="${{e.target.result}}">`;
             }};
             reader.readAsDataURL(adPhotoFile);
         }}
@@ -5312,10 +5331,15 @@ async def create_ad_page():
                     formData.append("description", fullDescription);
                 }}
 
-                formData.append("hidden", "false");
+                formData.append("hidden", false);
 
                 if (adPhotoFile) {{
                     formData.append("file", adPhotoFile);
+                }}
+
+                if (!adPhotoFile) {{
+                    tg.showAlert("Добавьте фото");
+                    return;
                 }}
 
                 const response = await fetch("/api/ads/create", {{
@@ -5477,15 +5501,41 @@ async def get_ad(ad_id: int):
 
 # ===== UPDATE объявления =====
 @app.put("/api/ads/update/{ad_id}")
-async def update_ad(ad_id: int, body: dict):
+async def update_ad(
+    ad_id: int,
+    title: str = Form(...),
+    description: str = Form(None),
+    hidden: bool = Form(False),
+    file: UploadFile = File(None),
+):
     try:
         async with AsyncSessionLocal() as session:
             ad_repo = AdRepository(session)
+
+            photo_url = None
+
+            # если пришло новое фото
+            if file:
+                content = await file.read()
+
+                # TODO: сохранить файл (S3 / disk)
+                photo_url = save_file(content, file.filename)
+
+            body = {
+                "title": title,
+                "description": description,
+                "hidden": hidden,
+            }
+
+            if photo_url:
+                body["photo_url"] = photo_url
+
             ad = await ad_repo.update(ad_id, body)
+
             if not ad:
                 raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            return JSONResponse({
+
+            return {
                 "success": True,
                 "ad": {
                     "id": ad.id,
@@ -5495,12 +5545,12 @@ async def update_ad(ad_id: int, body: dict):
                     "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
-            })
+            }
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.get("/market/ad/{telegram_id}/{ad_id}", response_class=HTMLResponse)
 async def view_ad_page(telegram_id: int, ad_id: int):
