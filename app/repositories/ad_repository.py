@@ -24,18 +24,12 @@ class AdRepository:
             title: str, 
             description: str = None,        
             photo_url: str = None, 
-            category: str = None, 
-            price: float = None, 
-            status: str = "active",
             hidden: bool = False, ):
         ad = Ad(
             user_id=user_id,
             title=title,
             description=description,
             photo_url=photo_url,
-            category=category,
-            price=price,
-            status=status,
             hidden=hidden
         )
         self.session.add(ad)
@@ -43,13 +37,6 @@ class AdRepository:
         await self.session.refresh(ad)
         return ad
     
-    async def update_status(self, ad_id: int, status: str):
-        ad = await self.get_by_id(ad_id)
-        if ad:
-            ad.status = status
-            await self.session.commit()
-            await self.session.refresh(ad)
-        return ad
     
     async def delete(self, ad_id: int):
         ad = await self.get_by_id(ad_id)
@@ -71,12 +58,6 @@ class AdRepository:
             ad.description = data["description"]
         if "photo_url" in data:
             ad.photo_url = data["photo_url"]
-        if "category" in data:
-            ad.category = data["category"]
-        if "price" in data:
-            ad.price = data["price"]
-        if "status" in data:
-            ad.status = data["status"]
         if "hidden" in data:
             ad.hidden = data["hidden"]
         

@@ -56,9 +56,6 @@ class AdCreateRequest(BaseModel):
     title: str
     description: Optional[str] = None
     photo_url: Optional[str] = None
-    category: Optional[str] = None
-    price: Optional[float] = None
-    status: str = "active"
     hidden: bool = False 
 
 class AdUpdateRequest(BaseModel):
@@ -2836,7 +2833,7 @@ async def main_app():
 
         function renderServices() {{
             document.getElementById('main-content').innerHTML = `
-                <div class="page-title">🛠️ Мои услуги</div>
+                <div class="page-title">Мои услуги</div>
                 <button class="btn" onclick="goCreateService()">+ Создать услугу</button>
                 <div style="margin-top:16px">${{servicesList.length ? servicesList.map(serviceCardHtml).join('') : '<div class="empty">Услуги пока не созданы</div>'}}</div>
             `;
@@ -4505,8 +4502,6 @@ async def public_market_page(telegram_id: int):
                 id: 1,
                 title: "Скидка на персональные тренировки",
                 description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!\\n\\nПодробности:\\n- Индивидуальный подход\\n- Профессиональный тренер\\n- Современное оборудование",
-                price: 1200,
-                status: "active",
                 rating: 4.5,
                 created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -4515,8 +4510,6 @@ async def public_market_page(telegram_id: int):
                 id: 2,
                 title: "Новый курс по йоге",
                 description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!\\n\\nДля начинающих и продолжающих",
-                price: 800,
-                status: "active",
                 rating: 4.8,
                 created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -4525,8 +4518,6 @@ async def public_market_page(telegram_id: int):
                 id: 3,
                 title: "Спецпредложение",
                 description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!\\n\\nВключает:\\n- Неограниченные тренировки\\n- Доступ к тренажерному залу\\n- Консультация тренера",
-                price: 1500,
-                status: "active",
                 rating: 4.2,
                 created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -4916,8 +4907,6 @@ async def ads_page():
                                 id: 1,
                                 title: "Скидка на персональные тренировки",
                                 description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!",
-                                price: 1200,
-                                status: "active",
                                 hidden: false,
                                 created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
                             }},
@@ -4925,8 +4914,6 @@ async def ads_page():
                                 id: 2,
                                 title: "Новый курс по йоге",
                                 description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!",
-                                price: 800,
-                                status: "active",
                                 hidden: false,
                                 created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
                             }},
@@ -4934,8 +4921,6 @@ async def ads_page():
                                 id: 3,
                                 title: "Спецпредложение",
                                 description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!",
-                                price: 1500,
-                                status: "active",
                                 hidden: true,
                                 created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
                             }}
@@ -5035,36 +5020,6 @@ async def edit_ad_page(ad_id: int):
                             <div class="ad-photo-hint">Нажмите, чтобы загрузить новое фото (до 3 МБ)</div>
                         </div>
 
-                        <!-- Категория -->
-                        <div class="ad-field-group" style="margin-top: 8px;">
-                            <label class="ad-field-label">Категория</label>
-                            <select class="ad-field-input" id="ad-category">
-                                <option value="">Выберите категорию</option>
-                                <option value="Услуги">Услуги</option>
-                                <option value="Товары">Товары</option>
-                                <option value="Аренда">Аренда</option>
-                                <option value="События">События</option>
-                                <option value="Работа">Работа</option>
-                                <option value="Обучение">Обучение</option>
-                                <option value="Другое">Другое</option>
-                            </select>
-                        </div>
-
-                        <!-- Цена -->
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Цена (₽)</label>
-                            <input class="ad-field-input" id="ad-price" type="number" min="0" placeholder="0">
-                        </div>
-
-                        <!-- Статус -->
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Статус</label>
-                            <select class="ad-field-input" id="ad-status">
-                                <option value="active">🟢 Активно</option>
-                                <option value="paused">⏸ Приостановлено</option>
-                                <option value="archived">📦 Архив</option>
-                            </select>
-                        </div>
                         
                         <!-- Кнопки -->
                         <div style="display:flex; gap:12px; margin-top:8px;">
@@ -5330,9 +5285,6 @@ async def create_ad_page():
                         title: title,
                         description: fullDescription || null,
                         photo_url: adPhoto,
-                        category: null,
-                        price: null,
-                        status: "status",
                         hidden: false 
                     }})
                 }});
@@ -5383,9 +5335,6 @@ async def get_ads(telegram_id: int):
                         "title": ad.title,
                         "description": ad.description,
                         "photo_url": ad.photo_url,
-                        "category": ad.category,
-                        "price": ad.price,
-                        "status": ad.status,
                         "hidden": ad.hidden, 
                         "created_at": ad.created_at.isoformat() if ad.created_at else None
                     }
@@ -5411,9 +5360,6 @@ async def create_ad(body: AdCreateRequest):
                 title=body.title,
                 description=body.description,
                 photo_url=body.photo_url,
-                category=body.category,
-                price=body.price,
-                status=body.status,
                 hidden=body.hidden
             )
             
@@ -5424,9 +5370,6 @@ async def create_ad(body: AdCreateRequest):
                     "title": ad.title,
                     "description": ad.description,
                     "photo_url": ad.photo_url,
-                    "category": ad.category,
-                    "price": ad.price,
-                    "status": ad.status,
                     "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
@@ -5436,27 +5379,7 @@ async def create_ad(body: AdCreateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ===== UPDATE статуса объявления =====
-@app.put("/api/ads/{ad_id}/status")
-async def update_ad_status(ad_id: int, status: str):
-    try:
-        async with AsyncSessionLocal() as session:
-            ad_repo = AdRepository(session)
-            ad = await ad_repo.update_status(ad_id, status)
-            if not ad:
-                raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            return JSONResponse({
-                "success": True,
-                "ad": {
-                    "id": ad.id,
-                    "status": ad.status
-                }
-            })
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ===== DELETE объявления =====
 @app.delete("/api/ads/{ad_id}")
@@ -5493,9 +5416,6 @@ async def get_ad(ad_id: int):
                     "title": ad.title,
                     "description": ad.description,
                     "photo_url": ad.photo_url,
-                    "category": ad.category,
-                    "price": ad.price,
-                    "status": ad.status,
                     "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
@@ -5523,9 +5443,6 @@ async def update_ad(ad_id: int, body: dict):
                     "title": ad.title,
                     "description": ad.description,
                     "photo_url": ad.photo_url,
-                    "category": ad.category,
-                    "price": ad.price,
-                    "status": ad.status,
                     "hidden": ad.hidden,
                     "created_at": ad.created_at.isoformat() if ad.created_at else None
                 }
@@ -5563,8 +5480,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 id: 1,
                 title: "Скидка на персональные тренировки",
                 description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!\\n\\nПодробности:\\n- Индивидуальный подход\\n- Профессиональный тренер\\n- Современное оборудование",
-                price: 1200,
-                status: "active",
                 rating: 4.5,
                 created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -5573,8 +5488,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 id: 2,
                 title: "Новый курс по йоге",
                 description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!\\n\\nДля начинающих и продолжающих",
-                price: 800,
-                status: "active",
                 rating: 4.8,
                 created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -5583,8 +5496,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 id: 3,
                 title: "Спецпредложение",
                 description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!\\n\\nВключает:\\n- Неограниченные тренировки\\n- Доступ к тренажерному залу\\n- Консультация тренера",
-                price: 1500,
-                status: "active",
                 rating: 4.2,
                 created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
                 photo_url: null
@@ -5638,7 +5549,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                     ${{photoHtml}}
                     <div class="ad-detail-content">
                         <div class="ad-detail-title">${{adData.title}}</div>
-                        ${{adData.price ? `<div style="font-size:18px; font-weight:600; color:#f5a623; margin-bottom:8px;">${{adData.price}} ₽</div>` : ''}}
                         <div class="ad-detail-meta">
                             <span class="ad-detail-date">📅 ${{createdDate}}</span>
                             <span class="ad-detail-rating">${{renderStars(rating)}}</span>
