@@ -25,7 +25,8 @@ from app.repositories.ad_repository import AdRepository
 
 from fastapi.staticfiles import StaticFiles
 
-
+import os
+os.makedirs("uploads", exist_ok=True)
 
 app = FastAPI()
 
@@ -5271,14 +5272,17 @@ async def create_ad_page():
         {WEBAPP_INIT}
         {SERVICE_HELPERS_JS}
 
-        let adPhoto = null;
+        let adPhotoFile = null;
 
         function onAdPhotoSelect(input) {{
-            readPhotoFile(input, dataUrl => {{
-                adPhoto = dataUrl;
-                const box = document.getElementById('ad-photo-box');
-                box.innerHTML = `<img src="${{dataUrl}}" alt="Фото">`;
-            }});
+            adPhotoFile = input.files[0];
+
+            const reader = new FileReader();
+            reader.onload = e => {{
+                document.getElementById('ad-photo-box').innerHTML =
+                    `<img src="${{e.target.result}}" alt="Фото">`;
+            }};
+            reader.readAsDataURL(adPhotoFile);
         }}
 
         async function createAd() {{
@@ -5308,10 +5312,10 @@ async def create_ad_page():
                     formData.append("description", fullDescription);
                 }}
 
-                formData.append("hidden", false);
+                formData.append("hidden", "false");
 
-                if (adPhoto) {{
-                    formData.append("file", adPhoto);
+                if (adPhotoFile) {{
+                    formData.append("file", adPhotoFile);
                 }}
 
                 const response = await fetch("/api/ads/create", {{
