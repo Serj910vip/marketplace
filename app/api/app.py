@@ -1,10 +1,14 @@
 import json
 from typing import Any, Literal, Optional
 
+
+import uuid
+from pathlib import Path
+
 from pydantic import BaseModel
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import func, select
@@ -19,7 +23,13 @@ from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
 from app.repositories.ad_repository import AdRepository
 
+from fastapi.staticfiles import StaticFiles
+
+
+
 app = FastAPI()
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 MARKETPLACE_NAME = "Tipster my market"
 
@@ -55,7 +65,6 @@ class AdCreateRequest(BaseModel):
     telegram_id: int
     title: str
     description: Optional[str] = None
-    photo_url: Optional[str] = None
     hidden: bool = False 
 
 class AdUpdateRequest(BaseModel):
@@ -5290,16 +5299,24 @@ async def create_ad_page():
             }}
 
             try {{
-                const response = await fetch(`/api/ads/create`, {{
-                    method: 'POST',
-                    headers: {{'Content-Type': 'application/json'}},
-                    body: JSON.stringify({{
-                        telegram_id: tgUser.id,
-                        title: title,
-                        description: fullDescription || null,
-                        photo_url: adPhoto,
-                        hidden: false 
-                    }})
+                const formData = new FormData();
+
+                formData.append("telegram_id", tgUser.id);
+                formData.append("title", title);
+
+                if (fullDescription) {{
+                    formData.append("description", fullDescription);
+                }}
+
+                formData.append("hidden", false);
+
+                if (adPhoto) {{
+                    formData.append("file", adPhoto);
+                }}
+
+                const response = await fetch("/api/ads/create", {{
+                    method: "POST",
+                    body: formData
                 }});
 
                 if (!response.ok) throw new Error('Ошибка создания');
@@ -5359,39 +5376,54 @@ async def get_ads(telegram_id: int):
 
 # ===== CREATE объявления =====
 @app.post("/api/ads/create")
-async def create_ad(body: AdCreateRequest):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(body.telegram_id)
-            if not user:
-                raise HTTPException(status_code=404, detail="Пользователь не найден")
-            
-            ad_repo = AdRepository(session)
-            ad = await ad_repo.create(
-                user_id=user.id,
-                title=body.title,
-                description=body.description,
-                photo_url=body.photo_url,
-                hidden=body.hidden
-            )
-            
-            return JSONResponse({
-                "success": True,
-                "ad": {
-                    "id": ad.id,
-                    "title": ad.title,
-                    "description": ad.description,
-                    "photo_url": ad.photo_url,
-                    "hidden": ad.hidden,
-                    "created_at": ad.created_at.isoformat() if ad.created_at else None
-                }
-            })
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+async def create_ad(
+    telegram_id: int = Form(...),
+    title: str = Form(...),
+    description: str = Form(None),
+    hidden: bool = Form(False),
+    file: UploadFile = File(None)
+):
+    async with AsyncSessionLocal() as session:
+        user_repo = UserRepository(session)
+        user = await user_repo.get_by_telegram_id(telegram_id)
 
+        if not user:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+        photo_url = None
+
+        # 📌 сохраняем файл если он есть
+        if file:
+            upload_dir = Path("uploads")
+            upload_dir.mkdir(exist_ok=True)
+
+            ext = file.filename.split(".")[-1]
+            filename = f"{uuid.uuid4()}.{ext}"
+            file_path = upload_dir / filename
+
+            with open(file_path, "wb") as f:
+                f.write(await file.read())
+
+            photo_url = f"/uploads/{filename}"
+
+        ad_repo = AdRepository(session)
+
+        ad = await ad_repo.create(
+            user_id=user.id,
+            title=title,
+            description=description,
+            photo_url=photo_url,
+            hidden=hidden
+        )
+
+        return {
+            "success": True,
+            "ad": {
+                "id": ad.id,
+                "title": ad.title,
+                "photo_url": ad.photo_url
+            }
+        }
 
 
 # ===== DELETE объявления =====
