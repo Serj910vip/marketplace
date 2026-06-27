@@ -22,7 +22,7 @@ from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
 from app.repositories.ad_repository import AdRepository
-from uploads import save_file
+from app.services.file_service import save_file
 
 
 from fastapi.staticfiles import StaticFiles
