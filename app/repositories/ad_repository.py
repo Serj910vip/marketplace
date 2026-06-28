@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.ad import Ad
+
 
 
 class AdRepository:
@@ -82,12 +83,13 @@ class AdRepository:
         return result.scalars().all()
 
     async def get_due_scheduled(self, now: datetime | None = None) -> list[Ad]:
-        now = now or datetime.utcnow()
+        now = now or (datetime.utcnow() - timedelta(hours=3))
         result = await self.session.execute(
             select(Ad).where(
                 Ad.status == "scheduled",
                 Ad.scheduled_at <= now,
-            )
+                
+            ).order_by(Ad.scheduled_at)
         )
         return list(result.scalars().all())
 
