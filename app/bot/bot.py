@@ -14,8 +14,9 @@ dp = Dispatcher(storage=storage)
 
 # ========== ПОДКЛЮЧАЕМ ОБРАБОТЧИКИ КОМАНД ==========
 # Импортируем роутер из файла с командами
-from app.handlers.start import router
+from app.handlers.start import router as start_router
+from app.handlers.groups import router as groups_router
 
-# Регистрируем роутер в диспетчере
-dp.include_router(router)
+dp.include_router(start_router)
+dp.include_router(groups_router)
 

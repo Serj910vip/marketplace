@@ -21,7 +21,7 @@ from app.repositories.booking_repository import BookingRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
-from app.repositories.ad_repository import AdRepository, photos_from_ad
+from app.repositories.ad_repository import AdRepository
 from app.services.file_service import save_file
 
 
@@ -78,14 +78,16 @@ class AdUpdateRequest(BaseModel):
 
 
 def _ad_to_dict(ad: Ad) -> dict:
-    photo_list = photos_from_ad(ad)
     return {
         "id": ad.id,
         "title": ad.title,
+        "subtitle": ad.subtitle,
         "description": ad.description,
-        "photo_url": photo_list[0] if photo_list else ad.photo_url,
-        "photos": photo_list,
+        "content": ad.description,
+        "status": getattr(ad, "status", None) or "published",
         "hidden": ad.hidden,
+        "scheduled_at": ad.scheduled_at.isoformat() if ad.scheduled_at else None,
+        "published_at": ad.published_at.isoformat() if ad.published_at else None,
         "created_at": ad.created_at.isoformat() if ad.created_at else None,
     }
 
@@ -467,6 +469,47 @@ COMMON_STYLES = """
 
     .my-market-btn:active {
         transform: translateY(0px);
+    }
+
+    .add-bot-btn {
+        width: 100%;
+        height: 56px;
+        background: transparent;
+        border: 1px solid #0073FF;
+        border-radius: 20px;
+        color: #FFFFFF;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 10px;
+        padding: 0 20px;
+    }
+
+    .add-bot-btn:hover {
+        background: rgba(0, 115, 255, 0.15);
+    }
+
+    .linked-chat-info {
+        font-size: 12px;
+        color: rgba(255,255,255,0.85);
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .post-actions-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .post-actions-row .ad-btn-create {
+        flex: 1;
+        margin-top: 0;
+    }
+
+    .ad-btn-secondary {
+        background: rgba(0, 58, 129, 0.3) !important;
+        border: 0.5px solid #0073FF !important;
     }
 
 
@@ -2737,6 +2780,8 @@ async def main_app():
                         <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
                             My Market
                         </button>
+                        <button class="add-bot-btn" onclick="addBotToGroup()">Добавить бота в группу</button>
+                        <div class="linked-chat-info" id="linked-chat-info"></div>
                     </div>
                 </div>
 
@@ -2744,14 +2789,14 @@ async def main_app():
                 <div class="divider-line"></div>
 
 
-                <!-- ОТДЕЛЬНЫЙ БЛОК ДЛЯ ОБЪЯВЛЕНИЙ -->
+                <!-- БЛОК ПОСТОВ -->
 
                 
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="section-title">Создать бесплатно:</div>
-                        <div class="menu-card" onclick="window.location.href='/ads'">
+                        <div class="menu-card" onclick="window.location.href='/posts'">
                             <div class="left">
-                                <span class="label">Объявления</span>
+                                <span class="label">Посты</span>
                             </div>
                             <span class="accordion-arrow" id="arrow-ad">
                                 <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2829,6 +2874,7 @@ async def main_app():
                     servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
                 }}
             }}
+            loadLinkedChat();
         }}
 
         // Функция для открытия/закрытия аккордеона
@@ -3245,6 +3291,51 @@ async def main_app():
         }}
 
         function goCreateService() {{ window.location.href = '/service/create'; }}
+
+        async function loadLinkedChat() {{
+            const el = document.getElementById('linked-chat-info');
+            if (!el || !tgUser) return;
+            try {{
+                const res = await fetch(`/api/user/${{tgUser.id}}/channel`);
+                const data = await res.json();
+                if (data.linked) {{
+                    const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
+                    el.textContent = `✅ ${{typeLabel}} подключена: ${{data.chat_title}}`;
+                }} else {{
+                    el.textContent = 'Бот не подключён к группе или каналу';
+                }}
+            }} catch(e) {{
+                el.textContent = '';
+            }}
+        }}
+
+        async function addBotToGroup() {{
+            try {{
+                const res = await fetch('/api/bot/username');
+                const data = await res.json();
+                if (!data.username) {{
+                    tg.showAlert('Не удалось получить имя бота');
+                    return;
+                }}
+                tg.showPopup({{
+                    title: 'Подключение бота',
+                    message: 'Выберите, куда добавить бота:',
+                    buttons: [
+                        {{id: 'group', type: 'default', text: 'В группу'}},
+                        {{id: 'channel', type: 'default', text: 'В канал'}},
+                        {{type: 'cancel'}}
+                    ]
+                }}, (btnId) => {{
+                    if (btnId === 'group') {{
+                        tg.openTelegramLink(`https://t.me/${{data.username}}?startgroup=connect`);
+                    }} else if (btnId === 'channel') {{
+                        tg.openTelegramLink(`https://t.me/${{data.username}}?startchannel&admin=post_messages`);
+                    }}
+                }});
+            }} catch(e) {{
+                tg.showAlert('Ошибка: ' + e.message);
+            }}
+        }}
 
         function switchTab(tab) {{
             currentTab = tab;
@@ -4757,7 +4848,7 @@ async def public_market_page(telegram_id: int):
 
                 <div class="market-menu-grid">
                     <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
-                        <span class="market-menu-label">Объявления</span>
+                        <span class="market-menu-label">Посты</span>
                     </div>
                     <div class="market-menu-item active" data-tab="services" onclick="switchMarketTab('services')">
                         <span class="market-menu-label">Услуги</span>
@@ -4793,30 +4884,20 @@ async def public_market_page(telegram_id: int):
             }} else if (tab === 'events') {{
                 return '<div class="empty">События временно не доступны</div>';
             }} else if (tab === 'ads') {{
-                console.log('📊 Рендерим объявления, количество:', adsList.length);
                 if (adsList && adsList.length) {{
                     return `
                         <div class="market-ads-container">
-                            ${{adsList.map(ad => {{
-                                const createdDate = ad.created_at ? new Date(ad.created_at).toLocaleDateString('ru-RU') : new Date().toLocaleDateString('ru-RU');
-                                const subtitle = ad.description ? ad.description.split('\\n')[0] : 'Без подзаголовка';
-                                const rating = ad.rating || 0;
-                                
-                                // Фото
-                                const photoHtml = ad.photo_url 
-                                    ? `<img class="market-ad-card-image" src="${{ad.photo_url}}" alt="${{ad.title}}">`
-                                    : `<div class="market-ad-card-image-placeholder">📷</div>`;
-                                
+                            ${{adsList.map(post => {{
+                                const createdDate = post.created_at ? new Date(post.created_at).toLocaleDateString('ru-RU') : '';
+                                const subtitle = post.subtitle || 'Без подзаголовка';
                                 return `
                                     <div class="market-ad-card">
-                                        ${{photoHtml}}
                                         <div class="market-ad-card-body">
-                                            <div class="market-ad-card-title">${{ad.title}}</div>
+                                            <div class="market-ad-card-title">${{post.title}}</div>
                                             <div class="market-ad-card-subtitle">${{subtitle}}</div>
                                             <div class="market-ad-card-footer">
                                                 <span class="market-ad-card-date">📅 ${{createdDate}}</span>
-                                                <span class="market-ad-card-rating">${{renderStars(rating)}}</span>
-                                                <button class="market-ad-card-btn" onclick="viewAd(${{ad.id}})">Посмотреть</button>
+                                                <button class="market-ad-card-btn" onclick="viewAd(${{post.id}})">Посмотреть</button>
                                             </div>
                                         </div>
                                     </div>
@@ -4825,7 +4906,7 @@ async def public_market_page(telegram_id: int):
                         </div>
                     `;
                 }} else {{
-                    return '<div class="empty">Объявлений пока нет</div>';
+                    return '<div class="empty">Постов пока нет</div>';
                 }}
             }}
             return '';
@@ -4847,7 +4928,7 @@ async def public_market_page(telegram_id: int):
                 const [biz, svc, ads] = await Promise.all([
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
                     fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
-                    fetch(`/api/market/ads/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/market/posts/${{telegramId}}`).then(r => r.json()),
                 ]);
                 
                 if (!biz || !biz.has_business) {{
@@ -4895,12 +4976,10 @@ async def public_market_page(telegram_id: int):
                     servicesList = svc.services || [];
                 }}
 
-                if (ads.ads && ads.ads.length > 0) {{
-                    adsList = ads.ads;
-                    console.log('✅ Загружены реальные объявления:', adsList.length);
+                if (ads.posts && ads.posts.length > 0) {{
+                    adsList = ads.posts;
                 }} else {{
-                    adsList = TEST_ADS;
-                    console.log('📢 Используем тестовые объявления:', adsList.length);
+                    adsList = [];
                 }}
 
             }} catch(e) {{
@@ -4926,7 +5005,7 @@ async def public_market_page(telegram_id: int):
                         photo_url: null
                     }}
                 ];
-                adsList = TEST_ADS;
+                adsList = [];
             }}
         }}
 
@@ -4949,622 +5028,7 @@ async def public_market_page(telegram_id: int):
     """
 
 
-@app.get("/ads", response_class=HTMLResponse)
-async def ads_page():
-    return f"""
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <style>{COMMON_STYLES}</style>
-        <title>Объявления</title>
-    </head>
-    <body>
-        <div class="app">
-            <div class="content" style="padding-top: 0;">
-                <!-- Верхний блок с шапкой -->
-                <div class="ads-header-block">
-                    <div class="ads-header-row">
-                        <button class="back-link-white" onclick="window.location.href='/?tab=home'">← Назад</button>
-                        <span class="ads-header-title">Объявления</span>
-                    </div>
-                </div>
-
-                <!-- Кнопка создания объявления -->
-                <div class="ads-create-container" style="margin-top: 20px;">
-                    <button class="ads-create-btn" onclick="window.location.href='/ad/create'">
-                        Создать объявление
-                    </button>
-                </div>
-
-                <!-- Линия разделитель -->
-                <div class="ads-divider"></div>
-
-                <!-- ФИЛЬТР -->
-                <div class="ads-filter-container">
-                    <button class="ads-filter-btn active" id="filter-active" onclick="filterAds('active')">Активные</button>
-                    <button class="ads-filter-btn" id="filter-hidden" onclick="filterAds('hidden')">Скрытые</button>
-                </div>
-
-                <!-- Счетчик объявлений -->
-                <div class="ads-count" id="ads-count">У вас 0 объявлений</div>
-
-                <!-- Список объявлений -->
-                <div class="ads-list-container" id="ads-list-container">
-                    <div class="ads-empty">Список объявлений пуст</div>
-                </div>
-            </div>
-        </div>
-        <script>
-        {WEBAPP_INIT}
-
-        let allAds = [];
-        let filteredAds = [];
-        let currentFilter = 'active';
-        let telegramId = tgUser?.id || 552386150;
-
-        // ФИЛЬТР
-        function filterAds(filter) {{
-            currentFilter = filter;
-            
-            document.getElementById('filter-active').classList.toggle('active', filter === 'active');
-            document.getElementById('filter-hidden').classList.toggle('active', filter === 'hidden');
-            
-            if (filter === 'active') {{
-                filteredAds = allAds.filter(ad => !ad.hidden);
-            }} else {{
-                filteredAds = allAds.filter(ad => ad.hidden);
-            }}
-            
-            renderAds();
-        }}
-
-        // ОТОБРАЖЕНИЕ
-        function renderAds() {{
-            const container = document.getElementById('ads-list-container');
-            const countElement = document.getElementById('ads-count');
-            
-            countElement.textContent = `У вас ${{filteredAds.length}} объявлений`;
-            
-            if (filteredAds.length === 0) {{
-                container.innerHTML = `<div class="ads-empty">${{currentFilter === 'active' ? 'Активных' : 'Скрытых'}} объявлений нет</div>`;
-                return;
-            }}
-            
-            container.innerHTML = filteredAds.map((ad, index) => {{
-                const adNumber = String(index + 1).padStart(3, '0');
-                const createdDate = ad.created_at ? new Date(ad.created_at).toLocaleDateString('ru-RU') : new Date().toLocaleDateString('ru-RU');
-                const subtitle = ad.description ? ad.description.split('\\n')[0] : 'Без подзаголовка';
-                const statusText = ad.hidden ? '🔴 Скрыто' : '🟢 Активно';
-                
-                return `
-                    <div class="add-item">
-                        <div class="add-item-header">
-                            <div class="add-item-title-block">
-                                <div class="add-item-title">${{ad.title}}</div>
-                                <div class="add-item-subtitle">${{subtitle}}</div>
-                            </div>
-                            <div class="add-item-title-block">
-                                <div class="add-item-number">#${{adNumber}}</div>
-                                <div class="add-item-date">📅 ${{createdDate}} · ${{statusText}}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="add-item-actions">
-                            <button class="add-item-btn add-item-btn-edit" onclick="editAd(${{ad.id}})">Редактировать</button>
-                        </div>
-                    </div>
-                `;
-            }}).join('');
-        }}
-
-        function editAd(adId) {{
-            window.location.href = `/ad/edit/${{adId}}`;
-        }}
-
-        // ЗАГРУЗКА ДАННЫХ
-        async function loadAds() {{
-            try {{
-                const response = await fetch(`/api/ads/${{telegramId}}`);
-                if (response.ok) {{
-                    const data = await response.json();
-                    allAds = data.ads || [];
-                    console.log('✅ Объявления:', allAds.length);
-                }} else {{
-                    allAds = [];
-                    console.log('⚠️ Ошибка сервера');
-                }}
-            }} catch(e) {{
-                console.log('❌ Ошибка:', e);
-                allAds = [];
-            }}
-
-            filterAds('active');
-        }}
-
-        async function init() {{
-            await loadAds();
-        }}
-        init();
-        </script>
-    </body>
-    </html>
-    """
-
-
-
-
-@app.get("/ad/edit/{ad_id}", response_class=HTMLResponse)
-async def edit_ad_page(ad_id: int):
-    return f"""
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <style>{COMMON_STYLES}</style>
-        <title>Редактирование объявления</title>
-    </head>
-    <body>
-        <div class="app">
-            <div class="content" style="padding-top: 0;">
-                <div class="ad-header-block">
-                    <div class="ad-header-row">
-                        <button class="back-link-white" onclick="window.location.href='/ads'">← Назад</button>
-                        <span class="ad-header-title">Редактирование объявления</span>
-                    </div>
-                </div>
-
-                <div class="ad-create-main-block" style="margin-top: 20px;">
-                    <div id="loading" style="text-align:center;color:#8A9593;padding:40px 0;">Загрузка данных...</div>
-
-                    <div id="form-container" style="display:none;">
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Видимость объявления</label>
-                            <div class="toggle-container">
-                                <span class="toggle-label">Показывать объявление</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="ad-visible-toggle" onchange="toggleHidden(this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="toggle-status active" id="hidden-status">🟢 Активно</span>
-                            </div>
-                        </div>
-                        <input type="hidden" id="ad-hidden" value="false">
-
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Заголовок объявления:</label>
-                            <input class="ad-field-input" id="ad-title" type="text" placeholder="Введите заголовок" maxlength="200">
-                        </div>
-
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Подзаголовок объявления:</label>
-                            <input class="ad-field-input" id="ad-subtitle" type="text" placeholder="Краткое описание" maxlength="100">
-                        </div>
-
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Содержание объявления:</label>
-                            <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
-                        </div>
-
-                        <div class="ad-field-group">
-                            <label class="ad-field-label">Фотографии объявления</label>
-                            <div class="ad-photos-grid" id="ad-photos-grid"></div>
-                            <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelected(this)">
-                            <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
-                        </div>
-
-                        <div style="display:flex; gap:12px; margin-top:8px;">
-                            <button class="ad-btn-create" onclick="updateAd()" style="flex:2;">Сохранить изменения</button>
-                            <button class="ad-btn-create" onclick="deleteAd()" style="flex:1; background:#FF8282; border-color:#FF8282;">Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-        {WEBAPP_INIT}
-        {AD_PHOTOS_JS}
-
-        let currentAdId = {ad_id};
-        let currentAdData = null;
-
-        function toggleHidden(isVisible) {{
-            const status = document.getElementById('hidden-status');
-            const hiddenInput = document.getElementById('ad-hidden');
-            if (isVisible) {{
-                status.textContent = '🟢 Активно';
-                status.className = 'toggle-status active';
-                hiddenInput.value = 'false';
-            }} else {{
-                status.textContent = '🔴 Скрыто';
-                status.className = 'toggle-status inactive';
-                hiddenInput.value = 'true';
-            }}
-        }}
-
-        async function loadAdData() {{
-            try {{
-                const response = await fetch(`/api/ads/get/${{currentAdId}}`);
-                if (!response.ok) {{
-                    document.getElementById('loading').innerHTML = '❌ Объявление не найдено';
-                    tg.showAlert('Не удалось загрузить объявление');
-                    return;
-                }}
-
-                const data = await response.json();
-                currentAdData = data.ad;
-
-                document.getElementById('ad-title').value = currentAdData.title || '';
-
-                const desc = currentAdData.description || '';
-                const parts = desc.split('\\n\\n');
-                if (parts.length > 1) {{
-                    document.getElementById('ad-subtitle').value = parts[0] || '';
-                    document.getElementById('ad-description').value = parts.slice(1).join('\\n\\n') || '';
-                }} else {{
-                    document.getElementById('ad-subtitle').value = '';
-                    document.getElementById('ad-description').value = desc;
-                }}
-
-                const photos = currentAdData.photos && currentAdData.photos.length
-                    ? currentAdData.photos
-                    : (currentAdData.photo_url ? [currentAdData.photo_url] : []);
-                initAdPhotosFromUrls(photos);
-
-                const isHidden = currentAdData.hidden || false;
-                document.getElementById('ad-visible-toggle').checked = !isHidden;
-                toggleHidden(!isHidden);
-
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('form-container').style.display = 'block';
-            }} catch(e) {{
-                document.getElementById('loading').innerHTML = '❌ Ошибка: ' + e.message;
-                tg.showAlert('Ошибка загрузки: ' + e.message);
-            }}
-        }}
-
-        async function updateAd() {{
-            const title = document.getElementById('ad-title').value.trim();
-            if (!title) {{
-                tg.showAlert('Введите заголовок объявления');
-                return;
-            }}
-
-            const hidden = document.getElementById('ad-hidden').value === 'true';
-            const subtitle = document.getElementById('ad-subtitle').value.trim();
-            const description = document.getElementById('ad-description').value.trim();
-
-            let fullDescription = description;
-            if (subtitle) {{
-                fullDescription = subtitle + (description ? '\\n\\n' + description : '');
-            }}
-
-            if (!hasAdPhotos()) {{
-                tg.showAlert('Добавьте хотя бы одно фото');
-                return;
-            }}
-
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', fullDescription || '');
-            formData.append('hidden', hidden ? 'true' : 'false');
-            appendAdPhotosToFormData(formData);
-
-            try {{
-                const response = await fetch(`/api/ads/update/${{currentAdId}}`, {{
-                    method: 'PUT',
-                    body: formData
-                }});
-
-                if (!response.ok) {{
-                    const err = await response.json().catch(() => ({{}}));
-                    throw new Error(err.detail || 'Ошибка сохранения');
-                }}
-
-                tg.showAlert('✅ Изменения сохранены!', () => {{
-                    window.location.href = '/ads';
-                }});
-            }} catch (e) {{
-                tg.showAlert('❌ Ошибка: ' + e.message);
-            }}
-        }}
-
-        function deleteAd() {{
-            tg.showConfirmPopup({{
-                title: 'Удаление',
-                message: 'Удалить это объявление?',
-                buttons: [
-                    {{type: 'cancel'}},
-                    {{id: 'delete', type: 'destructive', text: 'Удалить'}}
-                ]
-            }}, async (buttonId) => {{
-                if (buttonId !== 'delete') return;
-                try {{
-                    const response = await fetch(`/api/ads/${{currentAdId}}`, {{ method: 'DELETE' }});
-                    if (!response.ok) throw new Error('Ошибка удаления');
-                    tg.showAlert('✅ Объявление удалено!', () => {{
-                        window.location.href = '/ads';
-                    }});
-                }} catch(e) {{
-                    tg.showAlert('❌ Ошибка: ' + e.message);
-                }}
-            }});
-        }}
-
-        function init() {{
-            if (!tgUser) {{
-                document.getElementById('loading').innerHTML = '❌ Откройте через Telegram';
-                return;
-            }}
-            loadAdData();
-        }}
-        init();
-        </script>
-    </body>
-    </html>
-    """
-
-# ========== API для объявлений ==========
-
-@app.get("/ad/create", response_class=HTMLResponse)
-async def create_ad_page():
-    return f"""
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <style>{COMMON_STYLES}</style>
-        <title>Создание объявления</title>
-    </head>
-    <body>
-        <div class="app">
-            <div class="content" style="padding-top: 0;">
-                <!-- Верхний блок с шапкой -->
-                <div class="ad-header-block">
-                    <div class="ad-header-row">
-                        <button class="back-link-white" onclick="history.back()">← Назад</button>
-                        <span class="ad-header-title">Создание объявления</span>
-                    </div>
-                </div>
-
-                <!-- ===== ГЛАВНЫЙ БЛОК С ФОРМОЙ ===== -->
-                <div class="ad-create-main-block" style="margin-top: 20px;">
-    
-
-                    <!-- Заголовок -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Заголовок объявления: </label>
-                        <input class="ad-field-input" id="ad-title" type="text" placeholder="Введите заголовок" maxlength="200">
-                    </div>
-
-                    <!-- Подзаголовок -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Подзаголовок объявления: </label>
-                        <input class="ad-field-input" id="ad-subtitle" type="text" placeholder="Краткое описание" maxlength="100">
-                    </div>
-
-                    <!-- Содержание -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Содержание объявления: </label>
-                        <textarea class="ad-field-input" id="ad-description" placeholder="Подробное описание..." maxlength="1000"></textarea>
-                    </div>
-
-                    <!-- Фотографии -->
-                    <div class="ad-field-group">
-                        <label class="ad-field-label">Фотографии объявления (минимум одно)</label>
-                        <div class="ad-photos-grid" id="ad-photos-grid"></div>
-                        <input class="ad-input-file" type="file" id="ad-photo-input" accept="image/*" onchange="onAdPhotoSelected(this)">
-                        <div class="ad-photo-hint">Нажмите «+», чтобы добавить фото. Можно загрузить несколько (до 3 МБ каждое)</div>
-                    </div>
-                     <!-- Кнопка создания -->
-                    <button class="ad-btn-create" onclick="createAd()">Создать объявление</button>
-                </div>
-
-               
-            </div>
-        </div>
-
-        <script>
-        {WEBAPP_INIT}
-        {AD_PHOTOS_JS}
-
-        async function createAd() {{
-            const title = document.getElementById('ad-title').value.trim();
-            if (!title) {{
-                tg.showAlert('Введите заголовок объявления');
-                return;
-            }}
-
-            const subtitle = document.getElementById('ad-subtitle').value.trim();
-            const description = document.getElementById('ad-description').value.trim();
-
-            let fullDescription = description;
-            if (subtitle) {{
-                fullDescription = subtitle + (description ? '\\n\\n' + description : '');
-            }}
-
-            if (!hasAdPhotos()) {{
-                tg.showAlert('Добавьте хотя бы одно фото');
-                return;
-            }}
-
-            try {{
-                const formData = new FormData();
-                formData.append('telegram_id', tgUser.id);
-                formData.append('title', title);
-                if (fullDescription) {{
-                    formData.append('description', fullDescription);
-                }}
-                formData.append('hidden', 'false');
-                appendAdPhotosToFormData(formData);
-
-                const response = await fetch('/api/ads/create', {{
-                    method: 'POST',
-                    body: formData
-                }});
-
-                if (!response.ok) {{
-                    const err = await response.json().catch(() => ({{}}));
-                    throw new Error(err.detail || 'Ошибка создания');
-                }}
-
-                tg.showAlert('✅ Объявление создано!', () => {{
-                    window.location.href = '/ads';
-                }});
-            }} catch(e) {{
-                tg.showAlert('❌ Ошибка: ' + e.message);
-            }}
-        }}
-
-        function init() {{
-            if (!tgUser) {{
-                tg.showAlert('Откройте через Telegram');
-                return;
-            }}
-            initAdPhotosFromUrls([]);
-        }}
-        init();
-        </script>
-    </body>
-    </html>
-    """
-
-
-@app.get("/api/ads/{telegram_id}")
-async def get_ads(telegram_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(telegram_id)
-            if not user:
-                return JSONResponse({"ads": []})
-
-            ad_repo = AdRepository(session)
-            ads = await ad_repo.get_by_user_id(user.id)
-
-            return JSONResponse({
-                "ads": [_ad_to_dict(ad) for ad in ads]
-            })
-    except Exception as e:
-        return JSONResponse({"ads": [], "error": str(e)})
-
-
-@app.post("/api/ads/create")
-async def create_ad(
-    telegram_id: int = Form(...),
-    title: str = Form(...),
-    description: str = Form(None),
-    hidden: str = Form("false"),
-    files: list[UploadFile] = File(default=[]),
-):
-    async with AsyncSessionLocal() as session:
-        user_repo = UserRepository(session)
-        user = await user_repo.get_by_telegram_id(telegram_id)
-
-        if not user:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
-
-        photo_urls = await _save_upload_files(files)
-        if not photo_urls:
-            raise HTTPException(status_code=400, detail="Добавьте хотя бы одно фото")
-
-        ad_repo = AdRepository(session)
-        ad = await ad_repo.create(
-            user_id=user.id,
-            title=title.strip(),
-            description=description,
-            photos=photo_urls,
-            hidden=_parse_hidden(hidden),
-        )
-
-        return {
-            "success": True,
-            "ad": _ad_to_dict(ad),
-        }
-
-
-# ===== DELETE объявления =====
-@app.delete("/api/ads/{ad_id}")
-async def delete_ad(ad_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            ad_repo = AdRepository(session)
-            result = await ad_repo.delete(ad_id)
-            if not result:
-                raise HTTPException(status_code=404, detail="Объявление не найдено")
-            
-            return JSONResponse({"success": True})
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
-
-# ===== GET одно объявление =====
-@app.get("/api/ads/get/{ad_id}")
-async def get_ad(ad_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            ad_repo = AdRepository(session)
-            ad = await ad_repo.get_by_id(ad_id)
-            if not ad:
-                raise HTTPException(status_code=404, detail="Объявление не найдено")
-
-            return JSONResponse({"ad": _ad_to_dict(ad)})
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.put("/api/ads/update/{ad_id}")
-async def update_ad(
-    ad_id: int,
-    title: str = Form(...),
-    description: str = Form(None),
-    hidden: str = Form("false"),
-    existing_photos: str = Form("[]"),
-    files: list[UploadFile] = File(default=[]),
-):
-    try:
-        async with AsyncSessionLocal() as session:
-            ad_repo = AdRepository(session)
-            ad = await ad_repo.get_by_id(ad_id)
-            if not ad:
-                raise HTTPException(status_code=404, detail="Объявление не найдено")
-
-            try:
-                kept_photos = json.loads(existing_photos)
-                if not isinstance(kept_photos, list):
-                    kept_photos = []
-            except json.JSONDecodeError:
-                kept_photos = []
-
-            new_photos = await _save_upload_files(files)
-            final_photos = kept_photos + new_photos
-
-            if not final_photos:
-                raise HTTPException(status_code=400, detail="Добавьте хотя бы одно фото")
-
-            updated = await ad_repo.update(ad_id, {
-                "title": title.strip(),
-                "description": description,
-                "hidden": _parse_hidden(hidden),
-                "photos": final_photos,
-            })
-
-            return JSONResponse({
-                "success": True,
-                "ad": _ad_to_dict(updated),
-            })
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# Legacy ad routes moved to posts_router.py
 
 @app.get("/market/ad/{telegram_id}/{ad_id}", response_class=HTMLResponse)
 async def view_ad_page(telegram_id: int, ad_id: int):
@@ -5750,3 +5214,9 @@ async def get_market_ads(telegram_id: int):
 
     except Exception as e:
         return JSONResponse({"ads": [], "error": str(e)})
+
+
+from app.api.posts_router import router as posts_router, register_post_pages
+
+app.include_router(posts_router)
+register_post_pages(app, COMMON_STYLES, WEBAPP_INIT)

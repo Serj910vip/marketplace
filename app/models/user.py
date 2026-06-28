@@ -51,6 +51,12 @@ class User(Base):
 
     personal_city: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    linked_chat_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+
+    linked_chat_title: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    linked_chat_type: Mapped[str | None] = mapped_column(String, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow

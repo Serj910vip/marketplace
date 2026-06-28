@@ -1,28 +1,9 @@
-import json
+from datetime import datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.ad import Ad
-
-
-def photos_from_ad(ad: Ad) -> list[str]:
-    if ad.photos:
-        try:
-            parsed = json.loads(ad.photos)
-            if isinstance(parsed, list):
-                return [p for p in parsed if p]
-        except json.JSONDecodeError:
-            pass
-    if ad.photo_url:
-        return [ad.photo_url]
-    return []
-
-
-def set_ad_photos(ad: Ad, photo_urls: list[str]) -> None:
-    cleaned = [url for url in photo_urls if url]
-    ad.photos = json.dumps(cleaned, ensure_ascii=False) if cleaned else None
-    ad.photo_url = cleaned[0] if cleaned else None
 
 
 class AdRepository:
@@ -45,23 +26,23 @@ class AdRepository:
         self,
         user_id: int,
         title: str,
-        description: str = None,
-        photo_url: str = None,
-        photos: list[str] | None = None,
+        subtitle: str | None = None,
+        description: str | None = None,
         hidden: bool = False,
+        status: str = "published",
+        scheduled_at: datetime | None = None,
+        published_at: datetime | None = None,
     ):
         ad = Ad(
             user_id=user_id,
             title=title,
+            subtitle=subtitle,
             description=description,
-            photo_url=photo_url,
             hidden=hidden,
+            status=status,
+            scheduled_at=scheduled_at,
+            published_at=published_at,
         )
-        if photos:
-            set_ad_photos(ad, photos)
-        elif photo_url:
-            set_ad_photos(ad, [photo_url])
-
         self.session.add(ad)
         await self.session.commit()
         await self.session.refresh(ad)
@@ -80,16 +61,9 @@ class AdRepository:
         if not ad:
             return None
 
-        if "title" in data:
-            ad.title = data["title"]
-        if "description" in data:
-            ad.description = data["description"]
-        if "hidden" in data:
-            ad.hidden = data["hidden"]
-        if "photos" in data:
-            set_ad_photos(ad, data["photos"])
-        elif "photo_url" in data:
-            set_ad_photos(ad, [data["photo_url"]] if data["photo_url"] else [])
+        for field in ("title", "subtitle", "description", "hidden", "status", "scheduled_at", "published_at"):
+            if field in data:
+                setattr(ad, field, data[field])
 
         await self.session.commit()
         await self.session.refresh(ad)
@@ -101,7 +75,26 @@ class AdRepository:
             .where(
                 Ad.user_id == user_id,
                 Ad.hidden == False,
+                Ad.status == "published",
             )
             .order_by(desc(Ad.created_at))
         )
         return result.scalars().all()
+
+    async def get_due_scheduled(self, now: datetime | None = None) -> list[Ad]:
+        now = now or datetime.utcnow()
+        result = await self.session.execute(
+            select(Ad).where(
+                Ad.status == "scheduled",
+                Ad.scheduled_at <= now,
+            )
+        )
+        return list(result.scalars().all())
+
+    async def mark_published(self, ad: Ad):
+        ad.status = "published"
+        ad.hidden = False
+        ad.published_at = datetime.utcnow()
+        await self.session.commit()
+        await self.session.refresh(ad)
+        return ad
