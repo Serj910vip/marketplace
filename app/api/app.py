@@ -78,12 +78,16 @@ class AdUpdateRequest(BaseModel):
 
 
 def _ad_to_dict(ad: Ad) -> dict:
+    from app.repositories.ad_repository import photos_from_ad
+    photo_list = photos_from_ad(ad)
     return {
         "id": ad.id,
         "title": ad.title,
         "subtitle": ad.subtitle,
         "description": ad.description,
         "content": ad.description,
+        "photos": photo_list,
+        "photo_url": photo_list[0] if photo_list else ad.photo_url,
         "status": getattr(ad, "status", None) or "published",
         "hidden": ad.hidden,
         "scheduled_at": ad.scheduled_at.isoformat() if ad.scheduled_at else None,
@@ -4907,8 +4911,13 @@ async def public_market_page(telegram_id: int):
                             ${{adsList.map(post => {{
                                 const createdDate = post.created_at ? new Date(post.created_at).toLocaleDateString('ru-RU') : '';
                                 const subtitle = post.subtitle || 'Без подзаголовка';
+                                const mainPhoto = (post.photos && post.photos[0]) || post.photo_url;
+                                const photoHtml = mainPhoto
+                                    ? `<img class="market-ad-card-image" src="${{mainPhoto}}" alt="${{post.title}}">`
+                                    : `<div class="market-ad-card-image-placeholder">📷</div>`;
                                 return `
                                     <div class="market-ad-card">
+                                        ${{photoHtml}}
                                         <div class="market-ad-card-body">
                                             <div class="market-ad-card-title">${{post.title}}</div>
                                             <div class="market-ad-card-subtitle">${{subtitle}}</div>

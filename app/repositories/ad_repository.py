@@ -1,10 +1,28 @@
-from datetime import datetime, timedelta
+import json
 
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.ad import Ad
 
+
+def photos_from_ad(ad: Ad) -> list[str]:
+    if ad.photos:
+        try:
+            parsed = json.loads(ad.photos)
+            if isinstance(parsed, list):
+                return [p for p in parsed if p][:3]
+        except json.JSONDecodeError:
+            pass
+    if ad.photo_url:
+        return [ad.photo_url]
+    return []
+
+
+def set_ad_photos(ad: Ad, photo_urls: list[str]) -> None:
+    cleaned = [url for url in photo_urls if url][:3]
+    ad.photos = json.dumps(cleaned, ensure_ascii=False) if cleaned else None
+    ad.photo_url = cleaned[0] if cleaned else None
 
 
 class AdRepository:
@@ -29,10 +47,11 @@ class AdRepository:
         title: str,
         subtitle: str | None = None,
         description: str | None = None,
+        photos: list[str] | None = None,
         hidden: bool = False,
         status: str = "published",
-        scheduled_at: datetime | None = None,
-        published_at: datetime | None = None,
+        scheduled_at=None,
+        published_at=None,
     ):
         ad = Ad(
             user_id=user_id,
@@ -44,6 +63,9 @@ class AdRepository:
             scheduled_at=scheduled_at,
             published_at=published_at,
         )
+        if photos:
+            set_ad_photos(ad, photos)
+
         self.session.add(ad)
         await self.session.commit()
         await self.session.refresh(ad)
@@ -62,9 +84,15 @@ class AdRepository:
         if not ad:
             return None
 
-        for field in ("title", "subtitle", "description", "hidden", "status", "scheduled_at", "published_at"):
+        for field in (
+            "title", "subtitle", "description", "hidden",
+            "status", "scheduled_at", "published_at",
+        ):
             if field in data:
                 setattr(ad, field, data[field])
+
+        if "photos" in data:
+            set_ad_photos(ad, data["photos"])
 
         await self.session.commit()
         await self.session.refresh(ad)
@@ -82,18 +110,19 @@ class AdRepository:
         )
         return result.scalars().all()
 
-    async def get_due_scheduled(self, now: datetime | None = None) -> list[Ad]:
+    async def get_due_scheduled(self, now=None) -> list[Ad]:
+        from datetime import datetime
         now = now or datetime.utcnow()
         result = await self.session.execute(
             select(Ad).where(
                 Ad.status == "scheduled",
                 Ad.scheduled_at <= now,
-                
             ).order_by(Ad.scheduled_at)
         )
         return list(result.scalars().all())
 
     async def mark_published(self, ad: Ad):
+        from datetime import datetime
         ad.status = "published"
         ad.hidden = False
         ad.published_at = datetime.utcnow()
