@@ -693,11 +693,9 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        height: 200px;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
-        margin-bottom: 340px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -821,10 +819,10 @@ COMMON_STYLES = """
     .business-card .address { font-size: 13px; color: var(--tg-theme-hint-color, #707579); }
 
     .section-title {
-        font-size: 10px; 
-        margin-bottom: 12px; 
-        padding-bottom: 8px;
-        margin-top: 15px;
+        font-size: 10px;
+        margin-bottom: 9px;
+        padding-bottom: 4px;
+        margin-top: 5px;
         margin-left: 10px;
     }
     /*
@@ -1672,7 +1670,7 @@ COMMON_STYLES = """
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        margin-top: 228px;
+       
     }
 
     /* Стили для пунктов меню профиля (аналогично menu-card) */
