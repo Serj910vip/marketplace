@@ -471,6 +471,33 @@ COMMON_STYLES = """
         transform: translateY(0px);
     }
 
+    /* Стиль для кнопки My Market */
+    .my-market-btn {
+        width: 100%;
+        height: 70px;
+        background: #121918;
+        border: 1px solid #0073FF;
+        border-radius: 20px;
+        color: #0073FF;
+        font-size: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0, 58, 129, 0.25);
+        margin-top: 10px;
+        padding: 0 20px;
+    }
+
+    .my-market-btn:hover {
+        background: rgba(0, 58, 129, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 58, 129, 0.3);
+    }
+
+    .my-market-btn:active {
+        transform: translateY(0px);
+    }
+
     .add-bot-btn {
         width: 100%;
         height: 56px;
@@ -670,7 +697,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 20px 20px;
-        margin-bottom: 180px;
+        margin-bottom: 340px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -697,10 +724,8 @@ COMMON_STYLES = """
     }
 
     .home-business-card {
-        padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
-        margin-top: -16px;
         
     }
 
