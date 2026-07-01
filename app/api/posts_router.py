@@ -117,8 +117,28 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 }}
                 container.innerHTML = filtered.map((post, index) => {{
                     const num = String(index + 1).padStart(3, '0');
-                    const date = post.created_at ? new Date(post.created_at).toLocaleDateString('ru-RU') : '';
-                    const scheduleInfo = post.scheduled_at ? `<br>🕐 ${{new Date(post.scheduled_at).toLocaleString('ru-RU')}}` : '';
+                    const date = post.created_at 
+                        ? new Date(post.created_at).toLocaleString('ru-RU', {{
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }})
+                        : '';
+
+                    const scheduleInfo = post.scheduled_at 
+                        ? `<br>🕐 ${{new Date(post.scheduled_at).toLocaleString('ru-RU', {{
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }})}}`
+                        : '';
+                    
                     return `
                         <div class="add-item">
                             <div class="add-item-header">

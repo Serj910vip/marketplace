@@ -83,7 +83,7 @@ class AdRepository:
         return result.scalars().all()
 
     async def get_due_scheduled(self, now: datetime | None = None) -> list[Ad]:
-        now = now or (datetime.utcnow() - timedelta(hours=3))
+        now = now or datetime.utcnow()
         result = await self.session.execute(
             select(Ad).where(
                 Ad.status == "scheduled",

@@ -2777,11 +2777,16 @@ async def main_app():
                         
                         
                         <!-- КНОПКА MY MARKET -->
-                        <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
-                            My Market
-                        </button>
-                        <button class="add-bot-btn" onclick="addBotToGroup()">Добавить бота в группу</button>
-                        <div class="linked-chat-info" id="linked-chat-info"></div>
+                        <div class="home-market-button">
+                            <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                                TipsterMarket
+                            </button>
+                            <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                                My Market
+                            </button>
+                            <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
+                            <div class="linked-chat-info" id="linked-chat-info"></div>
+                        </div>
                     </div>
                 </div>
 
