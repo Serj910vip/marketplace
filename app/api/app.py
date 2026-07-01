@@ -3515,7 +3515,7 @@ async def main_app():
                 
                 // Создаем тестового пользователя
                 tgUser = {{
-                    id: 123456789,
+                    id: 552386150,
                     username: 'test_user',
                     first_name: 'Тестовый',
                     last_name: 'Пользователь'
