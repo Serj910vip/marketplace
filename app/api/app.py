@@ -444,8 +444,8 @@ COMMON_STYLES = """
         display: block;
     }
 
-    /* Стиль для кнопки My Market */
-    .my-market-btn {
+    /* Стиль для кнопки TipsterMarket */
+    .my-tipmarket-btn {
         width: 100%;
         height: 70px;
         background: #003A81;
@@ -461,13 +461,13 @@ COMMON_STYLES = """
         padding: 0 20px;
     }
 
-    .my-market-btn:hover {
+    .my-tipmarket-btn:hover {
         background: rgba(0, 58, 129, 0.3);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 58, 129, 0.3);
     }
 
-    .my-market-btn:active {
+    .my-tipmarket-btn:active {
         transform: translateY(0px);
     }
 
@@ -2803,7 +2803,7 @@ async def main_app():
                         
                         <!-- КНОПКА MY MARKET -->
                         <div class="home-market-button">
-                            <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                            <button class="my-tipmarket-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
                                 TipsterMarket
                             </button>
                             <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
