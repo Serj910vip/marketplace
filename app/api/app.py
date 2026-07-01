@@ -546,7 +546,6 @@ COMMON_STYLES = """
         width: 360px;
         height: 1px;
         background: #435450;
-        margin: 22px auto 22px auto;
     }
 
     /* Активный пункт - показываем иконку и текст, с белым фоном */
@@ -929,7 +928,6 @@ COMMON_STYLES = """
     }
 
     .menu-card:hover {
-        background: #dddcdc;
     }
 
     .menu-card .left {
@@ -962,7 +960,7 @@ COMMON_STYLES = """
     }
 
     .accordion-header:hover {
-        background: var(--tg-theme-bg-color, #f0f0f0);
+        
     }
 
     .accordion-arrow {
@@ -974,7 +972,7 @@ COMMON_STYLES = """
     .accordion-content {
         display: none;
         padding: 12px 16px 16px 40px;
-        background: rgba(0, 58, 129, 0.7);
+        background: rgba(0, 58, 129, 0.3);
         border-radius: 12px;
         margin-top: -8px;
         margin-bottom: 12px;
@@ -1153,7 +1151,6 @@ COMMON_STYLES = """
     /* Стили для профиля */
     .profile-card {
         border-radius: 16px;
-        margin-bottom: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
@@ -1176,7 +1173,7 @@ COMMON_STYLES = """
     .profile-business-address {
         font-size: 14px;
         margin-top: 16px;
-        color: var(--tg-theme-hint-color, #707579);
+        color: #8A9593;
     }
 
     .profile-divider {
@@ -1208,14 +1205,14 @@ COMMON_STYLES = """
 
     .format-toggle { display: flex; gap: 8px; }
     .format-btn {
-        flex: 1; padding: 12px; border: 2px solid var(--tg-theme-hint-color, #ccc);
-        border-radius: 10px; background: var(--tg-theme-bg-color, #fff);
+        flex: 1; padding: 12px; border: 2px solid #ccc;
+        border-radius: 10px; background: #fff;
         font-size: 14px; font-weight: 600; cursor: pointer; text-align: center;
     }
     .format-btn.active {
-        border-color: var(--tg-theme-button-color, #2481cc);
-        background: var(--tg-theme-button-color, #2481cc);
-        color: var(--tg-theme-button-text-color, #fff);
+        border-color: #2481cc;
+        background: #2481cc;
+        color: #fff;
     }
 
     .days-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -1294,7 +1291,7 @@ COMMON_STYLES = """
 
     .btn-delete-market {
         color: #FFFFFF;
-        margin-top: 0px;
+        margin-top: 50px;
         font-size: 20px;
         font-weight: 500;
         height: 70px;
@@ -1696,9 +1693,6 @@ COMMON_STYLES = """
         margin-bottom: 0;
     }
 
-    .profile-menu-card:hover {
-        background: var(--tg-theme-hint-color, #dddcdc);
-    }
 
     .profile-menu-card .left {
         display: flex;
