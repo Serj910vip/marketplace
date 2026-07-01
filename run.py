@@ -4,6 +4,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+
+# ФИКС ДЛЯ WINDOWS (ВАЖНО!)
+
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
@@ -21,8 +24,11 @@ async def run_bot():
     )
 
 
+
 if __name__ == "__main__":
-    print("🚀 Запуск Telegram бота...")
+    
+    print("🚀Запуск Telegram бота...")
+
     try:
         asyncio.run(run_bot())
     except KeyboardInterrupt:
