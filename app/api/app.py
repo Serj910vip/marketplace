@@ -823,6 +823,7 @@ COMMON_STYLES = """
         padding-bottom: 4px;
         margin-top: 5px;
         margin-left: 10px;
+        color: #FFFF
     }
     /*
     .menu-card {
