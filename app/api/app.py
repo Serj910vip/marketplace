@@ -2823,7 +2823,7 @@ async def main_app():
 
                 
                 <div class="menu-container-home" style="margin-top: 20px !important;">
-                    <div class="section-title">Создать бесплатно:</div>
+                    <div class="section-title">Доступно:</div>
                         <div class="menu-card" onclick="window.location.href='/posts'">
                             <div class="left">
                                 <span class="label">Посты</span>
