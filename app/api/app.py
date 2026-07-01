@@ -3234,12 +3234,6 @@ async def main_app():
                         <span class="accordion-arrow">▶</span>
                     </div>
                     
-                    <div class="profile-menu-card" onclick="window.location.href='/settings?from=profile'">
-                        <div class="left">
-                            <span class="label">Настройки</span>
-                        </div>
-                        <span class="accordion-arrow">▶</span>
-                    </div>
                     
                     <div class="profile-menu-card" onclick="window.location.href='/privacy?from=profile'">
                         <div class="left">
