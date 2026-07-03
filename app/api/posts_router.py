@@ -69,6 +69,11 @@ POST_PHOTOS_CSS = """
         background: #003A81;
     }
 
+    .ads-filter-tabs {
+        display: flex;
+        justify-content: space-around;
+    }
+
     .ads-filter-tab {
         width: 110px;
         padding: 14px;
