@@ -54,20 +54,35 @@ POST_PHOTOS_CSS = """
         padding: 0;
     }
     .posts-secondary-btn {
-        width: 100%;
+        width: 110px;
         padding: 14px;
         margin-top: 10px;
         background: rgba(0, 58, 129, 0.3);
         border: 0.5px solid #0073FF;
         border-radius: 10px;
         color: #FFFFFF;
-        font-size: 16px;
+        font-size: 10px;
         font-weight: 500;
         cursor: pointer;
     }
     .posts-secondary-btn.active {
         background: #003A81;
     }
+
+    .ads-filter-tab {
+        width: 110px;
+        padding: 14px;
+        margin-top: 10px;
+        background: rgba(0, 58, 129, 0.3);
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+
     .market-ad-card-image-full {
         width: 100%;
         height: 180px;
@@ -249,13 +264,14 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     </div>
                     <div class="ads-create-btn-wrapper">
                         <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
-                        <button class="posts-secondary-btn" id="btn-hidden" onclick="filterPosts('hidden')">Скрытые</button>
+                        
                     </div>
                     <div class="ads-filter-tabs" id="status-tabs">
-                        <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Опубликованные</button>
+                        <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
                         <button class="ads-filter-tab" id="filter-scheduled" onclick="filterPosts('scheduled')">Запланированные</button>
+                        <button class="posts-secondary-btn" id="btn-hidden" onclick="filterPosts('hidden')">Скрытые</button>
                     </div>
-                    <div class="ads-count" id="posts-count">У вас 0 постов</div>
+                    <div class="ads-count" id="posts-count">Посты: 0</div>
                     <div class="ads-list-container" id="posts-list">
                         <div class="ads-empty">Список постов пуст</div>
                     </div>
@@ -289,7 +305,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     scheduled: 'запланированных',
                     hidden: 'скрытых',
                 }};
-                document.getElementById('posts-count').textContent = `У вас ${{filtered.length}} постов`;
+                document.getElementById('posts-count').textContent = `Посты: ${{filtered.length}}`;
                 if (!filtered.length) {{
                     container.innerHTML = `<div class="ads-empty">Нет ${{labels[currentFilter]}} постов</div>`;
                     return;

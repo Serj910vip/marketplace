@@ -2981,17 +2981,17 @@ async def main_app():
                     <!-- Объявления -->
                     <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
                         <div class="left">
-                            <span class="label">Объявления</span>
+                            <span class="label">Посты</span>
                             <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
                         </div>
                         <span class="accordion-arrow" id="stats-arrow-ads-detail">▶</span>
                     </div>
                     <div class="accordion-content" id="stats-content-ads-detail">
                         <div class="stats-detail">
-                            <div class="stats-row"><span>Активных объявлений:</span><span class="stats-value">${{adsCount}}</span></div>
+                            <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
                             <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
                             <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
-                            <div class="stats-row"><span>Заявок с объявлений:</span><span class="stats-value">19</span></div>
+                            <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">19</span></div>
                             <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
                         </div>
                     </div>
