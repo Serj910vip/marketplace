@@ -555,7 +555,7 @@ COMMON_STYLES = """
     .divider-line-post {
         height: 1px;
         background: #435450;
-        margin-top: 61px;
+        margin-top: 17px;
     }
 
     /* Активный пункт - показываем иконку и текст, с белым фоном */
@@ -2495,8 +2495,8 @@ COMMON_STYLES = """
         display: flex;
         justify-content: space-between;
         margin-top: 16px;
-        padding: ;
         padding: 8px 12px;
+        color: #FFF;
     }
 
     .posts-vid-text {
