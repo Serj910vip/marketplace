@@ -72,6 +72,7 @@ POST_PHOTOS_CSS = """
     .ads-filter-tabs {
         display: flex;
         justify-content: space-around;
+        margin-bottom: 19px;
     }
 
     .ads-filter-tab {
