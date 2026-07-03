@@ -5150,6 +5150,7 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 </button>
                 <div class="ad-detail-page">
                     ${{photoHtml}}
+                    <div class="divider-line"></div>
                     <div class="ad-detail-content">
                         <div class="ad-detail-title">${{adData.title}}</div>
                         <div class="ad-detail-meta">
