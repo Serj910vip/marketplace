@@ -550,6 +550,12 @@ COMMON_STYLES = """
         width: 360px;
         height: 1px;
         background: #435450;
+    }   
+
+    .divider-line-post {
+        height: 1px;
+        background: #435450;
+        margin-top: 61px;
     }
 
     /* Активный пункт - показываем иконку и текст, с белым фоном */
@@ -2277,13 +2283,14 @@ COMMON_STYLES = """
     .ad-detail-image-placeholder {
         width: 100%;
         height: 300px;
+        margin-top: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: rgba(0, 58, 129, 0.2);
         font-size: 64px;
         color: #8A9593;
-        border-radius: 0 0 20px 20px;
+        border-radius: 20px 20px 0 0;
     }
 
     .ad-detail-content {
@@ -2305,11 +2312,10 @@ COMMON_STYLES = """
 
     .ad-detail-meta {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 16px;
+        margin-bottom: 10px;
         padding-bottom: 16px;
-        border-bottom: 0.5px solid rgba(67, 84, 80, 0.6);
     }
 
     .ad-detail-date {
@@ -5149,14 +5155,16 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                     ← Назад
                 </button>
                 <div class="ad-detail-page">
+                <div class="divider-line-post"></div>
                     ${{photoHtml}}
-                    <div class="divider-line"></div>
+                    
                     <div class="ad-detail-content">
-                        <div class="ad-detail-title">${{adData.title}}</div>
+                        
                         <div class="ad-detail-meta">
                             <span class="ad-detail-date">📅 ${{createdDate}}</span>
                             <span class="ad-detail-rating">${{renderStars(rating)}}</span>
                         </div>
+                        <div class="ad-detail-title">${{adData.title}}</div>
                         <div class="ad-detail-description">${{adData.description || 'Описание отсутствует'}}</div>
                         <div class="ad-detail-rating-section">
                             <span class="ad-detail-rating-label">Оцените объявление:</span>
