@@ -2491,6 +2491,18 @@ COMMON_STYLES = """
         transform: translateX(22px);
     }
 
+    .post-vid {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+        padding: ;
+        padding: 8px 12px;
+    }
+
+    .posts-vid-text {
+        color: #FFF;
+        font-size: 12px;
+    }
 
 
     
@@ -5151,9 +5163,13 @@ async def view_ad_page(telegram_id: int, ad_id: int):
             }}
 
             document.getElementById('main-content').innerHTML = `
-                <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'" style="position:absolute; top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:12px;">
-                    ← Назад
-                </button>
+                <div class="post-vid"
+                    <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'" style="top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); border-radius:12px;">
+                        ← Назад
+                    </button>
+                    <span class="post-vid-text">Пост</span>
+                </div>
+
                 <div class="ad-detail-page">
                 <div class="divider-line-post"></div>
                     ${{photoHtml}}
