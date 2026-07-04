@@ -3047,7 +3047,7 @@ async def main_app():
                         <div class="left">
                             <span class="label">Услуги</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                        <span class="accordion-arrow" id="stats-arrow-services-detail">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
                             </svg>
@@ -3069,7 +3069,7 @@ async def main_app():
                         <div class="left">
                             <span class="label">Товары</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                        <span class="accordion-arrow" id="stats-arrow-products-detail">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
                             </svg>
@@ -3091,7 +3091,7 @@ async def main_app():
                         <div class="left">
                             <span class="label">Аренда</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                        <span class="accordion-arrow" id="stats-arrow-rentals-detail">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
                             </svg>
@@ -3113,7 +3113,7 @@ async def main_app():
                         <div class="left">
                             <span class="label">События</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                        <span class="accordion-arrow" id="stats-arrow-events-detail">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
                             </svg>
