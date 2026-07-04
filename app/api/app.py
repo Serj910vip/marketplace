@@ -4458,7 +4458,6 @@ async def profile_fill_page():
     </body>
     </html>
     """
-}
 
 
 @app.get("/wallet", response_class=HTMLResponse)
