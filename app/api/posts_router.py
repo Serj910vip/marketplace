@@ -268,10 +268,12 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <span class="ads-header-title">Посты</span>
                         </div>
                     </div>
-                    <div class="ads-create-btn-wrapper">
-                        <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
-                        
-                    </div>
+                    <div class="menu-container-home">
+                        <div class="ads-create-btn-wrapper">
+                            <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
+                            
+                        </div>
+                        </div>
                     <div class="ads-filter-tabs" id="status-tabs">
                         <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
                         <button class="ads-filter-tab" id="filter-scheduled" onclick="filterPosts('scheduled')">Запланированные</button>

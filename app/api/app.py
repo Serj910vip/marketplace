@@ -1465,7 +1465,7 @@ COMMON_STYLES = """
     .back-link-white {
         display: inline-block;
         color: #FFFFFF;
-        font-size: 10px;
+        font-size: 12px;
         cursor: pointer;
         border: none;
         background: none;
@@ -2065,6 +2065,7 @@ COMMON_STYLES = """
         justify-content: space-between;
         width: 100%;
         margin-top: 20px;
+        margin-bottom: 25px;
     }
 
     .ad-header-title {
