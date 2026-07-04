@@ -3153,8 +3153,8 @@ async def main_app():
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
-                            <div class="bookings-menu-item" onclick="filterBookings('ads')">
-                                <span class="bookings-menu-label">Объявления</span>
+                            <div class="bookings-menu-item active" onclick="filterBookings('ads')">
+                                <span class="bookings-menu-label">Посты</span>
                             </div>
                             <div class="bookings-menu-item" onclick="filterBookings('all')">
                                 <span class="bookings-menu-label">Услуги</span>
@@ -3171,7 +3171,7 @@ async def main_app():
                         </div>
                         
                         <div class="bookings-filter-buttons">
-                            <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
+                            <button class="booking-filter-btn active" onclick="filterByStatus('new')">Новые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
@@ -4912,10 +4912,10 @@ async def public_market_page(telegram_id: int):
                 </div>
 
                 <div class="market-menu-grid">
-                    <div class="market-menu-item" data-tab="ads" onclick="switchMarketTab('ads')">
+                    <div class="market-menu-item active" data-tab="ads" onclick="switchMarketTab('ads')">
                         <span class="market-menu-label">Посты</span>
                     </div>
-                    <div class="market-menu-item active" data-tab="services" onclick="switchMarketTab('services')">
+                    <div class="market-menu-item" data-tab="services" onclick="switchMarketTab('services')">
                         <span class="market-menu-label">Услуги</span>
                     </div>
                     <div class="market-menu-item" data-tab="products" onclick="switchMarketTab('products')">
