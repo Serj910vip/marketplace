@@ -3047,7 +3047,12 @@ async def main_app():
                         <div class="left">
                             <span class="label">Услуги</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-services-detail">▶</span>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+                            </svg>
+
+                        </span>
                     </div>
                     <div class="accordion-content" id="stats-content-services-detail">
                         <div class="stats-detail">
@@ -3064,7 +3069,12 @@ async def main_app():
                         <div class="left">
                             <span class="label">Товары</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-products-detail">▶</span>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+                            </svg>
+
+                        </span>
                     </div>
                     <div class="accordion-content" id="stats-content-products-detail">
                         <div class="stats-detail">
@@ -3081,7 +3091,12 @@ async def main_app():
                         <div class="left">
                             <span class="label">Аренда</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-rentals-detail">▶</span>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+                            </svg>
+
+                        </span>
                     </div>
                     <div class="accordion-content" id="stats-content-rentals-detail">
                         <div class="stats-detail">
@@ -3098,7 +3113,12 @@ async def main_app():
                         <div class="left">
                             <span class="label">События</span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-events-detail">▶</span>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+                            </svg>
+
+                        </span>
                     </div>
                     <div class="accordion-content" id="stats-content-events-detail">
                         <div class="stats-detail">
@@ -3121,17 +3141,23 @@ async def main_app():
         function toggleStatsAccordion(id) {{
             const content = document.getElementById('stats-content-' + id);
             const arrow = document.getElementById('stats-arrow-' + id);
+            
+            // SVG для закрытого состояния (стрелка вправо)
+            const closedSvg = `<svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+            </svg>`;
+            
+            // SVG для открытого состояния (стрелка вниз - повернутая)
+            const openedSvg = `<svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(90deg);">
+                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
+            </svg>`;
+            
             if (content.style.display === 'block') {{
                 content.style.display = 'none';
-                arrow.innerHTML = '<span class="accordion-arrow" id="stats-arrow-ads-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#003A81"/>
-                            </svg>
-
-                        </span>';
+                arrow.innerHTML = closedSvg;
             }} else {{
                 content.style.display = 'block';
-                arrow.innerHTML = '▼';
+                arrow.innerHTML = openedSvg;
             }}
         }}
 
