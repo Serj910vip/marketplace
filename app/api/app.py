@@ -558,6 +558,12 @@ COMMON_STYLES = """
         margin-top: 17px;
     }
 
+    .divider-line-post-2 {
+        height: 1px;
+        background: #435450;
+        margin-bottom: 9px;
+    }
+
     /* Активный пункт - показываем иконку и текст, с белым фоном */
     .nav-item.active {
         background: #003A81;
@@ -911,7 +917,7 @@ COMMON_STYLES = """
         padding: 8px 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border: 0.5px solid rgba(67, 84, 80, 0.6);
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         position: relative;
         z-index: 2;
 
@@ -1767,7 +1773,7 @@ COMMON_STYLES = """
         color: #FFFFFF;
         font-size: 12px;
         font-weight: 500;
-        margin-right: 20px;
+        margin-right: 6px;
     }
 
     /* Кнопка создания объявления */
@@ -1814,10 +1820,11 @@ COMMON_STYLES = """
 
     /* Счетчик объявлений */
     .ads-count {
-        font-size: 16px;
+        font-size: 12px;
         font-weight: 500;
-        color: #FFFFFF;
+        color: #8A9593;
         margin-bottom: 16px;
+        margin-left: 5px;
     }
 
     /* Контейнер со списком объявлений */
@@ -1834,7 +1841,7 @@ COMMON_STYLES = """
         text-align: center;
         color: #8A9593;
         font-size: 14px;
-        padding: 40px 10px;
+        padding: 6px 10px;
     }
 
     /* Элемент объявления */

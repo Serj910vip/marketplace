@@ -68,6 +68,9 @@ POST_PHOTOS_CSS = """
     .posts-secondary-btn.active {
         background: #003A81;
     }
+    .posts-secondary-btn:hover {
+        background: #003A81;
+    }
 
     .ads-filter-tabs {
         display: flex;
@@ -87,6 +90,10 @@ POST_PHOTOS_CSS = """
         font-weight: 500;
         cursor: pointer;
     }
+    .ads-filter-tab:hover {
+        background: #003A81;
+    }
+
 
 
     .market-ad-card-image-full {
@@ -274,7 +281,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             
                         </div>
                     </div>
-                    <div class="divider-line"></div>
+                    <div class="divider-line-post-2"></div>
                     <div class="ads-filter-tabs" id="status-tabs">
                         <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
                         <button class="ads-filter-tab" id="filter-scheduled" onclick="filterPosts('scheduled')">Запланированные</button>
