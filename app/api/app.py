@@ -4216,79 +4216,213 @@ async def profile_fill_page():
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
-        <title>Заполнение профиля</title>
+        <title>Редактирование профиля</title>
     </head>
     <body>
         <div class="app">
-            <div class="content">
-                <button class="back-link" onclick="history.back()">← Назад</button>
-                <div class="page-title">Заполнение профиля</div>
-                <div class="tabs">
-                    <button class="tab active" id="tab-business" onclick="switchTab('business')">Бизнес профиль</button>
-                    <button class="tab" id="tab-personal" onclick="switchTab('personal')">Личный профиль</button>
+            <div class="content" style="padding-top: 0;">
+                <!-- Большой черный блок в стиле создания поста -->
+                <div class="ad-create-main-block" style="margin-top: 0; border-radius: 20px 20px 20px 20px; padding: 20px;">
+                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'" style="display: inline-block; margin-bottom: 16px; font-size: 14px;">
+                        ← Назад
+                    </button>
+                    
+                    <div class="form-title" style="font-size: 18px; font-weight: 600; color: #FFFFFF; margin-bottom: 20px; text-align: center;">
+                        Редактирование профиля
+                    </div>
+
+                    <!-- Фото маркета -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Фото маркета</label>
+                        <div class="ad-photo-upload-box" id="profile-photo-box" onclick="document.getElementById('profile-photo-input').click()" style="height: 160px;">
+                            <span id="profile-photo-placeholder">📷</span>
+                            <img id="profile-photo-preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <input type="file" id="profile-photo-input" accept="image/*" onchange="onProfilePhotoSelect(this)" style="display: none;">
+                        <div class="ad-photo-hint">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                    </div>
+
+                    <!-- Название маркета -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Название маркета *</label>
+                        <input type="text" id="market-name" class="ad-field-input" placeholder="Введите название маркета" maxlength="50">
+                    </div>
+
+                    <!-- Страна -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Страна *</label>
+                        <select id="profile-country" class="ad-field-input" onchange="onProfileCountryChange()">
+                            <option value="">Выберите страну</option>
+                        </select>
+                    </div>
+
+                    <!-- Область/край -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Область / край *</label>
+                        <select id="profile-region" class="ad-field-input" onchange="onProfileRegionChange()">
+                            <option value="">Сначала выберите страну</option>
+                        </select>
+                    </div>
+
+                    <!-- Город -->
+                    <div class="ad-field-group">
+                        <label class="ad-field-label">Город *</label>
+                        <select id="profile-city" class="ad-field-input">
+                            <option value="">Сначала выберите область</option>
+                        </select>
+                    </div>
+
+                    <!-- Кнопка сохранить -->
+                    <button class="ad-btn-create" onclick="saveProfileChanges()">💾 Сохранить изменения</button>
                 </div>
-                <div id="form-area"></div>
             </div>
         </div>
         <script>
         {WEBAPP_INIT}
         {LOCATION_DATA_JS}
 
-        let activeTab = 'business', profileData = {{}};
+        let profilePhotoData = null;
+        let currentProfileData = {{}};
 
-        function switchTab(tab) {{
-            activeTab = tab;
-            document.getElementById('tab-business').classList.toggle('active', tab === 'business');
-            document.getElementById('tab-personal').classList.toggle('active', tab === 'personal');
-            renderForm();
-        }}
-
-        function onCountryChange() {{
-            fillSelect(document.getElementById('region'), getRegions(document.getElementById('country').value), 'Выберите область/край', '');
-            fillSelect(document.getElementById('city'), [], 'Сначала выберите область', '');
-        }}
-        function onRegionChange() {{
-            fillSelect(document.getElementById('city'), getCities(document.getElementById('region').value), 'Выберите город', '');
-        }}
-
-        function renderForm() {{
-            const prefix = activeTab === 'business' ? 'business' : 'personal';
-            const saved = {{
-                country: profileData[prefix + '_country'] || '',
-                region: profileData[prefix + '_region'] || '',
-                city: profileData[prefix + '_city'] || '',
+        function onProfilePhotoSelect(input) {{
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 3 * 1024 * 1024) {{
+                tg.showAlert('Фото не больше 3 МБ');
+                return;
+            }}
+            const reader = new FileReader();
+            reader.onload = e => {{
+                profilePhotoData = e.target.result;
+                document.getElementById('profile-photo-placeholder').style.display = 'none';
+                const preview = document.getElementById('profile-photo-preview');
+                preview.src = profilePhotoData;
+                preview.style.display = 'block';
             }};
-            const label = activeTab === 'business' ? 'бизнеса' : 'личного профиля';
-            document.getElementById('form-area').innerHTML = `
-                <div class="field-group"><div class="field-label">Страна ${{label}}</div><select id="country" onchange="onCountryChange()"></select></div>
-                <div class="field-group"><div class="field-label">Область / край</div><select id="region" onchange="onRegionChange()"></select></div>
-                <div class="field-group"><div class="field-label">Город</div><select id="city"></select></div>
-                <button class="btn" onclick="saveProfile()">Сохранить</button>
-            `;
-            fillSelect(document.getElementById('country'), COUNTRIES, 'Выберите страну', saved.country);
-            fillSelect(document.getElementById('region'), getRegions(saved.country), 'Выберите область/край', saved.region);
-            fillSelect(document.getElementById('city'), getCities(saved.region), 'Выберите город', saved.city);
+            reader.readAsDataURL(file);
         }}
 
-        async function saveProfile() {{
-            const country = document.getElementById('country').value;
-            const region = document.getElementById('region').value;
-            const city = document.getElementById('city').value;
-            if (!country || !region || !city) {{ tg.showAlert('Заполните все поля'); return; }}
+        function onProfileCountryChange() {{
+            const country = document.getElementById('profile-country').value;
+            const regionSelect = document.getElementById('profile-region');
+            const citySelect = document.getElementById('profile-city');
+            fillSelect(regionSelect, getRegions(country), 'Выберите область/край', '');
+            fillSelect(citySelect, [], 'Сначала выберите область', '');
+        }}
+
+        function onProfileRegionChange() {{
+            const region = document.getElementById('profile-region').value;
+            const citySelect = document.getElementById('profile-city');
+            fillSelect(citySelect, getCities(region), 'Выберите город', '');
+        }}
+
+        function fillSelect(el, items, placeholder, selected) {{
+            if (!el) return;
+            el.innerHTML = `<option value="">${{placeholder}}</option>` +
+                items.map(i => `<option value="${{i}}" ${{i === selected ? 'selected' : ''}}>${{i}}</option>`).join('');
+        }}
+
+        async function loadProfileData() {{
             try {{
-                const res = await fetch(`/api/profile/${{tgUser.id}}`, {{
-                    method: 'POST', headers: {{'Content-Type':'application/json'}},
-                    body: JSON.stringify({{ profile_type: activeTab, country, region, city }}),
+                const res = await fetch(`/api/business/${{tgUser.id}}`);
+                const data = await res.json();
+                if (data && data.has_business) {{
+                    currentProfileData = data;
+                    
+                    // Заполняем поля
+                    document.getElementById('market-name').value = data.business_name || '';
+                    
+                    // Фото
+                    if (data.business_photo_url) {{
+                        document.getElementById('profile-photo-placeholder').style.display = 'none';
+                        const preview = document.getElementById('profile-photo-preview');
+                        preview.src = data.business_photo_url;
+                        preview.style.display = 'block';
+                    }}
+                    
+                    // Страна
+                    const countrySelect = document.getElementById('profile-country');
+                    fillSelect(countrySelect, COUNTRIES, 'Выберите страну', data.business_country || '');
+                    
+                    // Область
+                    const regionSelect = document.getElementById('profile-region');
+                    const regions = getRegions(data.business_country || '');
+                    fillSelect(regionSelect, regions, 'Выберите область/край', data.business_region || '');
+                    
+                    // Город
+                    const citySelect = document.getElementById('profile-city');
+                    const cities = getCities(data.business_region || '');
+                    fillSelect(citySelect, cities, 'Выберите город', data.business_city || '');
+                }}
+            }} catch(e) {{
+                console.error('Ошибка загрузки профиля:', e);
+            }}
+        }}
+
+        async function saveProfileChanges() {{
+            const name = document.getElementById('market-name').value.trim();
+            const country = document.getElementById('profile-country').value;
+            const region = document.getElementById('profile-region').value;
+            const city = document.getElementById('profile-city').value;
+
+            if (!name) {{
+                tg.showAlert('Введите название маркета');
+                return;
+            }}
+            if (name.length < 3) {{
+                tg.showAlert('Название должно содержать минимум 3 символа');
+                return;
+            }}
+            if (!country || !region || !city) {{
+                tg.showAlert('Заполните все поля: страна, область и город');
+                return;
+            }}
+
+            try {{
+                // Сначала обновляем бизнес-настройки (название и фото)
+                const bizBody = {{
+                    market_name: name,
+                }};
+                if (profilePhotoData) {{
+                    bizBody.business_photo_url = profilePhotoData;
+                }}
+
+                const bizRes = await fetch(`/api/business/${{tgUser.id}}/settings`, {{
+                    method: 'POST',
+                    headers: {{'Content-Type': 'application/json'}},
+                    body: JSON.stringify(bizBody),
                 }});
-                if (!res.ok) throw new Error('Ошибка');
-                tg.showAlert('Профиль сохранён!', () => {{ window.location.href = '/'; }});
-            }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
+                
+                if (!bizRes.ok) throw new Error('Ошибка сохранения бизнес-настроек');
+
+                // Затем обновляем профиль (страна, область, город) - используем business тип
+                const profileRes = await fetch(`/api/profile/${{tgUser.id}}`, {{
+                    method: 'POST',
+                    headers: {{'Content-Type': 'application/json'}},
+                    body: JSON.stringify({{
+                        profile_type: 'business',
+                        country: country,
+                        region: region,
+                        city: city,
+                    }}),
+                }});
+                
+                if (!profileRes.ok) throw new Error('Ошибка сохранения профиля');
+
+                tg.showAlert('✅ Профиль успешно сохранён!', () => {{
+                    window.location.href = '/?tab=profile';
+                }});
+            }} catch(e) {{
+                tg.showAlert('❌ Ошибка: ' + e.message);
+            }}
         }}
 
         async function init() {{
-            if (!tgUser) return;
-            profileData = await fetch(`/api/business/${{tgUser.id}}`).then(r => r.json());
-            renderForm();
+            if (!tgUser) {{
+                document.getElementById('main-content').innerHTML = '<div class="error">Пользователь не найден</div>';
+                return;
+            }}
+            await loadProfileData();
         }}
         init();
         </script>
