@@ -4223,15 +4223,15 @@ async def profile_fill_page():
                 align-items: center;
                 justify-content: space-between;
                 padding: 16px 0 12px 0;
+                margin-bottom: 20px;
             }}
             .profile-header-title {{
                 color: #FFFFFF;
-                font-size: 20px;
-                font-weight: 600;
+                font-size: 12px;
             }}
             .profile-header-back {{
                 color: #FFFFFF;
-                font-size: 14px;
+                font-size: 12px;
                 cursor: pointer;
                 border: none;
                 background: none;
@@ -4289,7 +4289,6 @@ async def profile_fill_page():
                 <div class="profile-header-row">
                     <button class="profile-header-back" onclick="window.location.href='/?tab=profile'">← Назад</button>
                     <span class="profile-header-title">Профиль</span>
-                    <span style="width: 50px;"></span> <!-- Пустой элемент для выравнивания -->
                 </div>
                 
                 <!-- Линия разделитель -->
@@ -4318,23 +4317,23 @@ async def profile_fill_page():
                     <!-- Страна -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Страна *</label>
-                        <input type="text" id="profile-country" class="ad-field-input" placeholder="Введите страну">
+                        <input type="text" id="profile-country" class="ad-field-input" placeholder="Страна вашего маркета:">
                     </div>
 
                     <!-- Область/край -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Область / край *</label>
-                        <input type="text" id="profile-region" class="ad-field-input" placeholder="Введите область или край">
+                        <input type="text" id="profile-region" class="ad-field-input" placeholder="Область вашего маркета:">
                     </div>
 
                     <!-- Город -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Город *</label>
-                        <input type="text" id="profile-city" class="ad-field-input" placeholder="Введите город">
+                        <input type="text" id="profile-city" class="ad-field-input" placeholder="Город вашего маркета:">
                     </div>
 
                     <!-- Кнопка сохранить -->
-                    <button class="ad-btn-create" onclick="saveProfileChanges()">💾 Сохранить изменения</button>
+                    <button class="ad-btn-create" onclick="saveProfileChanges()">Сохранить</button>
                 </div>
             </div>
         </div>
