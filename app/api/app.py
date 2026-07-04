@@ -4217,29 +4217,96 @@ async def profile_fill_page():
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
         <title>Редактирование профиля</title>
+        <style>
+            .profile-header-row {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 0 12px 0;
+            }}
+            .profile-header-title {{
+                color: #FFFFFF;
+                font-size: 20px;
+                font-weight: 600;
+            }}
+            .profile-header-back {{
+                color: #FFFFFF;
+                font-size: 14px;
+                cursor: pointer;
+                border: none;
+                background: none;
+                padding: 0;
+                text-decoration: none;
+            }}
+            .profile-header-back:hover {{
+                color: #4a9eff;
+            }}
+            .profile-divider-line {{
+                width: 100%;
+                height: 1px;
+                background: #435450;
+                margin-bottom: 20px;
+            }}
+            .profile-photo-square {{
+                width: 60px;
+                height: 60px;
+                border-radius: 12px;
+                background: rgba(0, 58, 129, 0.3);
+                border: 0.5px solid #0073FF;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                overflow: hidden;
+                margin: 0 auto;
+                position: relative;
+            }}
+            .profile-photo-square:hover {{
+                border-color: #4a9eff;
+                background: rgba(0, 58, 129, 0.4);
+            }}
+            .profile-photo-square img {{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }}
+            .profile-photo-square .placeholder {{
+                font-size: 28px;
+                color: #8A9593;
+            }}
+            .profile-photo-hint {{
+                font-size: 12px;
+                color: #8A9593;
+                text-align: center;
+                margin-top: 6px;
+            }}
+        </style>
     </head>
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                <!-- Большой черный блок в стиле создания поста -->
-                <div class="ad-create-main-block" style="margin-top: 0; border-radius: 20px 20px 20px 20px; padding: 20px;">
-                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'" style="display: inline-block; margin-bottom: 16px; font-size: 14px;">
-                        ← Назад
-                    </button>
-                    
-                    <div class="form-title" style="font-size: 18px; font-weight: 600; color: #FFFFFF; margin-bottom: 20px; text-align: center;">
-                        Редактирование профиля
-                    </div>
+                <!-- Шапка с кнопкой назад и названием -->
+                <div class="profile-header-row">
+                    <button class="profile-header-back" onclick="window.location.href='/?tab=profile'">← Назад</button>
+                    <span class="profile-header-title">Профиль</span>
+                    <span style="width: 50px;"></span> <!-- Пустой элемент для выравнивания -->
+                </div>
+                
+                <!-- Линия разделитель -->
+                <div class="profile-divider-line"></div>
 
-                    <!-- Фото маркета -->
-                    <div class="ad-field-group">
+                <!-- Большой черный блок в стиле создания поста -->
+                <div class="ad-create-main-block" style="margin-top: 0; border-radius: 20px; padding: 20px;">
+                    
+                    <!-- Фото маркета - квадрат 60x60 по центру -->
+                    <div class="ad-field-group" style="text-align: center;">
                         <label class="ad-field-label">Фото маркета</label>
-                        <div class="ad-photo-upload-box" id="profile-photo-box" onclick="document.getElementById('profile-photo-input').click()" style="height: 160px;">
-                            <span id="profile-photo-placeholder">📷</span>
-                            <img id="profile-photo-preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        <div class="profile-photo-square" id="profile-photo-box" onclick="document.getElementById('profile-photo-input').click()">
+                            <span class="placeholder" id="profile-photo-placeholder">📷</span>
+                            <img id="profile-photo-preview" style="display: none;">
                         </div>
                         <input type="file" id="profile-photo-input" accept="image/*" onchange="onProfilePhotoSelect(this)" style="display: none;">
-                        <div class="ad-photo-hint">Нажмите, чтобы загрузить фото (до 3 МБ)</div>
+                        <div class="profile-photo-hint">Нажмите, чтобы загрузить фото</div>
                     </div>
 
                     <!-- Название маркета -->
@@ -4251,25 +4318,19 @@ async def profile_fill_page():
                     <!-- Страна -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Страна *</label>
-                        <select id="profile-country" class="ad-field-input" onchange="onProfileCountryChange()">
-                            <option value="">Выберите страну</option>
-                        </select>
+                        <input type="text" id="profile-country" class="ad-field-input" placeholder="Введите страну">
                     </div>
 
                     <!-- Область/край -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Область / край *</label>
-                        <select id="profile-region" class="ad-field-input" onchange="onProfileRegionChange()">
-                            <option value="">Сначала выберите страну</option>
-                        </select>
+                        <input type="text" id="profile-region" class="ad-field-input" placeholder="Введите область или край">
                     </div>
 
                     <!-- Город -->
                     <div class="ad-field-group">
                         <label class="ad-field-label">Город *</label>
-                        <select id="profile-city" class="ad-field-input">
-                            <option value="">Сначала выберите область</option>
-                        </select>
+                        <input type="text" id="profile-city" class="ad-field-input" placeholder="Введите город">
                     </div>
 
                     <!-- Кнопка сохранить -->
@@ -4279,7 +4340,6 @@ async def profile_fill_page():
         </div>
         <script>
         {WEBAPP_INIT}
-        {LOCATION_DATA_JS}
 
         let profilePhotoData = null;
         let currentProfileData = {{}};
@@ -4302,26 +4362,6 @@ async def profile_fill_page():
             reader.readAsDataURL(file);
         }}
 
-        function onProfileCountryChange() {{
-            const country = document.getElementById('profile-country').value;
-            const regionSelect = document.getElementById('profile-region');
-            const citySelect = document.getElementById('profile-city');
-            fillSelect(regionSelect, getRegions(country), 'Выберите область/край', '');
-            fillSelect(citySelect, [], 'Сначала выберите область', '');
-        }}
-
-        function onProfileRegionChange() {{
-            const region = document.getElementById('profile-region').value;
-            const citySelect = document.getElementById('profile-city');
-            fillSelect(citySelect, getCities(region), 'Выберите город', '');
-        }}
-
-        function fillSelect(el, items, placeholder, selected) {{
-            if (!el) return;
-            el.innerHTML = `<option value="">${{placeholder}}</option>` +
-                items.map(i => `<option value="${{i}}" ${{i === selected ? 'selected' : ''}}>${{i}}</option>`).join('');
-        }}
-
         async function loadProfileData() {{
             try {{
                 const res = await fetch(`/api/business/${{tgUser.id}}`);
@@ -4331,6 +4371,9 @@ async def profile_fill_page():
                     
                     // Заполняем поля
                     document.getElementById('market-name').value = data.business_name || '';
+                    document.getElementById('profile-country').value = data.business_country || '';
+                    document.getElementById('profile-region').value = data.business_region || '';
+                    document.getElementById('profile-city').value = data.business_city || '';
                     
                     // Фото
                     if (data.business_photo_url) {{
@@ -4339,20 +4382,6 @@ async def profile_fill_page():
                         preview.src = data.business_photo_url;
                         preview.style.display = 'block';
                     }}
-                    
-                    // Страна
-                    const countrySelect = document.getElementById('profile-country');
-                    fillSelect(countrySelect, COUNTRIES, 'Выберите страну', data.business_country || '');
-                    
-                    // Область
-                    const regionSelect = document.getElementById('profile-region');
-                    const regions = getRegions(data.business_country || '');
-                    fillSelect(regionSelect, regions, 'Выберите область/край', data.business_region || '');
-                    
-                    // Город
-                    const citySelect = document.getElementById('profile-city');
-                    const cities = getCities(data.business_region || '');
-                    fillSelect(citySelect, cities, 'Выберите город', data.business_city || '');
                 }}
             }} catch(e) {{
                 console.error('Ошибка загрузки профиля:', e);
@@ -4361,9 +4390,9 @@ async def profile_fill_page():
 
         async function saveProfileChanges() {{
             const name = document.getElementById('market-name').value.trim();
-            const country = document.getElementById('profile-country').value;
-            const region = document.getElementById('profile-region').value;
-            const city = document.getElementById('profile-city').value;
+            const country = document.getElementById('profile-country').value.trim();
+            const region = document.getElementById('profile-region').value.trim();
+            const city = document.getElementById('profile-city').value.trim();
 
             if (!name) {{
                 tg.showAlert('Введите название маркета');
@@ -4429,6 +4458,7 @@ async def profile_fill_page():
     </body>
     </html>
     """
+}
 
 
 @app.get("/wallet", response_class=HTMLResponse)
