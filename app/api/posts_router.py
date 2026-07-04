@@ -128,7 +128,7 @@ POST_PHOTOS_JS = """
                 ? (slot.kind === 'existing'
                     ? `<img src="${slot.url}" alt="">`
                     : `<img src="${slot.preview}" alt="">`)
-                : '📷 ➕';
+                : '➕';
             const removeBtn = slot
                 ? `<button type="button" class="post-photo-remove" onclick="removePhotoSlot(${index})">Удалить фото ${index + 1}</button>`
                 : '';
@@ -387,21 +387,22 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <span class="ad-header-title">Создание поста</span>
                         </div>
                     </div>
+                    <div class="divider-line-create-post"></div>
                     <div class="ad-create-main-block" style="margin-top:20px;">
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Заголовок</label>
+                            <label class="ad-field-label">Заголовок поста:</label>
                             <input class="ad-field-input" id="post-title" maxlength="200" placeholder="Заголовок поста">
                         </div>
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Подзаголовок</label>
+                            <label class="ad-field-label">Подзаголовок поста:</label>
                             <input class="ad-field-input" id="post-subtitle" maxlength="200" placeholder="Краткое описание">
                         </div>
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Содержание</label>
+                            <label class="ad-field-label">Содержание поста:</label>
                             <textarea class="ad-field-input" id="post-content" maxlength="2000" placeholder="Текст поста"></textarea>
                         </div>
                         <div class="ad-field-group">
-                            <label class="ad-field-label">Фотографии (до 3 шт., до 3 МБ каждая)</label>
+                            <label class="ad-field-label">Загрузите фотографии (до 3 шт., до 3 МБ каждая)</label>
                             <div id="photo-slots"></div>
                             <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                         </div>

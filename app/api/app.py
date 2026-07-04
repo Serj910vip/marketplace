@@ -563,6 +563,10 @@ COMMON_STYLES = """
         background: #435450;
         margin-bottom: 9px;
     }
+    .divider-line-create-post {
+        height: 1px;
+        background: #435450;
+    }
 
     /* Активный пункт - показываем иконку и текст, с белым фоном */
     .nav-item.active {
@@ -2655,7 +2659,7 @@ AD_PHOTOS_JS = """
         if (adPhotoItems.length < MAX_AD_PHOTOS) {
             html += `
                 <div class="ad-photo-block">
-                    <div class="ad-photo-upload-box ad-photo-add" onclick="addAdPhotoSlot()">📷 ➕</div>
+                    <div class="ad-photo-upload-box ad-photo-add" onclick="addAdPhotoSlot()">➕</div>
                 </div>
             `;
         }
