@@ -29,7 +29,7 @@ POST_PHOTOS_CSS = """
         width: 100%;
         height: 140px;
         background: rgba(0, 58, 129, 0.3);
-        border: 0.5px dashed #0073FF;
+        border: 0.5px solid #0073FF;
         border-radius: 16px;
         display: flex;
         align-items: center;
@@ -388,7 +388,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         </div>
                     </div>
                     <div class="divider-line-create-post"></div>
-                    <div class="ad-create-main-block" style="margin-top:20px;">
+                    <div class="ad-create-main-block" style="margin-top:15px;">
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок поста:</label>
                             <input class="ad-field-input" id="post-title" maxlength="200" placeholder="Заголовок поста">
