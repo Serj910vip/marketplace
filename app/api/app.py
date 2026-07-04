@@ -3153,7 +3153,7 @@ async def main_app():
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
-                            <div class="bookings-menu-item" onclick="filterBookings('ads')">
+                            <div class="bookings-menu-item active" onclick="filterBookings('ads')">
                                 <span class="bookings-menu-label">Посты</span>
                             </div>
                             <div class="bookings-menu-item" onclick="filterBookings('all')">
@@ -3171,7 +3171,7 @@ async def main_app():
                         </div>
                         
                         <div class="bookings-filter-buttons">
-                            <button class="booking-filter-btn" onclick="filterByStatus('new')">Новые</button>
+                            <button class="booking-filter-btn active" onclick="filterByStatus('new')">Новые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
                             <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
