@@ -4930,7 +4930,7 @@ async def public_market_page(telegram_id: int):
                 </div>
 
                 <div id="market-content">
-                    ${{renderTabContent('services')}}
+                    ${{renderTabContent('ads')}}
                 </div>
             `;
         }}
