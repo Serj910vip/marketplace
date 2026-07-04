@@ -903,6 +903,20 @@ COMMON_STYLES = """
         margin-top: 20px;  /* Убираем отрицательный отступ */
     }
 
+    .container-post {
+        display: flex;
+        justify-content: center;
+        background: #121918;
+        border-radius: 20px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+
+    }
+
     .menu-container-stats {
         background: #121918;
         border-radius: 20px;
@@ -1768,7 +1782,7 @@ COMMON_STYLES = """
     }
 
     .ads-create-btn {
-        width: 100%;
+        width: 326px;
         height: 68px;
         background: #003A81;
         border: 0.5px solid #0073FF;
