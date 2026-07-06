@@ -3202,9 +3202,6 @@ async def main_app():
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
-                            <div class="bookings-menu-item active" onclick="filterBookings('ads')">
-                                <span class="bookings-menu-label">Посты</span>
-                            </div>
                             <div class="bookings-menu-item" onclick="filterBookings('all')">
                                 <span class="bookings-menu-label">Услуги</span>
                             </div>
@@ -3226,11 +3223,16 @@ async def main_app():
                             <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
                         </div>
                     </div>
-                    
-                    <div class="page-title">📋 Заявки</div>
-                    <div id="bookings-list-container">
-                        ${{generateBookingsList()}}
+
+                    <div class="ads-list-container" id="posts-list">
+                        <div class="ads-empty">${{generateBookingsList()}}</div>
+                        <div id="bookings-list-container">
+                            ${{generateBookingsList()}}
+                        </div>
                     </div>
+                    
+               
+                    
                 </div>
             `;
         }}
