@@ -3266,7 +3266,6 @@ async def main_app():
                 
                     <div class="profile-card">                        
                         <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
-                        <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Настройки</button>
                         <div class="profile-divider"></div>
                     </div>
                 </div>
