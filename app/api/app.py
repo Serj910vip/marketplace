@@ -2527,57 +2527,6 @@ COMMON_STYLES = """
         font-size: 12px;
     }
 
-    
-    /* Стили для объединенного аккордеона - только для постов */
-    .accordion-item-merged {
-        background: #121918;
-        border-radius: 20px;
-        padding: 8px 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 0.5px solid rgba(67, 84, 80, 0.6);
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 2;
-        overflow: hidden;
-    }
-
-    .accordion-item-merged .menu-card {
-        margin-bottom: 0;
-        border-radius: 20px 20px 0 0;
-        border-bottom: none;
-    }
-
-    .accordion-content-merged {
-        display: none;
-        padding: 0 16px 16px 40px;
-        background: rgba(0, 58, 129, 0.15);
-        border-radius: 0 0 20px 20px;
-        margin-top: -2px;
-        border-top: 1px solid rgba(67, 84, 80, 0.3);
-    }
-
-    .accordion-content-merged.open {
-        display: block;
-    }
-
-    /* Анимация стрелки */
-    .accordion-arrow-merged {
-        display: inline-block;
-        transition: transform 0.3s ease;
-    }
-
-    .accordion-arrow-merged.open {
-        transform: rotate(90deg);
-    }
-
-    /* Убираем лишние отступы у stats-detail внутри объединенного аккордеона */
-    .accordion-content-merged .stats-detail {
-        padding: 8px 0;
-    }
-
-    .accordion-content-merged .stats-row {
-        padding: 6px 0;
-    }
 
     
 
@@ -3056,7 +3005,7 @@ async def main_app():
                         </div>
                         <div class="balance-row-flat">
                             <span class="balance-label-flat">Баланс:</span>
-                            <span class="balance-amount-flat">2000.0 ₽</span>
+                            <span class="balance-amount-flat">0.0 ₽</span>
                         </div>
                         
                     </div>
@@ -3066,27 +3015,28 @@ async def main_app():
         
                 
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
-                <!-- ПОСТЫ - объединенный аккордеон -->
-                    <div class="accordion-item-merged">
-                        <div class="menu-card" onclick="toggleStatsAccordionMerged('ads-detail')" style="cursor:pointer;">
-                            <div class="left">
-                                <span class="label">Посты</span>
-                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
-                            </div>
-                            <span class="accordion-arrow-merged" id="stats-arrow-ads-detail-merged">
-                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                                </svg>
-                            </span>
+                <div class="menu-container-stats">
+                    <!-- Объявления -->
+                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
+                        <div class="left">
+                            <span class="label">Посты</span>
+                            <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
                         </div>
-                        <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
-                            <div class="stats-detail">
-                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
-                                <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Кликов:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Конверсия:</span><span class="stats-value">0%</span></div>
-                            </div>
+                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
+                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                            </svg>
+
+                        </span>
+                        
+                    </div>
+                    <div class="accordion-content" id="stats-content-ads-detail">
+                        <div class="stats-detail">
+                            <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
+                            <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Кликов:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Конверсия:</span><span class="stats-value">0%</span></div>
                         </div>
                     </div>
                     <!-- Услуги -->
@@ -3103,11 +3053,11 @@ async def main_app():
                     </div>
                     <div class="accordion-content" id="stats-content-services-detail">
                         <div class="stats-detail">
-                            <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">2</span></div>
-                            <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">218</span></div>
-                            <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">198</span></div>
-                            <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">20</span></div>
-                            <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">25 680 ₽</span></div>
+                            <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">0</span></div>
+                            <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">0</span></div>
                         </div>
                     </div>
                     
@@ -3389,22 +3339,6 @@ async def main_app():
                 
 
             `;
-        }}
-
-        // Функция для открытия/закрытия объединенного аккордеона (добавьте в существующий код)
-        function toggleStatsAccordionMerged(id) {{
-            const content = document.getElementById('stats-content-' + id + '-merged');
-            const arrow = document.getElementById('stats-arrow-' + id + '-merged');
-            
-            if (!content || !arrow) return;
-            
-            if (content.classList.contains('open')) {{
-                content.classList.remove('open');
-                arrow.classList.remove('open');
-            }} else {{
-                content.classList.add('open');
-                arrow.classList.add('open');
-            }}
         }}
 
         // Функция для удаления маркета
