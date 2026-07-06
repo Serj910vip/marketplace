@@ -3224,15 +3224,12 @@ async def main_app():
                         </div>
                     </div>
 
-                    <div class="ads-list-container" id="posts-list">
-                        <div class="ads-empty">${{generateBookingsList()}}</div>
-                        <div id="bookings-list-container">
-                            ${{generateBookingsList()}}
-                        </div>
+                    
+                </div>
+                <div class="ads-list-container" id="posts-list">
+                    <div id="bookings-list-container">
+                        ${{generateBookingsList()}}
                     </div>
-                    
-               
-                    
                 </div>
             `;
         }}
@@ -3267,24 +3264,7 @@ async def main_app():
                 <div class="home-header-block">
                 
                 
-                    <div class="profile-card">
-                        <div class="profile-photo-section">
-                            <div onclick="document.getElementById('biz-photo-input').click()" style="cursor:pointer; text-align:center;">
-                                ${{photo}}
-                            </div>
-                            <input type="file" id="biz-photo-input" accept="image/*" onchange="onBizPhotoSelect(this)">
-                            <div style="font-size:12px;color:var(--tg-theme-hint-color,#999);margin-top:6px; text-align:center;">Нажмите, чтобы загрузить фото</div>
-                        </div>
-                        
-                        <div class="profile-info-section">
-                            <div class="profile-business-name">${{b.business_name || 'Название маркета'}}</div>
-                          
-                            <div class="profile-business-address">📍 ${{b.business_address || 'Адрес не указан'}}</div>
-                        </div>
-                        
-                        
-                        
-                        
+                    <div class="profile-card">                        
                         <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
                         <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Настройки</button>
                         <div class="profile-divider"></div>
