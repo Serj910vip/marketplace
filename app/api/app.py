@@ -686,7 +686,7 @@ COMMON_STYLES = """
     .market-menu-item.active {
         border: 0.5px solid #0073FF;
         background: #003A81;
-        box-shadow: 1px 2px 6px rgb(255 255 255 / 60%);
+       
     }
 
     .market-menu-item.active .market-menu-label {
@@ -1377,7 +1377,6 @@ COMMON_STYLES = """
     .bookings-menu-item:hover {
         background: #003A81;
         border-color: #0073FF;
-        box-shadow: 1px 1px 4px #FFFF;
         border: 0.5px solid rgba(0, 115, 255, 0.6);
     }
 
@@ -1412,7 +1411,6 @@ COMMON_STYLES = """
         background: #003A81;
         color: #FFFFFF;
         border-color: #0073FF;
-        box-shadow: 1px 1px 4px #FFFF;
         border: 0.5px solid rgba(0, 115, 255, 0.6);
     }
 
