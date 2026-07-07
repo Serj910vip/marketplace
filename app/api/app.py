@@ -3064,7 +3064,7 @@ async def main_app():
                         <div class="menu-card" onclick="toggleStatsAccordionMerged('ads-detail')" style="cursor:pointer;">
                             <div class="left">
                                 <span class="label">Посты</span>
-                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">{{adsCount}}</span>
+                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
                             </div>
                             <span class="accordion-arrow-merged" id="stats-arrow-ads-detail-merged">
                                 <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3074,7 +3074,7 @@ async def main_app():
                         </div>
                         <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
                             <div class="stats-detail">
-                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">{{adsCount}}</span></div>
+                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
                                 <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
                                 <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
                                 <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">19</span></div>
