@@ -2527,6 +2527,65 @@ COMMON_STYLES = """
         font-size: 12px;
     }
 
+    /* Стили для объединенного аккордеона */
+    .accordion-item-merged {
+        background: #121918;
+        border-radius: 20px;
+        padding: 8px 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 0.5px solid rgba(67, 84, 80, 0.6);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+        overflow: hidden;
+    }
+
+    /* Кнопка menu-card внутри объединенного аккордеона */
+    .accordion-item-merged .menu-card {
+        margin-bottom: 0;
+        border-radius: 20px; /* По умолчанию скруглена со всех сторон */
+        border-bottom: none;
+        transition: border-radius 0.3s ease;
+    }
+
+    /* Когда аккордеон открыт - у кнопки скругление только сверху */
+    .accordion-item-merged.open .menu-card {
+        border-radius: 20px 20px 0 0;
+    }
+
+    /* Контент аккордеона */
+    .accordion-content-merged {
+        display: none;
+        padding: 0 16px 16px 40px;
+        background: rgba(0, 58, 129, 0.15);
+        border-radius: 0 0 20px 20px;
+        margin-top: -2px;
+        border-top: 1px solid rgba(67, 84, 80, 0.3);
+    }
+
+    .accordion-content-merged.open {
+        display: block;
+    }
+
+    /* Анимация стрелки */
+    .accordion-arrow-merged {
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-arrow-merged.open {
+        transform: rotate(90deg);
+    }
+
+    /* Стили для stats-detail внутри объединенного аккордеона */
+    .accordion-content-merged .stats-detail {
+        padding: 8px 0;
+    }
+
+    .accordion-content-merged .stats-row {
+        padding: 6px 0;
+    }
+
 
     
 
@@ -3017,26 +3076,27 @@ async def main_app():
                 <!-- ОДИН БОЛЬШОЙ БЕЛЫЙ БЛОК ДЛЯ СТАТИСТИКИ -->
                 <div class="menu-container-stats">
                     <!-- Объявления -->
-                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('ads-detail')">
-                        <div class="left">
-                            <span class="label">Посты</span>
-                            <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
+                    <!-- ПОСТЫ - объединенный аккордеон -->
+                    <div class="accordion-item-merged" id="accordion-wrapper-ads-detail">
+                        <div class="menu-card" onclick="toggleStatsAccordionMerged('ads-detail')" style="cursor:pointer;">
+                            <div class="left">
+                                <span class="label">Посты</span>
+                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">{{ adsCount }}</span>
+                            </div>
+                            <span class="accordion-arrow-merged" id="stats-arrow-ads-detail-merged">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                                </svg>
+                            </span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-ads-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
-
-                        </span>
-                        
-                    </div>
-                    <div class="accordion-content" id="stats-content-ads-detail">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
-                            <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Кликов:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Конверсия:</span><span class="stats-value">0%</span></div>
+                        <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
+                            <div class="stats-detail">
+                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">{{ adsCount }}</span></div>
+                                <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
+                                <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
+                                <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">19</span></div>
+                                <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
+                            </div>
                         </div>
                     </div>
                     <!-- Услуги -->
@@ -3132,7 +3192,24 @@ async def main_app():
             `;
         }}
 
-
+        // Функция для открытия/закрытия объединенного аккордеона
+        function toggleStatsAccordionMerged(id) {{
+            const wrapper = document.getElementById('accordion-wrapper-' + id);
+            const content = document.getElementById('stats-content-' + id + '-merged');
+            const arrow = document.getElementById('stats-arrow-' + id + '-merged');
+            
+            if (!wrapper || !content || !arrow) return;
+            
+            if (content.classList.contains('open')) {{
+                content.classList.remove('open');
+                arrow.classList.remove('open');
+                wrapper.classList.remove('open'); // Убираем класс open у обертки
+            }} else {{
+                content.classList.add('open');
+                arrow.classList.add('open');
+                wrapper.classList.add('open'); // Добавляем класс open у обертки
+            }}
+        }}
 
         // Функция для открытия/закрытия аккордеона в статистике
         function toggleStatsAccordion(id) {{
