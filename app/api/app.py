@@ -3106,69 +3106,72 @@ async def main_app():
                         </div>
                     </div>
                     
-                    <!-- Товары -->
-                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('products-detail')">
-                        <div class="left">
-                            <span class="label">Товары</span>
+                    <!-- Товары - объединенный аккордеон -->
+                    <div class="accordion-item-merged" id="accordion-wrapper-products-detail">
+                        <div class="menu-card" onclick="toggleStatsAccordionMerged('products-detail')" style="cursor:pointer;">
+                            <div class="left">
+                                <span class="label">Товары</span>
+                            </div>
+                            <span class="accordion-arrow-merged" id="stats-arrow-products-detail-merged">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                                </svg>
+                            </span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-products-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
+                        <div class="accordion-content-merged" id="stats-content-products-detail-merged">
+                            <div class="stats-detail">
+                                <div class="stats-row"><span>Количество товаров:</span><span class="stats-value">5</span></div>
+                                <div class="stats-row"><span>Количество заказов:</span><span class="stats-value">47</span></div>
+                                <div class="stats-row"><span>Выполненные заказы:</span><span class="stats-value">42</span></div>
+                                <div class="stats-row"><span>Возвраты:</span><span class="stats-value">5</span></div>
+                                <div class="stats-row"><span>Выручка:</span><span class="stats-value">12 350 ₽</span></div>
+                            </div>
+                        </div>
+                    </div>
 
-                        </span>
-                    </div>
-                    <div class="accordion-content" id="stats-content-products-detail">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Количество товаров:</span><span class="stats-value">5</span></div>
-                            <div class="stats-row"><span>Количество заказов:</span><span class="stats-value">47</span></div>
-                            <div class="stats-row"><span>Выполненные заказы:</span><span class="stats-value">42</span></div>
-                            <div class="stats-row"><span>Возвраты:</span><span class="stats-value">5</span></div>
-                            <div class="stats-row"><span>Выручка:</span><span class="stats-value">12 350 ₽</span></div>
+                    <!-- Аренда - объединенный аккордеон -->
+                    <div class="accordion-item-merged" id="accordion-wrapper-rentals-detail">
+                        <div class="menu-card" onclick="toggleStatsAccordionMerged('rentals-detail')" style="cursor:pointer;">
+                            <div class="left">
+                                <span class="label">Аренда</span>
+                            </div>
+                            <span class="accordion-arrow-merged" id="stats-arrow-rentals-detail-merged">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="accordion-content-merged" id="stats-content-rentals-detail-merged">
+                            <div class="stats-detail">
+                                <div class="stats-row"><span>Предметов в аренду:</span><span class="stats-value">8</span></div>
+                                <div class="stats-row"><span>Активных аренд:</span><span class="stats-value">12</span></div>
+                                <div class="stats-row"><span>Завершённых аренд:</span><span class="stats-value">34</span></div>
+                                <div class="stats-row"><span>Отменённых аренд:</span><span class="stats-value">3</span></div>
+                                <div class="stats-row"><span>Заработано:</span><span class="stats-value">8 420 ₽</span></div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Аренда -->
-                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('rentals-detail')">
-                        <div class="left">
-                            <span class="label">Аренда</span>
-                        </div>
-                        <span class="accordion-arrow" id="stats-arrow-rentals-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
 
-                        </span>
-                    </div>
-                    <div class="accordion-content" id="stats-content-rentals-detail">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Предметов в аренду:</span><span class="stats-value">8</span></div>
-                            <div class="stats-row"><span>Активных аренд:</span><span class="stats-value">12</span></div>
-                            <div class="stats-row"><span>Завершённых аренд:</span><span class="stats-value">34</span></div>
-                            <div class="stats-row"><span>Отменённых аренд:</span><span class="stats-value">3</span></div>
-                            <div class="stats-row"><span>Заработано:</span><span class="stats-value">8 420 ₽</span></div>
+                    <!-- События - объединенный аккордеон -->
+                    <div class="accordion-item-merged" id="accordion-wrapper-events-detail">
+                        <div class="menu-card" onclick="toggleStatsAccordionMerged('events-detail')" style="cursor:pointer;">
+                            <div class="left">
+                                <span class="label">События</span>
+                            </div>
+                            <span class="accordion-arrow-merged" id="stats-arrow-events-detail-merged">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                                </svg>
+                            </span>
                         </div>
-                    </div>
-                    
-                    <!-- События -->
-                    <div class="menu-card accordion-header" onclick="toggleStatsAccordion('events-detail')">
-                        <div class="left">
-                            <span class="label">События</span>
-                        </div>
-                        <span class="accordion-arrow" id="stats-arrow-events-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
-
-                        </span>
-                    </div>
-                    <div class="accordion-content" id="stats-content-events-detail">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Создано событий:</span><span class="stats-value">3</span></div>
-                            <div class="stats-row"><span>Участников (всего):</span><span class="stats-value">156</span></div>
-                            <div class="stats-row"><span>Подтверждённых записей:</span><span class="stats-value">142</span></div>
-                            <div class="stats-row"><span>Отменённых записей:</span><span class="stats-value">14</span></div>
-                            <div class="stats-row"><span>Сбор с билетов:</span><span class="stats-value">31 200 ₽</span></div>
+                        <div class="accordion-content-merged" id="stats-content-events-detail-merged">
+                            <div class="stats-detail">
+                                <div class="stats-row"><span>Создано событий:</span><span class="stats-value">3</span></div>
+                                <div class="stats-row"><span>Участников (всего):</span><span class="stats-value">156</span></div>
+                                <div class="stats-row"><span>Подтверждённых записей:</span><span class="stats-value">142</span></div>
+                                <div class="stats-row"><span>Отменённых записей:</span><span class="stats-value">14</span></div>
+                                <div class="stats-row"><span>Сбор с билетов:</span><span class="stats-value">31 200 ₽</span></div>
+                            </div>
                         </div>
                     </div>
                     
