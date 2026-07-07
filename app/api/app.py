@@ -2530,11 +2530,7 @@ COMMON_STYLES = """
     /* Стили для объединенного аккордеона */
     /* Стили для объединенного аккордеона - только для постов */
     .accordion-item-merged {
-        background: #121918;
-        border-radius: 20px;
-        padding: 8px 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 0.5px solid rgba(67, 84, 80, 0.6);
+
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
@@ -2544,7 +2540,6 @@ COMMON_STYLES = """
     .accordion-item-merged .menu-card {
         margin-bottom: 0;
         border-radius: 20px;
-        border-bottom: none;
         transition: border-radius 0.3s ease;
     }
 
@@ -2555,7 +2550,7 @@ COMMON_STYLES = """
     .accordion-content-merged {
         display: none;
         padding: 0 16px 16px 40px;
-        background: rgba(0, 58, 129, 0.15);
+        background: rgba(0, 58, 129, 0.3);
         border-radius: 0 0 20px 20px;
         margin-top: -2px;
         border-top: 1px solid rgba(67, 84, 80, 0.3);
@@ -2563,6 +2558,7 @@ COMMON_STYLES = """
 
     .accordion-content-merged.open {
         display: block;
+        border: 0.5px solid #0073FF;
     }
 
     .accordion-arrow-merged {
