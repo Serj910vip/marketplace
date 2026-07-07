@@ -3175,24 +3175,7 @@ async def main_app():
             `;
         }}
 
-        // Функция для открытия/закрытия объединенного аккордеона
-        function toggleStatsAccordionMerged(id) {{
-            const wrapper = document.getElementById('accordion-wrapper-' + id);
-            const content = document.getElementById('stats-content-' + id + '-merged');
-            const arrow = document.getElementById('stats-arrow-' + id + '-merged');
-            
-            if (!wrapper || !content || !arrow) return;
-            
-            if (content.classList.contains('open')) {{
-                content.classList.remove('open');
-                arrow.classList.remove('open');
-                wrapper.classList.remove('open'); // Убираем класс open у обертки
-            }} else {{
-                content.classList.add('open');
-                arrow.classList.add('open');
-                wrapper.classList.add('open'); // Добавляем класс open у обертки
-            }}
-        }}
+        
 
         // Функция для открытия/закрытия аккордеона в статистике
         function toggleStatsAccordion(id) {{
@@ -3423,6 +3406,25 @@ async def main_app():
             }}
         }}
 
+
+        // Функция для открытия/закрытия объединенного аккордеона
+        function toggleStatsAccordionMerged(id) {{
+            const wrapper = document.getElementById('accordion-wrapper-' + id);
+            const content = document.getElementById('stats-content-' + id + '-merged');
+            const arrow = document.getElementById('stats-arrow-' + id + '-merged');
+            
+            if (!wrapper || !content || !arrow) return;
+            
+            if (content.classList.contains('open')) {{
+                content.classList.remove('open');
+                arrow.classList.remove('open');
+                wrapper.classList.remove('open'); // Убираем класс open у обертки
+            }} else {{
+                content.classList.add('open');
+                arrow.classList.add('open');
+                wrapper.classList.add('open'); // Добавляем класс open у обертки
+            }}
+        }}
 
 
 
