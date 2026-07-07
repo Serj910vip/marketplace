@@ -3083,25 +3083,26 @@ async def main_app():
                         </div>
                     </div>
                     <!-- Услуги -->
-                    <div class="accordion-item-merged" id="accordion-wrapper-ads-detail">
-                        <div class="menu-card" onclick="toggleStatsAccordion('services-detail')">
-                        <div class="left">
-                            <span class="label">Услуги</span>
+                    <!-- Услуги - объединенный аккордеон -->
+                    <div class="accordion-item-merged" id="accordion-wrapper-services-detail">
+                        <div class="menu-card" onclick="toggleStatsAccordionMerged('services-detail')" style="cursor:pointer;">
+                            <div class="left">
+                                <span class="label">Услуги</span>
+                            </div>
+                            <span class="accordion-arrow-merged" id="stats-arrow-services-detail-merged">
+                                <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                                </svg>
+                            </span>
                         </div>
-                        <span class="accordion-arrow" id="stats-arrow-services-detail">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
-
-                        </span>
-                    </div>
-                    <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
-                        <div class="stats-detail">
-                            <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">0</span></div>
-                            <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">0</span></div>
+                        <div class="accordion-content-merged" id="stats-content-services-detail-merged">
+                            <div class="stats-detail">
+                                <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">0</span></div>
+                                <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">0</span></div>
+                                <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">0</span></div>
+                                <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">0</span></div>
+                                <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">0</span></div>
+                            </div>
                         </div>
                     </div>
                     
