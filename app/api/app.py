@@ -2528,6 +2528,7 @@ COMMON_STYLES = """
     }
 
     /* Стили для объединенного аккордеона */
+    /* Стили для объединенного аккордеона - только для постов */
     .accordion-item-merged {
         background: #121918;
         border-radius: 20px;
@@ -2540,20 +2541,17 @@ COMMON_STYLES = """
         overflow: hidden;
     }
 
-    /* Кнопка menu-card внутри объединенного аккордеона */
     .accordion-item-merged .menu-card {
         margin-bottom: 0;
-        border-radius: 20px; /* По умолчанию скруглена со всех сторон */
+        border-radius: 20px;
         border-bottom: none;
         transition: border-radius 0.3s ease;
     }
 
-    /* Когда аккордеон открыт - у кнопки скругление только сверху */
     .accordion-item-merged.open .menu-card {
         border-radius: 20px 20px 0 0;
     }
 
-    /* Контент аккордеона */
     .accordion-content-merged {
         display: none;
         padding: 0 16px 16px 40px;
@@ -2567,7 +2565,6 @@ COMMON_STYLES = """
         display: block;
     }
 
-    /* Анимация стрелки */
     .accordion-arrow-merged {
         display: inline-block;
         transition: transform 0.3s ease;
@@ -2576,16 +2573,6 @@ COMMON_STYLES = """
     .accordion-arrow-merged.open {
         transform: rotate(90deg);
     }
-
-    /* Стили для stats-detail внутри объединенного аккордеона */
-    .accordion-content-merged .stats-detail {
-        padding: 8px 0;
-    }
-
-    .accordion-content-merged .stats-row {
-        padding: 6px 0;
-    }
-
 
     
 
@@ -3081,7 +3068,7 @@ async def main_app():
                         <div class="menu-card" onclick="toggleStatsAccordionMerged('ads-detail')" style="cursor:pointer;">
                             <div class="left">
                                 <span class="label">Посты</span>
-                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">{{ adsCount }}</span>
+                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">{{adsCount}}</span>
                             </div>
                             <span class="accordion-arrow-merged" id="stats-arrow-ads-detail-merged">
                                 <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3091,7 +3078,7 @@ async def main_app():
                         </div>
                         <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
                             <div class="stats-detail">
-                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">{{ adsCount }}</span></div>
+                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">{{adsCount}}</span></div>
                                 <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
                                 <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
                                 <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">19</span></div>
