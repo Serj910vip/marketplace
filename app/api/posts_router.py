@@ -97,7 +97,7 @@ POST_PHOTOS_CSS = """
         color: #FFFFFF;
     }
 
-    
+
     .ads-filter-tab:hover {
         background: #003A81;
     }
@@ -120,6 +120,131 @@ POST_PHOTOS_CSS = """
         font-size: 40px;
         background: rgba(0,58,129,0.2);
         border-radius: 12px 12px 0 0;
+    }
+
+    /* Стили для ползунка планирования */
+    .schedule-toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: rgba(0, 58, 129, 0.2);
+        border-radius: 12px;
+        border: 0.5px solid rgba(0, 115, 255, 0.4);
+        margin-bottom: 16px;
+    }
+
+    .schedule-toggle-label {
+        font-size: 14px;
+        color: #FFFFFF;
+        font-weight: 500;
+    }
+
+    .schedule-toggle-status {
+        font-size: 13px;
+        color: #8A9593;
+    }
+
+    .schedule-toggle-status.active {
+        color: #4caf50;
+    }
+
+    .schedule-toggle-status.inactive {
+        color: #ff6b6b;
+    }
+
+    .switch-schedule {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 25px;
+        flex-shrink: 0;
+    }
+
+    .switch-schedule input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-schedule .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 58, 129, 0.3);
+        transition: .3s;
+        border-radius: 10px;
+        border: 1px solid #0073FF;
+    }
+
+    .switch-schedule .slider:before {
+        position: absolute;
+        content: "";
+        height: 19px;
+        width: 19px;
+        left: 3px;
+        bottom: 2px;
+        background: #0073FF;
+        transition: .3s;
+        border-radius: 50%;
+    }
+
+    .switch-schedule input:checked + .slider {
+        background: #003A81;
+    }
+
+    .switch-schedule input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    /* Стили для полей даты и времени */
+    .schedule-fields {
+        display: none;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 12px 16px;
+        background: rgba(0, 58, 129, 0.15);
+        border-radius: 12px;
+        border: 0.5px solid rgba(67, 84, 80, 0.3);
+    }
+
+    .schedule-fields.visible {
+        display: flex;
+    }
+
+    .schedule-field-group {
+        flex: 1;
+    }
+
+    .schedule-field-group label {
+        display: block;
+        font-size: 12px;
+        color: #8A9593;
+        margin-bottom: 4px;
+    }
+
+    .schedule-field-group input {
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(0, 58, 129, 0.3);
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .schedule-field-group input:focus {
+        border-color: #4a9eff;
+    }
+
+    .schedule-field-group input[type="date"]::-webkit-calendar-picker-indicator,
+    .schedule-field-group input[type="time"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
     }
 """
 
@@ -429,16 +554,36 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <div id="photo-slots"></div>
                             <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                         </div>
-                        <div id="schedule-block" class="ad-field-group hidden">
-                            <label class="ad-field-label">Дата и время публикации</label>
-                            <input class="ad-field-input" type="datetime-local" id="schedule-datetime">
+
+                        <!-- Ползунок планирования -->
+                        <div class="schedule-toggle-container">
+                            <span class="schedule-toggle-label">📅 Запланировать публикацию</span>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <span class="schedule-toggle-status inactive" id="schedule-status">Выкл</span>
+                                <label class="switch-schedule">
+                                    <input type="checkbox" id="schedule-toggle" onchange="toggleScheduleFields(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="schedule-toggle-status active" id="schedule-status-on">Вкл</span>
+                            </div>
                         </div>
-                        <div class="post-actions-row">
-                            <button class="ad-btn-create" onclick="submitPost('publish')">Опубликовать</button>
-                            <button class="ad-btn-create ad-btn-secondary" onclick="toggleSchedule()">Запланировать</button>
+
+                        <!-- Поля даты и времени -->
+                        <div class="schedule-fields" id="schedule-fields">
+                            <div class="schedule-field-group">
+                                <label>📅 Дата</label>
+                                <input type="date" id="schedule-date">
+                            </div>
+                            <div class="schedule-field-group">
+                                <label>🕐 Время</label>
+                                <input type="time" id="schedule-time" step="60">
+                            </div>
                         </div>
-                        <button id="confirm-schedule-btn" class="ad-btn-create hidden" onclick="submitPost('schedule')">Подтвердить планирование</button>
-                    </div>
+
+                        <!-- Кнопка Опубликовать -->
+                        <button class="ad-btn-create" onclick="submitPost()">Опубликовать</button>
+
+                         </div>
                 </div>
             </div>
             <script>
@@ -452,16 +597,55 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 document.getElementById('confirm-schedule-btn').classList.toggle('hidden', !scheduleVisible);
             }}
 
+            // Функция для переключения полей планирования
+            function toggleScheduleFields(checked) {{
+                const fields = document.getElementById('schedule-fields');
+                const statusOff = document.getElementById('schedule-status');
+                const statusOn = document.getElementById('schedule-status-on');
+                
+                if (checked) {{
+                    fields.classList.add('visible');
+                    statusOff.style.display = 'none';
+                    statusOn.style.display = 'inline';
+                    // Устанавливаем дату по умолчанию - завтра
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    document.getElementById('schedule-date').value = tomorrow.toISOString().split('T')[0];
+                    // Устанавливаем время по умолчанию - 10:00
+                    document.getElementById('schedule-time').value = '10:00';
+                }} else {{
+                    fields.classList.remove('visible');
+                    statusOff.style.display = 'inline';
+                    statusOn.style.display = 'none';
+                }}
+            }}
+
             async function submitPost(action) {{
                 const title = document.getElementById('post-title').value.trim();
                 if (!title) {{ tg.showAlert('Введите заголовок'); return; }}
+
                 const subtitle = document.getElementById('post-subtitle').value.trim();
                 const content = document.getElementById('post-content').value.trim();
+
+                // Проверяем, включено ли планирование
+                const isScheduled = document.getElementById('schedule-toggle').checked;
                 let scheduled_at = null;
-                if (action === 'schedule') {{
-                    scheduled_at = document.getElementById('schedule-datetime').value;
-                    if (!scheduled_at) {{ tg.showAlert('Выберите дату и время'); return; }}
+                let action = 'publish';    
+
+                if (isScheduled) {{
+                    const date = document.getElementById('schedule-date').value;
+                    const time = document.getElementById('schedule-time').value;
+                    
+                    if (!date || !time) {{
+                        tg.showAlert('Выберите дату и время публикации');
+                        return;
+                    }}
+                    
+                    scheduled_at = `${{date}}T${{time}}:00`;
+                    action = 'schedule';
                 }}
+
+
                 const formData = new FormData();
                 formData.append('telegram_id', tgUser.id);
                 formData.append('title', title);
@@ -470,6 +654,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 formData.append('action', action);
                 if (scheduled_at) formData.append('scheduled_at', scheduled_at);
                 appendPhotosToFormData(formData);
+
                 try {{
                     const res = await fetch('/api/posts/create', {{ method: 'POST', body: formData }});
                     const data = await res.json().catch(() => ({{}}));
@@ -479,7 +664,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 }} catch(e) {{ tg.showAlert('❌ ' + e.message); }}
             }}
 
+
+
             initPhotoSlotsFromUrls([]);
+
+            document.getElementById('schedule-status-on').style.display = 'none';
             </script>
         </body>
         </html>
