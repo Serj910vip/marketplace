@@ -1164,12 +1164,13 @@ COMMON_STYLES = """
     .field-group { margin-bottom: 16px; }
     select, input[type="text"], input[type="number"], textarea {
         width: 100%; 
+        height: 68px;
         padding: 12px; 
-        border-radius: 10px;
+        border-radius: 20px;
         border: 0.5px solid #0073FF;
         font-size: 15px; 
         background: rgba(0, 58, 129, 0.3);
-        color: var(--tg-theme-text-color, #000);
+        color: #FFFF;
     }
     textarea { resize: vertical; min-height: 80px; }
     .back-link {
@@ -2872,6 +2873,10 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <!-- Синий блок с наложением -->
                 <div class="home-header-block">
+                    <div class="home-user-inline">
+                        <span class="home-user-role">Основатель</span>
+                        <span class="home-user-name">${{name}}</span>
+                    </div>
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
@@ -2881,17 +2886,7 @@ async def main_app():
                     
                         
                         
-                        <!-- КНОПКА MY MARKET -->
-                        <div class="home-market-button">
-                            <button class="my-tipmarket-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
-                                TipsterMarket
-                            </button>
-                            <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
-                                My Market
-                            </button>
-                            <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
-                            <div class="linked-chat-info" id="linked-chat-info"></div>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -2904,6 +2899,17 @@ async def main_app():
                 
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="section-title">Доступно:</div>
+                        <!-- КНОПКА MY MARKET -->
+                        <div class="home-market-button">
+                            <button class="my-tipmarket-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                                TipsterMarket
+                            </button>
+                            <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                                My Market
+                            </button>
+                            <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
+                            <div class="linked-chat-info" id="linked-chat-info"></div>
+                        </div>
                         <div class="menu-card" onclick="window.location.href='/posts'">
                             <div class="left">
                                 <span class="label">Посты</span>
@@ -3382,7 +3388,7 @@ async def main_app():
 
                         </span>
                     </div>
-                    <button class="btn btn-delete-market" onclick="deleteMarket()">Удалить маркет</button>
+                    <button class="btn btn-delete-market" onclick="deleteMarket()">Удалить аккаунт</button>
                 </div>
                 
 
@@ -4293,8 +4299,8 @@ async def profile_fill_page():
                 margin-bottom: 20px;
             }}
             .profile-photo-square {{
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
                 border-radius: 12px;
                 background: rgba(0, 58, 129, 0.3);
                 border: 0.5px solid #0073FF;
@@ -4346,7 +4352,7 @@ async def profile_fill_page():
                     <div class="ad-field-group" style="text-align: center;">
                         <label class="ad-field-label">Фото маркета</label>
                         <div class="profile-photo-square" id="profile-photo-box" onclick="document.getElementById('profile-photo-input').click()">
-                            <span class="placeholder" id="profile-photo-placeholder">📷</span>
+                            <span class="placeholder" id="profile-photo-placeholder">+</span>
                             <img id="profile-photo-preview" style="display: none;">
                         </div>
                         <input type="file" id="profile-photo-input" accept="image/*" onchange="onProfilePhotoSelect(this)" style="display: none;">
@@ -5482,18 +5488,12 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                     <div class="ad-detail-content">
                         
                         <div class="ad-detail-meta">
-                            <span class="ad-detail-date">📅 ${{createdDate}}</span>
-                            <span class="ad-detail-rating">${{renderStars(rating)}}</span>
+                            <span class="ad-detail-date">${{createdDate}}</span>
+                          
                         </div>
                         <div class="ad-detail-title">${{adData.title}}</div>
                         <div class="ad-detail-description">${{adData.description || 'Описание отсутствует'}}</div>
-                        <div class="ad-detail-rating-section">
-                            <span class="ad-detail-rating-label">Оцените объявление:</span>
-                            <div class="ad-detail-stars">
-                                ${{starsHtml}}
-                            </div>
-                            ${{userRatingValue > 0 ? `<span class="ad-detail-rating-value">${{userRatingValue}}.0</span>` : ''}}
-                        </div>
+                        
                     </div>
                 </div>
             `;
