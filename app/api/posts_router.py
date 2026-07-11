@@ -90,6 +90,14 @@ POST_PHOTOS_CSS = """
         font-weight: 500;
         cursor: pointer;
     }
+
+    .ads-filter-tab.active {
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        color: #FFFFFF;
+    }
+
+    
     .ads-filter-tab:hover {
         background: #003A81;
     }
