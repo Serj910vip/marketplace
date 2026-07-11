@@ -915,11 +915,6 @@ COMMON_STYLES = """
     .container-post {
         display: flex;
         justify-content: center;
-        background: #121918;
-        border-radius: 20px;
-        padding: 8px 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 0.5px solid rgba(67, 84, 80, 0.6);
         margin-bottom: 20px;
         position: relative;
         z-index: 2;
@@ -1790,13 +1785,13 @@ COMMON_STYLES = """
     }
 
     .ads-create-btn {
-        width: 326px;
-        height: 68px;
-        background: #003A81;
+        width: 360px;
+        height: 44px;
+        background: #121918;
         border: 0.5px solid #0073FF;
         border-radius: 10px;
         color: #FFFFFF;
-        font-size: 20px;
+        font-size: 14px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -2880,7 +2875,6 @@ async def main_app():
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
-                        <span class="home-user-name">${{name}}</span>
                         <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                         <div class="home-business-address">📍 ${{businessData.business_address}}</div>
                     

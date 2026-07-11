@@ -282,10 +282,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         </div>
                     </div>
                     <div class="divider-line-post-2"></div>
+                   
                     <div class="ads-filter-tabs" id="status-tabs">
                         <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
                         <button class="ads-filter-tab" id="filter-scheduled" onclick="filterPosts('scheduled')">Запланированные</button>
-                        <button class="posts-secondary-btn" id="btn-hidden" onclick="filterPosts('hidden')">Скрытые</button>
+                        <button class="ads-filter-tab" id="filter-hidden" onclick="filterPosts('hidden')">Скрытые</button>
                     </div>
                     <div class="ads-count" id="posts-count">Посты: 0</div>
                     <div class="ads-list-container" id="posts-list">
@@ -301,20 +302,32 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
             function filterPosts(type) {{
                 currentFilter = type;
-                document.getElementById('filter-published').classList.toggle('active', type === 'published');
-                document.getElementById('filter-scheduled').classList.toggle('active', type === 'scheduled');
-                document.getElementById('btn-hidden').classList.toggle('active', type === 'hidden');
-                document.getElementById('status-tabs').style.display = type === 'hidden' ? 'none' : 'flex';
+                
+                document.getElementById('filter-published').classList.remove('active');
+                document.getElementById('filter-scheduled').classList.remove('active');
+                document.getElementById('filter-hidden').classList.remove('active');
+                
+                // Добавляем active на нужную кнопку
+                if (type === 'published') {{
+                    document.getElementById('filter-published').classList.add('active');
+                }} else if (type === 'scheduled') {{
+                    document.getElementById('filter-scheduled').classList.add('active');
+                }} else if (type === 'hidden') {{
+                    document.getElementById('filter-hidden').classList.add('active');
+                }}
                 renderPosts();
             }}
 
             function renderPosts() {{
                 let filtered;
-                if (currentFilter === 'hidden') {{
-                    filtered = allPosts.filter(p => p.hidden);
-                }} else {{
-                    filtered = allPosts.filter(p => !p.hidden && p.status === currentFilter);
+                if (currentFilter === 'published') {{
+                    filtered = allPosts.filter(p => !p.hidden && p.status === 'published');
+                }} else if (currentFilter === 'scheduled') {{
+                    filtered = allPosts.filter(p => !p.hidden && p.status === 'scheduled');
+                }} else if (currentFilter === 'hidden') {{
+                    filtered = allPosts.filter(p => p.hidden === true);
                 }}
+                
                 const container = document.getElementById('posts-list');
                 const labels = {{
                     published: 'опубликованных',
@@ -322,10 +335,12 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     hidden: 'скрытых',
                 }};
                 document.getElementById('posts-count').textContent = `Посты: ${{filtered.length}}`;
+                
                 if (!filtered.length) {{
                     container.innerHTML = `<div class="ads-empty">Нет ${{labels[currentFilter]}} постов</div>`;
                     return;
                 }}
+                
                 container.innerHTML = filtered.map((post, index) => {{
                     const num = String(index + 1).padStart(3, '0');
                     const date = post.created_at
