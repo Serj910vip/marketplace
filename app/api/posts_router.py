@@ -126,11 +126,8 @@ POST_PHOTOS_CSS = """
     .schedule-toggle-container {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        background: rgba(0, 58, 129, 0.2);
+        justify-content: space-between; 
         border-radius: 12px;
-        border: 0.5px solid rgba(0, 115, 255, 0.4);
         margin-bottom: 16px;
     }
 
@@ -205,25 +202,30 @@ POST_PHOTOS_CSS = """
         display: none;
         gap: 12px;
         margin-top: 12px;
-        padding: 12px 16px;
-        background: rgba(0, 58, 129, 0.15);
         border-radius: 12px;
-        border: 0.5px solid rgba(67, 84, 80, 0.3);
     }
 
     .schedule-fields.visible {
-        display: flex;
+        display: block;
     }
 
     .schedule-field-group {
+        display: flex;
+        justify-content: space-between;
         flex: 1;
     }
 
     .schedule-field-group label {
         display: block;
         font-size: 12px;
-        color: #8A9593;
+        width: 130px;
+        text-align: center;
+        padding: 8px 8px 8px 8px;
+        color: #ffffff;
         margin-bottom: 4px;
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        border-radius: 10%;
     }
 
     .schedule-field-group input {
@@ -558,7 +560,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     
                         <!-- Ползунок планирования -->
                         <div class="schedule-toggle-container">
-                            <span class="schedule-toggle-label">📅 Запланировать публикацию</span>
+                            <span class="schedule-toggle-label">Запланировать публикацию</span>
                             <div style="display:flex;align-items:center;gap:12px;">
                                 <span class="schedule-toggle-status inactive" id="schedule-status">Выкл</span>
                                 <label class="switch-schedule">
@@ -572,11 +574,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         <!-- Поля даты и времени -->
                         <div class="schedule-fields" id="schedule-fields">
                             <div class="schedule-field-group">
-                                <label>📅 Дата</label>
+                                <label>Дата</label>
                                 <input type="date" id="schedule-date">
                             </div>
                             <div class="schedule-field-group">
-                                <label>🕐 Время</label>
+                                <label>Время</label>
                                 <input type="time" id="schedule-time" step="60">
                             </div>
                         </div>
