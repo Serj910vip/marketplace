@@ -555,6 +555,12 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                         </div>
 
+                        <div class="post-actions-row">
+                            <button class="ad-btn-create" onclick="submitPost('publish')">Опубликовать</button>
+                            <button class="ad-btn-create ad-btn-secondary" onclick="toggleSchedule()">Запланировать</button>
+                        </div>
+                        <button id="confirm-schedule-btn" class="ad-btn-create hidden" onclick="submitPost('schedule')">Подтвердить планирование</button>
+
                         <!-- Ползунок планирования -->
                         <div class="schedule-toggle-container">
                             <span class="schedule-toggle-label">📅 Запланировать публикацию</span>
@@ -582,8 +588,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
                         <!-- Кнопка Опубликовать -->
                         <button class="ad-btn-create" onclick="submitPost()">Опубликовать</button>
-
-                         </div>
+                    </div>
                 </div>
             </div>
             <script>
@@ -630,7 +635,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 // Проверяем, включено ли планирование
                 const isScheduled = document.getElementById('schedule-toggle').checked;
                 let scheduled_at = null;
-                let action = 'publish';    
+                let action = 'publish';
 
                 if (isScheduled) {{
                     const date = document.getElementById('schedule-date').value;
@@ -645,7 +650,6 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     action = 'schedule';
                 }}
 
-
                 const formData = new FormData();
                 formData.append('telegram_id', tgUser.id);
                 formData.append('title', title);
@@ -654,7 +658,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 formData.append('action', action);
                 if (scheduled_at) formData.append('scheduled_at', scheduled_at);
                 appendPhotosToFormData(formData);
-
+                
                 try {{
                     const res = await fetch('/api/posts/create', {{ method: 'POST', body: formData }});
                     const data = await res.json().catch(() => ({{}}));
@@ -663,8 +667,6 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     tg.showAlert(msg, () => {{ window.location.href = '/posts'; }});
                 }} catch(e) {{ tg.showAlert('❌ ' + e.message); }}
             }}
-
-
 
             initPhotoSlotsFromUrls([]);
 
