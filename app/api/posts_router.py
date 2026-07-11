@@ -555,12 +555,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                         </div>
 
-                        <div class="post-actions-row">
-                            <button class="ad-btn-create" onclick="submitPost('publish')">Опубликовать</button>
-                            <button class="ad-btn-create ad-btn-secondary" onclick="toggleSchedule()">Запланировать</button>
-                        </div>
-                        <button id="confirm-schedule-btn" class="ad-btn-create hidden" onclick="submitPost('schedule')">Подтвердить планирование</button>
-
+                    
                         <!-- Ползунок планирования -->
                         <div class="schedule-toggle-container">
                             <span class="schedule-toggle-label">📅 Запланировать публикацию</span>
@@ -596,11 +591,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
             {POST_PHOTOS_JS}
             let scheduleVisible = false;
 
-            function toggleSchedule() {{
-                scheduleVisible = !scheduleVisible;
-                document.getElementById('schedule-block').classList.toggle('hidden', !scheduleVisible);
-                document.getElementById('confirm-schedule-btn').classList.toggle('hidden', !scheduleVisible);
-            }}
+          
 
             // Функция для переключения полей планирования
             function toggleScheduleFields(checked) {{
