@@ -625,7 +625,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 }}
             }}
 
-            async function submitPost(action) {{
+            async function submitPost() {{
                 const title = document.getElementById('post-title').value.trim();
                 if (!title) {{ tg.showAlert('Введите заголовок'); return; }}
 
@@ -658,7 +658,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                 formData.append('action', action);
                 if (scheduled_at) formData.append('scheduled_at', scheduled_at);
                 appendPhotosToFormData(formData);
-                
+
                 try {{
                     const res = await fetch('/api/posts/create', {{ method: 'POST', body: formData }});
                     const data = await res.json().catch(() => ({{}}));
