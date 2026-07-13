@@ -2895,7 +2895,7 @@ async def main_app():
                     <div class="section-title">Доступно:</div>
                         <!-- КНОПКА MY MARKET -->
                         <div class="home-market-button">
-                            <button class="my-tipmarket-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
+                            <button class="my-tipmarket-btn" onclick="window.location.href='https://t.me/MyMarketTipster'">
                                 TipsterMarket
                             </button>
                             <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
