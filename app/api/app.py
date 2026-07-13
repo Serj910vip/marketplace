@@ -514,6 +514,7 @@ COMMON_STYLES = """
         cursor: pointer;
         margin-top: 10px;
         padding: 0 20px;
+        margin-bottom: 10px;
     }
 
     .add-bot-btn:hover {
@@ -1482,7 +1483,7 @@ COMMON_STYLES = """
     .back-link-white {
         display: inline-block;
         color: #FFFFFF;
-        font-size: 12px;
+        font-size: 16px;
         cursor: pointer;
         border: none;
         background: none;
@@ -1768,7 +1769,7 @@ COMMON_STYLES = """
 
     .ads-header-title {
         color: #FFFFFF;
-        font-size: 12px;
+        font-size: 16px;
         font-weight: 500;
         margin-right: 6px;
     }
