@@ -5550,7 +5550,7 @@ async def connect_bot_page():
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>
-            {common_styles}
+            {COMMON_STYLES}
             .connect-container {{
                 max-width: 400px;
                 margin: 40px auto;
