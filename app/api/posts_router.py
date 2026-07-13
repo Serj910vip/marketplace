@@ -252,27 +252,29 @@ POST_PHOTOS_CSS = """
 
 
     /* Новые стили для полей даты и времени */
-    .schedule-row {
-        display: flex;
-        gap: 12px;
-        justify-content: space-between;
+    .schedule-fields {
+        display: none;
+        margin-top: 12px;
+        border-radius: 12px;
+    }
+
+    .schedule-fields.visible {
+        display: block;
     }
 
     .schedule-field-group {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+        margin-bottom: 12px;
     }
 
-    .schedule-field-label-custom {
+    .schedule-field-group label {
+        display: block;
         font-size: 12px;
         color: #8A9593;
-        margin-bottom: 6px;
-        font-weight: 500;
+        margin-bottom: 4px;
     }
 
-    .schedule-input-custom {
-        width: 100%;
+    .schedule-field-group input {
+        width: 113px;
         height: 38px;
         padding: 0 12px;
         background: rgba(0, 58, 129, 0.3);
@@ -282,89 +284,24 @@ POST_PHOTOS_CSS = """
         font-size: 14px;
         outline: none;
         box-sizing: border-box;
-        min-width: 0;
+        float: right;
     }
 
-    .schedule-input-custom:focus {
+    .schedule-field-group input:focus {
         border-color: #4a9eff;
-        background: rgba(0, 58, 129, 0.4);
     }
 
-    .schedule-input-custom::-webkit-calendar-picker-indicator {
+    .schedule-field-group input[type="date"]::-webkit-calendar-picker-indicator,
+    .schedule-field-group input[type="time"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
         cursor: pointer;
     }
 
-    /* Стили для ползунка (без изменений) */
-    .schedule-toggle-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-radius: 12px;
-        margin-bottom: 16px;
-    }
-
-    .schedule-toggle-label {
-        font-size: 14px;
-        color: #FFFFFF;
-        font-weight: 500;
-    }
-
-    .switch-schedule {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 25px;
-        flex-shrink: 0;
-    }
-
-    .switch-schedule input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .switch-schedule .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 58, 129, 0.3);
-        transition: .3s;
-        border-radius: 10px;
-        border: 1px solid #0073FF;
-    }
-
-    .switch-schedule .slider:before {
-        position: absolute;
+    /* Очистка float */
+    .schedule-field-group::after {
         content: "";
-        height: 19px;
-        width: 19px;
-        left: 3px;
-        bottom: 2px;
-        background: #0073FF;
-        transition: .3s;
-        border-radius: 50%;
-    }
-
-    .switch-schedule input:checked + .slider {
-        background: #003A81;
-    }
-
-    .switch-schedule input:checked + .slider:before {
-        transform: translateX(24px);
-    }
-
-    .schedule-fields {
-        display: none;
-        margin-top: 12px;
-        border-radius: 12px;
-    }
-
-    .schedule-fields.visible {
-        display: block;
+        display: table;
+        clear: both;
     }
 """
 
@@ -689,15 +626,13 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
                         <!-- Поля даты и времени -->
                         <div class="schedule-fields" id="schedule-fields">
-                            <div class="schedule-row">
-                                <div class="schedule-field-group">
-                                    <label class="schedule-field-label-custom">Дата</label>
-                                    <input type="date" id="schedule-date" class="schedule-input-custom">
-                                </div>
-                                <div class="schedule-field-group">
-                                    <label class="schedule-field-label-custom">Время</label>
-                                    <input type="time" id="schedule-time" step="60" class="schedule-input-custom">
-                                </div>
+                            <div class="schedule-field-group">
+                                <label>Дата</label>
+                                <input type="date" id="schedule-date">
+                            </div>
+                            <div class="schedule-field-group">
+                                <label>Время</label>
+                                <input type="time" id="schedule-time" step="60">
                             </div>
                         </div>
 
