@@ -259,12 +259,12 @@ POST_PHOTOS_CSS = """
     .schedule-field-group label {
         display: block;
         font-size: 12px;
-        color: #8A9593;
+        color: #FFFFFF;
         margin-bottom: 4px;
     }
 
     .schedule-field-group input {
-        width: 113px;
+        width: 140px;
         height: 38px;
         margin-left: 39px;
         padding: 0 12px;
@@ -605,14 +605,10 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         <!-- Ползунок планирования -->
                         <div class="schedule-toggle-container">
                             <span class="schedule-toggle-label">Запланировать публикацию</span>
-                            <div style="display:flex;align-items:center;gap:12px;">
-                                <span class="schedule-toggle-status inactive" id="schedule-status">Выкл</span>
-                                <label class="switch-schedule">
-                                    <input type="checkbox" id="schedule-toggle" onchange="toggleScheduleFields(this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="schedule-toggle-status active" id="schedule-status-on">Вкл</span>
-                            </div>
+                            <label class="switch-schedule">
+                                <input type="checkbox" id="schedule-toggle" onchange="toggleScheduleFields(this.checked)">
+                                <span class="slider"></span>
+                            </label>
                         </div>
 
                         <!-- Поля даты и времени -->
@@ -642,13 +638,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
             // Функция для переключения полей планирования
             function toggleScheduleFields(checked) {{
                 const fields = document.getElementById('schedule-fields');
-                const statusOff = document.getElementById('schedule-status');
-                const statusOn = document.getElementById('schedule-status-on');
+
                 
                 if (checked) {{
                     fields.classList.add('visible');
-                    statusOff.style.display = 'none';
-                    statusOn.style.display = 'inline';
+
                     // Устанавливаем дату по умолчанию - завтра
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -657,8 +651,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     document.getElementById('schedule-time').value = '10:00';
                 }} else {{
                     fields.classList.remove('visible');
-                    statusOff.style.display = 'inline';
-                    statusOn.style.display = 'none';
+
                 }}
             }}
 
@@ -707,7 +700,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
             initPhotoSlotsFromUrls([]);
 
-            document.getElementById('schedule-status-on').style.display = 'none';
+            
             </script>
         </body>
         </html>
