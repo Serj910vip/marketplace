@@ -740,7 +740,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
             async function loadPost() {{
                 const res = await fetch(`/api/posts/get/${{postId}}`);
-                if (!res.ok) {{ tg.showAlert('Пост не найден'); return; }}
+                if (!res.ok) {{ 
+                    if (tg && tg.showAlert) tg.showAlert('Пост не найден');
+                    else alert('Пост не найден');
+                    return; 
+                }}
                 const data = await res.json();
                 const p = data.post;
                 document.getElementById('post-title').value = p.title || '';
@@ -756,7 +760,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
             async function savePost() {{
                 const title = document.getElementById('post-title').value.trim();
-                if (!title) {{ tg.showAlert('Введите заголовок'); return; }}
+                if (!title) {{ 
+                    if (tg && tg.showAlert) tg.showAlert('Введите заголовок'); 
+                    else alert('Введите заголовок');
+                    return; 
+                }}
                 const formData = new FormData();
                 formData.append('title', title);
                 formData.append('subtitle', document.getElementById('post-subtitle').value.trim());
@@ -768,28 +776,83 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                     body: formData,
                 }});
                 const data = await res.json().catch(() => ({{}}));
-                if (!res.ok) {{ tg.showAlert(data.detail || 'Ошибка сохранения'); return; }}
-                tg.showAlert('✅ Сохранено!', () => {{ window.location.href = '/posts'; }});
+                if (!res.ok) {{ 
+                    if (tg && tg.showAlert) tg.showAlert(data.detail || 'Ошибка сохранения'); 
+                    else alert(data.detail || 'Ошибка сохранения');
+                    return; 
+                }}
+                if (tg && tg.showAlert) {{
+                    tg.showAlert('✅ Сохранено!', () => {{ window.location.href = '/posts'; }});
+                }} else {{
+                    alert('✅ Сохранено!');
+                    window.location.href = '/posts';
+                }}
             }}
 
+            // ИСПРАВЛЕННАЯ ФУНКЦИЯ УДАЛЕНИЯ
             function deletePost() {{
-                const btn = document.getElementById('delete-btn');
-                btn.disabled = false;
-                tg.showConfirmPopup({{
-                    title: 'Удаление',
-                    message: 'Удалить этот пост навсегда?',
-                    buttons: [{{type:'cancel'}}, {{id:'delete', type:'destructive', text:'Удалить'}}]
-                }}, async (btnId) => {{
-                    if (btnId !== 'delete') return;
+                // Проверяем, доступен ли Telegram WebApp
+                const tg = window.Telegram?.WebApp;
+                
+                // Функция выполнения удаления
+                const performDelete = async () => {{
+                    const btn = document.getElementById('delete-btn');
+                    btn.disabled = true;
+                    btn.textContent = 'Удаление...';
+                    
                     try {{
-                        const res = await fetch(`/api/posts/${{postId}}`, {{method:'DELETE'}});
-                        if (!res.ok) throw new Error('Ошибка удаления');
-                        tg.showAlert('✅ Пост удалён', () => {{ window.location.href = '/posts'; }});
-                    }} catch(e) {{
-                        tg.showAlert('❌ ' + e.message);
+                        const res = await fetch(`/api/posts/${{postId}}`, {{
+                            method: 'DELETE'
+                        }});
+                        
+                        if (!res.ok) {{
+                            const data = await res.json().catch(() => ({{}}));
+                            throw new Error(data.detail || 'Ошибка удаления');
+                        }}
+                        
+                        // Успешно удалено
+                        if (tg && tg.showAlert) {{
+                            tg.showAlert('✅ Пост удалён', () => {{ 
+                                window.location.href = '/posts'; 
+                            }});
+                        }} else {{
+                            alert('✅ Пост удалён');
+                            window.location.href = '/posts';
+                        }}
+                    }} catch (e) {{
+                        if (tg && tg.showAlert) {{
+                            tg.showAlert('❌ ' + e.message);
+                        }} else {{
+                            alert('❌ ' + e.message);
+                        }}
+                        btn.disabled = false;
+                        btn.textContent = 'Удалить';
                     }}
-                }});
+                }};
+
+                // Показываем диалог подтверждения
+                if (tg && tg.showConfirmPopup) {{
+                    // Используем нативный диалог Telegram
+                    tg.showConfirmPopup({{
+                        title: 'Удаление',
+                        message: 'Удалить этот пост навсегда?',
+                        buttons: [
+                            {{ type: 'cancel' }},
+                            {{ id: 'delete', type: 'destructive', text: 'Удалить' }}
+                        ]
+                    }}, (btnId) => {{
+                        if (btnId === 'delete') {{
+                            performDelete();
+                        }}
+                    }});
+                }} else {{
+                    // Fallback для обычного браузера
+                    if (confirm('Удалить этот пост навсегда?')) {{
+                        performDelete();
+                    }}
+                }}
             }}
+
             loadPost();
             </script>
         </body>
