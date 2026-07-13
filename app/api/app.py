@@ -5640,7 +5640,7 @@ async def connect_bot_page():
             </div>
         </div>
         <script>
-            {webapp_init}
+            {WEBAPP_INIT}
             
             // Загружаем имя бота
             async function loadBotUsername() {{
