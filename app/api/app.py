@@ -665,7 +665,7 @@ COMMON_STYLES = """
 
     .market-menu-item {
         background: rgba(0, 58, 129, 0.2);
-        width: 60px;
+        width: 66px;
         height: 60px;
         border-radius: 15px;
         display: flex;
@@ -2117,7 +2117,7 @@ COMMON_STYLES = """
     }
 
     .add-item-title {
-        font-size: 16px;
+        font-size: 20px;
         font-weight: 600;
         color: #FFFFFF;
         margin-bottom: 17px;
@@ -4578,7 +4578,7 @@ async def subscription_page():
                 <!-- Синий блок с кнопкой назад внутри -->
                 <div class="subscription-header-block">
                     <button class="back-link-white" onclick="history.back()">← Назад</button>
-                    <div class="subscription-title">📋 Подписка</div>
+                    <div class="subscription-title">Подписка</div>
                 </div>
                 
                 <div class="profile-card">
@@ -5169,7 +5169,7 @@ async def public_market_page(telegram_id: int):
             document.getElementById('main-content').innerHTML = `
                 <button class="back-link-white"
                         onclick="goBack()"
-                        style="position:absolute; top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:12px;">
+                        style="position:absolute; top:16px; left:16px; z-index:10; padding:8px 12px; ">
                     ← Назад
                 </button>
                 <div class="market-header-block">
@@ -5241,7 +5241,7 @@ async def public_market_page(telegram_id: int):
                                             <div class="market-ad-card-title">${{post.title}}</div>
                                             <div class="market-ad-card-subtitle">${{subtitle}}</div>
                                             <div class="market-ad-card-footer">
-                                                <span class="market-ad-card-date">📅 ${{createdDate}}</span>
+                                                <span class="market-ad-card-date">${{createdDate}}</span>
                                                 <button class="market-ad-card-btn" onclick="viewAd(${{post.id}})">Посмотреть</button>
                                             </div>
                                         </div>
@@ -5464,11 +5464,12 @@ async def view_ad_page(telegram_id: int, ad_id: int):
             }}
 
             document.getElementById('main-content').innerHTML = `
-                <div class="post-vid"
-                    <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'" style="top:16px; left:16px; z-index:10; background:rgba(0,0,0,0.5); border-radius:12px;">
-                        ← Назад
-                    </button>
-                    <span class="post-vid-text">Пост</span>
+
+                <div class="ad-header-block">
+                    <div class="ad-header-row">
+                        <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'">← Назад</button>
+                        <span class="ads-header-title">Пост</span>
+                    </div>
                 </div>
 
                 <div class="ad-detail-page">
