@@ -527,13 +527,13 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         ? new Date(post.created_at).toLocaleString('ru-RU')
                         : '';
                     const scheduleInfo = post.scheduled_at
-                        ? `<br>🕐 ${{new Date(post.scheduled_at).toLocaleString('ru-RU')}}`
+                        ? `<br>Опубликуется: ${{new Date(post.scheduled_at).toLocaleString('ru-RU')}}`
                         : '';
                     return `
                         <div class="add-item">
                             <div class="add-item-date-block">
                                 <div class="add-item-number">#${{num}}</div>
-                                <div class="add-item-date">${{date}}${{scheduleInfo}}</div>
+                                <div class="add-item-date">Создано: ${{date}}${{scheduleInfo}}</div>
                             </div>
                             <div class="add-item-title-block">
                                     <div class="add-item-title">${{post.title}}</div>
