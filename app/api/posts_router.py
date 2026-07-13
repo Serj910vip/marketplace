@@ -225,19 +225,9 @@ POST_PHOTOS_CSS = """
         margin-bottom: 4px;
         background: #003A81;
         border: 0.5px solid #0073FF;
-        border-radius: 10%;
+        border-radius: 10px;
     }
 
-    .schedule-field-group input {
-        width: 100%;
-        padding: 10px 12px;
-        background: rgba(0, 58, 129, 0.3);
-        border: 0.5px solid #0073FF;
-        border-radius: 10px;
-        color: #FFFFFF;
-        font-size: 14px;
-        outline: none;
-    }
 
     .schedule-field-group input:focus {
         border-color: #4a9eff;
@@ -276,6 +266,7 @@ POST_PHOTOS_CSS = """
     .schedule-field-group input {
         width: 113px;
         height: 38px;
+        margin-left: 39px;
         padding: 0 12px;
         background: rgba(0, 58, 129, 0.3);
         border: 0.5px solid #0073FF;
