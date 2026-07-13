@@ -153,7 +153,7 @@ POST_PHOTOS_CSS = """
     .switch-schedule {
         position: relative;
         display: inline-block;
-        width: 50px;
+        width: 58px;
         height: 25px;
         flex-shrink: 0;
     }
@@ -180,10 +180,9 @@ POST_PHOTOS_CSS = """
     .switch-schedule .slider:before {
         position: absolute;
         content: "";
-        height: 19px;
-        width: 19px;
-        left: 3px;
-        bottom: 2px;
+        height: 21px;
+        width: 27px;
+        bottom: 1.5px;
         background: #0073FF;
         transition: .3s;
         border-radius: 50%;
