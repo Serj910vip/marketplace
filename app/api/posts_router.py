@@ -185,7 +185,7 @@ POST_PHOTOS_CSS = """
         bottom: 1.5px;
         background: #0073FF;
         transition: .3s;
-        border-radius: 50%;
+        border-radius: 37%;
     }
 
     .switch-schedule input:checked + .slider {
