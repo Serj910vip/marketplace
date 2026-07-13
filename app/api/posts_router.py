@@ -486,16 +486,14 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         : '';
                     return `
                         <div class="add-item">
-                            <div class="add-item-header">
-                                <div class="add-item-title-block">
+                            <div class="add-item-date-block">
+                                <div class="add-item-number">#${{num}}</div>
+                                <div class="add-item-date">${{date}}${{scheduleInfo}}</div>
+                            </div>
+                            <div class="add-item-title-block">
                                     <div class="add-item-title">${{post.title}}</div>
                                     <div class="add-item-subtitle">${{post.subtitle || 'Без подзаголовка'}}</div>
                                 </div>
-                                <div class="add-item-title-block">
-                                    <div class="add-item-number">#${{num}}</div>
-                                    <div class="add-item-date">${{date}}${{scheduleInfo}}</div>
-                                </div>
-                            </div>
                             <div class="add-item-actions">
                                 <button class="add-item-btn add-item-btn-edit" onclick="editPost(${{post.id}})">Редактировать</button>
                             </div>

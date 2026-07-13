@@ -2111,7 +2111,9 @@ COMMON_STYLES = """
         margin-bottom: 6px;
     }
 
-    .add-item-title-block {
+    .add-item-date-block {
+        display: flex;
+        justify-content: space-between;
     }
 
     .add-item-title {
@@ -2127,19 +2129,13 @@ COMMON_STYLES = """
     }
 
     .add-item-number {
-        font-size: 12px;
-        color: #8A9593;
-        white-space: nowrap;
-        margin-left: 16px;
-        padding: 4px 10px;
-        background: rgba(0, 58, 129, 0.3);
-        border-radius: 12px;
-        border: 0.5px solid rgba(0, 115, 255, 0.4);
+        font-size: 13px;
+        color: #999393;
     }
 
     .add-item-date {
-        font-size: 12px;
-        color: #8A9593;
+        font-size: 13px;
+        color: #999393;
         margin-bottom: 16px;
     }
 
