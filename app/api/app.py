@@ -2126,7 +2126,7 @@ COMMON_STYLES = """
 
     .add-item-subtitle {
         font-size: 13px;
-        color: #8A9593;
+        color: #DFDFDF;
     }
 
     .add-item-number {
@@ -2899,7 +2899,7 @@ async def main_app():
                                 My Market
                             </button>
                             <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
-                            <div class="linked-chat-info" id="linked-chat-info"></div>
+                            <button class="add-bot-btn" onclick="window.location.href='/connect-bot'">Добавить My Market в группу</button>
                         </div>
                         <div class="menu-card" onclick="window.location.href='/posts'">
                             <div class="left">
@@ -5536,6 +5536,158 @@ async def view_ad_page(telegram_id: int, ad_id: int):
             await loadAdData();
         }}
         init();
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/connect-bot", response_class=HTMLResponse)
+async def connect_bot_page():
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>
+            {common_styles}
+            .connect-container {{
+                max-width: 400px;
+                margin: 40px auto;
+                padding: 20px;
+                text-align: center;
+            }}
+            .connect-title {{
+                font-size: 24px;
+                font-weight: 700;
+                color: #FFFFFF;
+                margin-bottom: 12px;
+            }}
+            .connect-subtitle {{
+                font-size: 16px;
+                color: #8A9593;
+                margin-bottom: 30px;
+                line-height: 1.5;
+            }}
+            .connect-buttons {{
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }}
+            .connect-btn {{
+                padding: 16px;
+                border-radius: 12px;
+                border: 1px solid #0073FF;
+                background: rgba(0, 58, 129, 0.3);
+                color: #FFFFFF;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s;
+            }}
+            .connect-btn:hover {{
+                background: #003A81;
+            }}
+            .connect-btn-group {{
+                border-color: #4a9eff;
+            }}
+            .connect-btn-channel {{
+                border-color: #00c853;
+            }}
+            .connect-btn-back {{
+                background: none;
+                border: 1px solid #8A9593;
+                color: #8A9593;
+                margin-top: 20px;
+            }}
+            .connect-btn-back:hover {{
+                background: rgba(138, 149, 147, 0.1);
+            }}
+            .bot-username {{
+                color: #0073FF;
+                font-weight: 600;
+            }}
+        </style>
+        <title>Подключение бота</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content">
+                <div class="ad-header-block">
+                    <div class="ad-header-row">
+                        <button class="back-link-white" onclick="window.location.href='/'">← Назад</button>
+                        <span class="ad-header-title">Подключение бота</span>
+                    </div>
+                </div>
+                <div class="connect-container">
+                    <div class="connect-title">🤖 Подключите бота</div>
+                    <div class="connect-subtitle">
+                        Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
+                        чтобы публиковать посты
+                    </div>
+                    <div class="connect-buttons">
+                        <button class="connect-btn connect-btn-group" onclick="addBotToGroup('group')">
+                            📢 В группу
+                        </button>
+                        <button class="connect-btn connect-btn-channel" onclick="addBotToGroup('channel')">
+                            📺 В канал
+                        </button>
+                        <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
+                            ← Вернуться на главную
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            {webapp_init}
+            
+            // Загружаем имя бота
+            async function loadBotUsername() {{
+                try {{
+                    const res = await fetch('/api/bot/username');
+                    const data = await res.json();
+                    if (data.username) {{
+                        document.getElementById('bot-username').textContent = '@' + data.username;
+                    }}
+                }} catch(e) {{
+                    console.error('Ошибка загрузки имени бота:', e);
+                }}
+            }}
+            
+            function addBotToGroup(type) {{
+                const tg = window.Telegram?.WebApp;
+                if (!tg) {{ return; }}
+                
+                tg.showPopup({{
+                    title: 'Подключение бота',
+                    message: 'Выберите, куда добавить бота:',
+                    buttons: [
+                        {{id: 'group', type: 'default', text: 'В группу'}},
+                        {{id: 'channel', type: 'default', text: 'В канал'}},
+                        {{type: 'cancel'}}
+                    ]
+                }}, async (btnId) => {{
+                    try {{
+                        const res = await fetch('/api/bot/username');
+                        const data = await res.json();
+                        if (!data.username) {{
+                            tg.showAlert('Не удалось получить имя бота');
+                            return;
+                        }}
+                        
+                        if (btnId === 'group') {{
+                            tg.openTelegramLink(`https://t.me/${{data.username}}?startgroup=connect`);
+                        }} else if (btnId === 'channel') {{
+                            tg.openTelegramLink(`https://t.me/${{data.username}}?startchannel&admin=post_messages`);
+                        }}
+                    }} catch(e) {{
+                        tg.showAlert('Ошибка: ' + e.message);
+                    }}
+                }});
+            }}
+            
+            loadBotUsername();
         </script>
     </body>
     </html>
