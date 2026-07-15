@@ -779,7 +779,7 @@ COMMON_STYLES = """
         font-weight: 700;
         color: #FFFFFF;
         margin-top: 17px;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
     }
 
     .home-business-rating {
@@ -1220,6 +1220,9 @@ COMMON_STYLES = """
     .profile-divider-stats {
         height: 1px;
         background: rgba(67, 84, 80, 0.6);
+        width: 500px;
+        margin-left: -100px;
+        margin-bottom: 19px;
     }
 
     .btn-edit-profile {
@@ -2855,6 +2858,29 @@ async def main_app():
             return s + ' ' + rating.toFixed(1);
         }}
 
+
+        function getUserAvatar() {{
+            const tg = window.Telegram?.WebApp;
+            const user = tg?.initDataUnsafe?.user;
+            
+            if (!user) return null;
+            
+            // Пробуем получить photo_url
+            if (user.photo_url) {{
+                return user.photo_url;
+            }}
+            
+            // Используем стандартный URL Telegram
+            return `https://t.me/i/userpic/320/${user.id}.jpg`;
+        }}
+
+        function getInitials() {{
+            const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            if (!user) return '?';
+            const firstName = user.first_name || '';
+            const lastName = user.last_name || '';
+            return (firstName[0] || '') + (lastName[0] || '');
+        }}
         
         function renderHome() {{
     
@@ -2869,10 +2895,14 @@ async def main_app():
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
 
             document.getElementById('main-content').innerHTML = `
-                <!-- Синий блок с наложением -->
+
                 <div class="home-header-block">
                     <div class="home-user-inline">
-                        <span class="home-user-role">Основатель</span>
+                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
+                        <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+                            <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
+                        </div>
                         <span class="home-user-name">${{name}}</span>
                     </div>
                     <!-- ЛИНИЯ -->
@@ -2992,6 +3022,10 @@ async def main_app():
                     </div>
                 </div>
             `;
+
+            setTimeout(() => {{
+                loadUserAvatar();
+            }}, 50);
                 
             
             // Отображаем услуги в списке
@@ -3019,6 +3053,42 @@ async def main_app():
             }}
         }}
 
+        function loadUserAvatar() {{
+            const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            if (!user) return;
+            
+            const img = document.getElementById('user-avatar-img');
+            const initials = document.getElementById('user-avatar-initials');
+            const container = document.getElementById('user-avatar-container');
+            
+            if (!img || !initials) return;
+            
+            // Показываем инициалы
+            const firstName = user.first_name || '';
+            const lastName = user.last_name || '';
+            initials.textContent = (firstName[0] || '') + (lastName[0] || '') || '?';
+            
+            // Пробуем загрузить аватарку
+            let avatarUrl = user.photo_url;
+            
+            if (!avatarUrl) {{
+                // Используем стандартный URL Telegram
+                avatarUrl = `https://t.me/i/userpic/320/${user.id}.jpg`;
+            }}
+            
+            img.src = avatarUrl;
+            img.onload = function() {{
+                img.style.display = 'block';
+                initials.style.display = 'none';
+                container.style.background = 'transparent';
+            }};
+            img.onerror = function() {{
+                img.style.display = 'none';
+                initials.style.display = 'flex';
+                container.style.background = '#003A81';
+            }};
+        }}
+
         function renderStats() {{
             const s = statsData || {{ total_requests:0, successful_requests:0, cancelled_requests:0 }};
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
@@ -3040,6 +3110,8 @@ async def main_app():
                         <span class="home-user-role">Основатель</span>
                         <span class="home-user-name">${{name}}</span>
                     </div>
+
+                    <div class="profile-divider-stats"></div>
                     
                     <div class="balance-card-flat">
                         
