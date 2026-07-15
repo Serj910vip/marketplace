@@ -2898,7 +2898,7 @@ async def main_app():
                             <button class="my-market-btn" onclick="window.location.href='/market/${{tgUser.id}}'">
                                 My Market
                             </button>
-                            <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
+                      ]
                             <button class="add-bot-btn" onclick="window.location.href='/connect-bot'">Добавить My Market в группу</button>
                         </div>
                         <div class="menu-card" onclick="window.location.href='/posts'">
@@ -5625,6 +5625,7 @@ async def connect_bot_page():
                         Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
                         чтобы публиковать посты
                     </div>
+                    <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
                     <div class="connect-buttons">
                         <button class="connect-btn connect-btn-group" onclick="addBotToGroup('group')">
                             📢 В группу
