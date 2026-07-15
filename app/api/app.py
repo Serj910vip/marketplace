@@ -2871,7 +2871,7 @@ async def main_app():
             }}
             
             // Используем стандартный URL Telegram
-            return `https://t.me/i/userpic/320/${user.id}.jpg`;
+            return `https://t.me/i/userpic/320/${{user.id}}.jpg`;
         }}
 
         function getInitials() {{
@@ -3073,7 +3073,7 @@ async def main_app():
             
             if (!avatarUrl) {{
                 // Используем стандартный URL Telegram
-                avatarUrl = `https://t.me/i/userpic/320/${user.id}.jpg`;
+                avatarUrl = `https://t.me/i/userpic/320/${{user.id}}.jpg`;
             }}
             
             img.src = avatarUrl;
