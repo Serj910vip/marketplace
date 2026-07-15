@@ -5640,12 +5640,13 @@ async def connect_bot_page():
                     </div>
                 </div>
 
-                <!-- Блок статуса подключения -->
-                <div id="linked-chat-info" class="chat-status loading">Проверка подключения...</div>
+                
 
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
 
                 <div class="market-ads-container">
+                    <!-- Блок статуса подключения -->
+                    <div id="linked-chat-info" class="chat-status loading">Проверка подключения...</div>
                     <div class="connect-container">
                         <div class="connect-title">🤖 Подключите бота</div>
                         <div class="connect-subtitle">
