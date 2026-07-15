@@ -953,6 +953,10 @@ COMMON_STYLES = """
         background: none;
     }
 
+    .menu-container-home .menu-card.posts {
+        background: rgba(0, 58, 129, 0.3);
+    }
+
     .menu-card:last-child {
         margin-bottom: 0;
     }
