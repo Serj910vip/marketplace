@@ -553,6 +553,7 @@ COMMON_STYLES = """
         width: 500px;
         margin-left: -100px;
         margin-bottom: 19px;
+        margin-top: 10px;
 
     }   
 
@@ -722,7 +723,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -16px;  /* Прижимаем к верхнему краю */
+        margin-top: -24px;  /* Прижимаем к верхнему краю */
     }
 
     .home-user-inline {
