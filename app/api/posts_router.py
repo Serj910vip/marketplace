@@ -744,21 +744,21 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                                 <div id="photo-slots"></div>
                                 <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                             </div>
-                            <div style="display:flex;gap:12px;margin-top:8px;">
-                                <button class="ad-btn-create" style="flex:2;" onclick="savePost()">Сохранить</button>
-                                <button class="ad-btn-create" id="delete-btn" style="flex:1;background:#FF8282;border-color:#FF8282;" onclick="deletePost()">Удалить</button>
-                            </div>
                             <div class="ad-field-group" style="margin-top:20px;">
-                                <label class="ad-field-label">Скрыть пост</label>
-                                <div class="toggle-container">
-                                    <span class="toggle-label">Не показывать в My Market</span>
-                                    <label class="switch">
-                                        <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
-                                        <span class="slider"></span>
-                                    </label>
-                                    <span class="toggle-status" id="hidden-status">🟢 Виден</span>
-                                </div>
+                            <div class="toggle-container" style="display:flex;align-items:center;justify-content:space-between;">
+                                <label class="ad-field-label" style="margin-bottom:0;">Скрыть пост</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
                             </div>
+                            <div style="display:flex;gap:12px;margin-top:8px;">
+                                <button class="ad-btn-create" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
+                                <button class="ad-btn-create" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
+                                
+                            </div>
+                            
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -771,7 +771,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
             function onHiddenToggle(checked) {{
                 isHidden = checked;
-                document.getElementById('hidden-status').textContent = checked ? '🔴 Скрыт' : '🟢 Виден';
+
             }}
 
             async function loadPost() {{
