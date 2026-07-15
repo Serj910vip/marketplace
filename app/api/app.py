@@ -5620,21 +5620,18 @@ async def connect_bot_page():
                     </div>
                 </div>
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
-
-                <div class="market-ads-container">
-                    <div class="connect-container">
-                        <div class="connect-title">🤖 Подключите бота</div>
-                        <div class="connect-subtitle">
-                            Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
-                            чтобы публиковать посты
-                        </div>
-                        
-                            <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
-                                ← Вернуться на главную
-                            </button>
-                        </div>
+                <div class="connect-container">
+                    <div class="connect-title">🤖 Подключите бота</div>
+                    <div class="connect-subtitle">
+                        Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
+                        чтобы публиковать посты
                     </div>
+                    
+                        <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
+                            ← Вернуться на главную
+                        </button>
                     </div>
+                </div>
             </div>
         </div>
         <script>
