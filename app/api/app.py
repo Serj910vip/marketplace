@@ -949,21 +949,8 @@ COMMON_STYLES = """
         border: 0.5px solid #0073FF;
     }
 
-    .menu-card .posts {
-        border-radius: 20px;
-        padding: 14px 16px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: none;
-        border: none;
-        width: 100%;
-        min-height: 68px;
-        box-sizing: border-box;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        border: 0.5px solid #0073FF;
+    .menu-card.posts {
+        background: none;
     }
 
     .menu-card:last-child {
