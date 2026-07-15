@@ -5541,7 +5541,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
     </html>
     """
 
-
 @app.get("/connect-bot", response_class=HTMLResponse)
 async def connect_bot_page():
     return f"""
@@ -5607,6 +5606,29 @@ async def connect_bot_page():
                 color: #0073FF;
                 font-weight: 600;
             }}
+            /* Стиль для статуса подключения */
+            .chat-status {{
+                padding: 12px 16px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                text-align: center;
+            }}
+            .chat-status.connected {{
+                background: rgba(76, 175, 80, 0.15);
+                border: 1px solid #4caf50;
+                color: #4caf50;
+            }}
+            .chat-status.disconnected {{
+                background: rgba(255, 82, 82, 0.15);
+                border: 1px solid #ff5252;
+                color: #ff5252;
+            }}
+            .chat-status.loading {{
+                background: rgba(138, 149, 147, 0.1);
+                border: 1px solid #8A9593;
+                color: #8A9593;
+            }}
         </style>
         <title>Подключение бота</title>
     </head>
@@ -5619,6 +5641,10 @@ async def connect_bot_page():
                         <span class="ad-header-title">Подключение бота</span>
                     </div>
                 </div>
+
+                <!-- Блок статуса подключения -->
+                <div id="linked-chat-info" class="chat-status loading">⏳ Проверка подключения...</div>
+
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
 
                 <div class="market-ads-container">
@@ -5629,16 +5655,38 @@ async def connect_bot_page():
                             чтобы публиковать посты
                         </div>
                         
-                            <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
-                                ← Вернуться на главную
-                            </button>
-                        </div>
+                        <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
+                            ← Вернуться на главную
+                        </button>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
         <script>
             {WEBAPP_INIT}
+            
+            // Функция проверки подключения
+            async function loadLinkedChat() {{
+                const el = document.getElementById('linked-chat-info');
+                if (!el || !tgUser) return;
+                
+                try {{
+                    const res = await fetch(`/api/user/${{tgUser.id}}/channel`);
+                    const data = await res.json();
+                    
+                    if (data.linked) {{
+                        const typeLabel = data.chat_type === 'channel' ? 'Канала' : 'Группы';
+                        el.className = 'chat-status connected';
+                        el.textContent = `✅ ${{typeLabel}} подключена: ${{data.chat_title}}`;
+                    }} else {{
+                        el.className = 'chat-status disconnected';
+                        el.textContent = '❌ Бот не подключён к группе или каналу';
+                    }}
+                }} catch(e) {{
+                    el.className = 'chat-status disconnected';
+                    el.textContent = '❌ Ошибка проверки подключения';
+                }}
+            }}
             
             // Загружаем имя бота
             async function loadBotUsername() {{
@@ -5653,7 +5701,7 @@ async def connect_bot_page():
                 }}
             }}
             
-            function addBotToGroup(type) {{
+            function addBotToGroup() {{
                 const tg = window.Telegram?.WebApp;
                 if (!tg) {{ return; }}
                 
@@ -5685,7 +5733,9 @@ async def connect_bot_page():
                 }});
             }}
             
+            // Загружаем всё при загрузке страницы
             loadBotUsername();
+            loadLinkedChat();
         </script>
     </body>
     </html>
