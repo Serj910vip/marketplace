@@ -3110,8 +3110,13 @@ async def main_app():
                 <!-- Единый блок с фоном #003A81 -->
                 <div class="stats-header-block">
                     <div class="home-user-inline">
-                        <span class="home-user-role">Основатель</span>
+                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
+                        <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+                            <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
+                        </div>
                         <span class="home-user-name">${{name}}</span>
+                    </div>
                     </div>
 
                     <div class="profile-divider-stats"></div>
@@ -3257,6 +3262,10 @@ async def main_app():
                     
                 </div>
             `;
+
+            setTimeout(() => {{
+                loadUserAvatar();
+            }}, 50);
         }}
 
         
@@ -3323,8 +3332,13 @@ async def main_app():
                 <!-- Синий блок с содержимым внутри -->
                 <div class="stats-header-block">
                     <div class="home-user-inline">
-                        <span class="home-user-role">Основатель</span>
-                        <span class="home-user-name">${{name}}</span>
+                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
+                            <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+                                <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
+                            </div>
+                            <span class="home-user-name">${{name}}</span>
+                        </div>
                     </div>
                     
                     <div class="books-stats">
@@ -3358,8 +3372,20 @@ async def main_app():
                         ${{generateBookingsList()}}
                     </div>
                 </div>
+
+                
             `;
+
+            setTimeout(() => {{
+                loadUserAvatar();
+            }}, 50);
         }}
+
+
+        
+
+
+        
 
 
         // Функции для фильтрации (только один раз!)
@@ -3466,6 +3492,10 @@ async def main_app():
                 
 
             `;
+
+            setTimeout(() => {{
+                loadUserAvatar();
+            }}, 50);
         }}
 
         // Функция для удаления маркета
