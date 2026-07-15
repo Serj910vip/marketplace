@@ -746,7 +746,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             </div>
                             <div class="ad-field-group" style="margin-top:20px;">
                             <div class="toggle-container" style="display:flex;align-items:center;justify-content:space-between;">
-                                <label class="ad-field-label" style="margin-bottom:0;">Скрыть пост</label>
+                                <label class="ad-field-label-hid" style="margin-bottom:0;">Скрыть пост</label>
                                 <label class="switch">
                                     <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
                                     <span class="slider"></span>

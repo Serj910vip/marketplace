@@ -1945,6 +1945,7 @@ COMMON_STYLES = """
         display: block;
     }
 
+
     .ad-field-input {
         width: 100%;
         padding: 14px 16px;
