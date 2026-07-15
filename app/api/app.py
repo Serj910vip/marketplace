@@ -1457,7 +1457,7 @@ COMMON_STYLES = """
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 16px 0 16px;
-        margin-bottom: 0;  /* Убираем отступ снизу */
+        margin-bottom: 26px;  /* Убираем отступ снизу */
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -3137,7 +3137,7 @@ async def main_app():
                         </div>
                         
                     </div>
-                    <div class="profile-divider-stats"></div>
+
                 </div>
                 
         
@@ -3342,6 +3342,7 @@ async def main_app():
                             <span class="home-user-name">${{name}}</span>
                         </div>
                     </div>
+                    <div class="profile-divider-stats"></div>
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
