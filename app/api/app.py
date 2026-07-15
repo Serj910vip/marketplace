@@ -550,6 +550,10 @@ COMMON_STYLES = """
     .divider-line {
         height: 1px;
         background: #435450;
+        width: 500px;
+        margin-left: -100px;
+        margin-bottom: 19px;
+
     }   
 
     .divider-line-post {
@@ -714,7 +718,7 @@ COMMON_STYLES = """
     .home-header-block {
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
-        padding: 20px 20px 20px 20px;
+        padding: 20px 20px 2px 20px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
@@ -848,27 +852,19 @@ COMMON_STYLES = """
     /*
     .menu-card {
         background: rgba(0, 58, 129, 0.3); 
-        border-radius: 12px;
-        padding: 14px 16px; 
-        margin-bottom: 10px;
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between;
-        border: 0.5px solid rgba(0, 115, 255, 0.6);
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-
-    .menu-card {
-        background: #FFFFFF;  
         border-radius: 20px;  
-        padding: 14px 16px;
-        margin-bottom: 10px;
+        padding: 14px 16px; 
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  
-        border: 1px solid rgba(0, 0, 0, 0.2);  
+        margin-bottom: 10px;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);   
+        
     }
+
+
     .menu-card .left { display: flex; align-items: center; gap: 10px; }
     .menu-card .icon { font-size: 22px; }
     .menu-card .label { font-size: 20px; font-weight: 600; }*/
@@ -937,6 +933,23 @@ COMMON_STYLES = """
     /* Кнопки внутри рамки */
     .menu-card {
         background: rgba(0, 58, 129, 0.3);
+        border-radius: 20px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        min-height: 68px;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border: 0.5px solid #0073FF;
+    }
+
+    .menu-card-posts {
         border-radius: 20px;
         padding: 14px 16px;
         margin-bottom: 8px;
@@ -2870,6 +2883,8 @@ async def main_app():
                         <span class="home-user-role">Основатель</span>
                         <span class="home-user-name">${{name}}</span>
                     </div>
+                    <!-- ЛИНИЯ -->
+                    <div class="divider-line"></div>
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
@@ -2882,8 +2897,7 @@ async def main_app():
                     </div>
                 </div>
 
-                <!-- ЛИНИЯ -->
-                <div class="divider-line"></div>
+                
 
 
                 <!-- БЛОК ПОСТОВ -->
@@ -2902,7 +2916,7 @@ async def main_app():
                       
                             <button class="add-bot-btn" onclick="window.location.href='/connect-bot'">Добавить My Market в группу</button>
                         </div>
-                        <div class="menu-card" onclick="window.location.href='/posts'">
+                        <div class="menu-card-posts" onclick="window.location.href='/posts'">
                             <div class="left">
                                 <span class="label">Посты</span>
                             </div>
