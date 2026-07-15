@@ -949,7 +949,7 @@ COMMON_STYLES = """
         border: 0.5px solid #0073FF;
     }
 
-    .menu-card-posts {
+    .menu-card .posts {
         border-radius: 20px;
         padding: 14px 16px;
         margin-bottom: 8px;
@@ -988,6 +988,7 @@ COMMON_STYLES = """
         font-weight: 500;
         color: #FFFFFF;
     }
+    
 
     .menu-card .accordion-arrow {
         font-size: 14px;
@@ -2916,7 +2917,7 @@ async def main_app():
                       
                             <button class="add-bot-btn" onclick="window.location.href='/connect-bot'">Добавить My Market в группу</button>
                         </div>
-                        <div class="menu-card-posts" onclick="window.location.href='/posts'">
+                        <div class="menu-card posts" onclick="window.location.href='/posts'">
                             <div class="left">
                                 <span class="label">Посты</span>
                             </div>
