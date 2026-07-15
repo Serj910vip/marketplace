@@ -5615,13 +5615,9 @@ async def connect_bot_page():
                 text-align: center;
             }}
             .chat-status.connected {{
-                background: rgba(76, 175, 80, 0.15);
-                border: 1px solid #4caf50;
                 color: #4caf50;
             }}
             .chat-status.disconnected {{
-                background: rgba(255, 82, 82, 0.15);
-                border: 1px solid #ff5252;
                 color: #ff5252;
             }}
             .chat-status.loading {{
@@ -5674,16 +5670,16 @@ async def connect_bot_page():
                     const data = await res.json();
                     
                     if (data.linked) {{
-                        const typeLabel = data.chat_type === 'channel' ? 'Канала' : 'Группы';
+                        const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
                         el.className = 'chat-status connected';
                         el.textContent = `${{typeLabel}}: ${{data.chat_title}} ✅`;
                     }} else {{
                         el.className = 'chat-status disconnected';
-                        el.textContent = '❌ Бот не подключён к группе или каналу';
+                        el.textContent = 'Бот не подключён к группе или каналу';
                     }}
                 }} catch(e) {{
                     el.className = 'chat-status disconnected';
-                    el.textContent = '❌ Ошибка проверки подключения';
+                    el.textContent = 'Ошибка проверки подключения';
                 }}
             }}
             
