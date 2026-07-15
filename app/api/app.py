@@ -1357,7 +1357,6 @@ COMMON_STYLES = """
     .bookings-menu-grid {
         display: flex;
         justify-content: space-around;
-        gap: 10px;
         margin-bottom: 20px;
         flex-wrap: wrap;
     }
@@ -1365,7 +1364,7 @@ COMMON_STYLES = """
     .bookings-menu-item {
         background: rgba(0, 58, 129, 0.2);
         border-radius: 15px;
-        width: 60px;
+        width: 83px;
         height: 60px;
         display: flex;
         flex-direction: column;
@@ -1401,7 +1400,7 @@ COMMON_STYLES = """
     }
 
     .booking-filter-btn {
-        width: 160px;
+        width: 173px;
         height: 41px;
         background: rgba(0, 58, 129, 0.2);
         color: #8A9593;
