@@ -2897,8 +2897,7 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
 
                 <div class="home-header-block">
-                    <div class="home-user-inline">
-                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
+                    <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
                         <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                             <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
                             <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
@@ -2907,6 +2906,9 @@ async def main_app():
                     </div>
                     <!-- ЛИНИЯ -->
                     <div class="divider-line"></div>
+                    <div class="home-user-inline">
+                        
+                    
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
