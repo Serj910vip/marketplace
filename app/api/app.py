@@ -522,7 +522,7 @@ COMMON_STYLES = """
     }
 
     .linked-chat-info {
-        font-size: 12px;
+        font-size: 13px;
         color: rgba(255,255,255,0.85);
         margin-top: 8px;
         text-align: center;
@@ -3479,7 +3479,7 @@ async def main_app():
                 const data = await res.json();
                 if (data.linked) {{
                     const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
-                    el.textContent = `✅ ${{typeLabel}} подключена: ${{data.chat_title}}`;
+                    el.textContent = `${{typeLabel}}: ${{data.chat_title}}` ✅;
                 }} else {{
                     el.textContent = 'Бот не подключён к группе или каналу';
                 }}
@@ -5625,8 +5625,6 @@ async def connect_bot_page():
                 color: #ff5252;
             }}
             .chat-status.loading {{
-                background: rgba(138, 149, 147, 0.1);
-                border: 1px solid #8A9593;
                 color: #8A9593;
             }}
         </style>
@@ -5643,7 +5641,7 @@ async def connect_bot_page():
                 </div>
 
                 <!-- Блок статуса подключения -->
-                <div id="linked-chat-info" class="chat-status loading">⏳ Проверка подключения...</div>
+                <div id="linked-chat-info" class="chat-status loading">Проверка подключения...</div>
 
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
 
