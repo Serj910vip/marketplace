@@ -949,7 +949,7 @@ COMMON_STYLES = """
         border: 0.5px solid #0073FF;
     }
 
-    .menu-card.posts {
+    .menu-container-home .menu-card {
         background: none;
     }
 
