@@ -748,7 +748,11 @@ COMMON_STYLES = """
     .home-business-card {
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         text-align: center;
+        max-width: 280px;
+        width: 100%;
+        margin: 0 auto;
         
+        box-sizing: border-box;
         
     }
 
