@@ -3484,12 +3484,12 @@ async def main_app():
         }}
 
         function getCategoryLabel(category) {{
-            const labels = {
+            const labels = {{
                 'all': 'Услуги',
                 'products': 'Товары',
                 'rent': 'Аренда',
                 'events': 'События'
-            };
+            }};
             return labels[category] || 'Услуги';
         }}
 
