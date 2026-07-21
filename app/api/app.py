@@ -1414,6 +1414,10 @@ COMMON_STYLES = """
         color: #8A9593;
     }
 
+    .bookings-menu-label.active {
+        color: #ffffff;
+    }
+
     .bookings-filter-buttons {
         display: flex;
         flex-wrap: wrap;
