@@ -717,17 +717,13 @@ COMMON_STYLES = """
 
     /* Стили для главной страницы */
     .home-header-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
         padding: 20px 20px 2px 20px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
         margin-top: -24px;  /* Прижимаем к верхнему краю */
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
     }
 
     .home-user-inline {
