@@ -753,8 +753,8 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                                 </label>
                             </div>
                             <div style="display:flex;gap:12px;margin-top:8px;">
-                                <button class="ad-btn-create" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
-                                <button class="ad-btn-create" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
+                                <button class="ad-btn-create-posts" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
+                                <button class="ad-btn-create-posts" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
                                 
                             </div>
                             

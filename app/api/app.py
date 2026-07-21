@@ -2079,6 +2079,27 @@ COMMON_STYLES = """
         transform: translateY(0px);
     }
 
+    .ad-btn-create-posts {
+        width: 100%;
+        max-width: 158px;
+        padding: 16px;
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
+        font-size: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+    }
+    .ad-btn-create-posts:hover {
+        background: rgba(0, 58, 129, 0.8);
+        transform: translateY(-1px);
+    }
+    .ad-btn-create-posts:active {
+        transform: translateY(0px);
+    }
+
     /* Стили для верхнего блока объявлений */
     .ad-header-block {
         padding: 20px 20px 0 20px;
