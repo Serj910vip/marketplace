@@ -182,7 +182,7 @@ POST_PHOTOS_CSS = """
         content: "";
         height: 21px;
         width: 27px;
-        bottom: 1.5px;
+        bottom: 0.55px;
         background: #0073FF;
         transition: 0.3s;
         border-radius: 25%;

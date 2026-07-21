@@ -1748,7 +1748,6 @@ COMMON_STYLES = """
 
     .profile-menu-card .label {
         font-size: 20px;
-        font-weight: 500;
         color: #FFFFFF;
     }
 
@@ -3444,6 +3443,19 @@ async def main_app():
 
 
                  <!-- Меню профиля с теми же стилями, что и menu-container-home -->
+
+                <div class="profile-menu-card" onclick="window.location.href='/subscription'">
+                    <div class="left">
+                        <span class="label">Подписка</span>
+                    </div>
+                    <span class="accordion-arrow" id="arrow-wallet">
+                        <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
+                        </svg>
+
+                    </span>
+                </div>
+                
                 <div class="profile-menu-container">
                     <div class="profile-menu-card" onclick="toggleProfileMenu('wallet')">
                         <div class="left">
@@ -3457,17 +3469,7 @@ async def main_app():
                         </span>
                     </div>
                     
-                    <div class="profile-menu-card" onclick="window.location.href='/subscription'">
-                        <div class="left">
-                            <span class="label">Подписка</span>
-                        </div>
-                        <span class="accordion-arrow" id="arrow-wallet">
-                            <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
-                            </svg>
-
-                        </span>
-                    </div>
+                    
                     
                     <div class="profile-menu-card" onclick="window.location.href='/clients?from=profile'">
                         <div class="left">
@@ -3496,7 +3498,7 @@ async def main_app():
                     
                     <div class="profile-menu-card" onclick="window.location.href='/privacy?from=profile'">
                         <div class="left">
-                            <span class="label">Политика и конфиденциальность</span>
+                            <span class="label">Политика и конф.</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-wallet">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
