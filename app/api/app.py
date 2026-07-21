@@ -2469,9 +2469,7 @@ COMMON_STYLES = """
         gap: 12px;
         margin-top: 8px;
         padding: 12px 16px;
-        background: rgba(0, 58, 129, 0.2);
-        border-radius: 12px;
-        border: 0.5px solid rgba(0, 115, 255, 0.4);
+
     }
 
     .toggle-label {
