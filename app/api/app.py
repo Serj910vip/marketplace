@@ -1384,6 +1384,24 @@ COMMON_STYLES = """
     }
 
 
+    .bookings-menu-item.active {
+        background: #003A81;
+        border-color: #0073FF;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
+    }
+
+    .bookings-menu-item.active .bookings-menu-label {
+        color: #FFFFFF;
+    }
+
+    .booking-filter-btn.active {
+        background: #003A81;
+        color: #FFFFFF;
+        border-color: #0073FF;
+        border: 0.5px solid rgba(0, 115, 255, 0.6);
+    }
+
+
     .bookings-menu-item:hover {
         background: #003A81;
         border-color: #0073FF;
@@ -3333,27 +3351,34 @@ async def main_app():
 
         // Вспомогательная функция
         function generateBookingsList() {{
-            if (bookingsList && bookingsList.length) {{
-                return bookingsList.map(b => `
-                    <div class="booking-card">
-                        <div class="bk-title">${{b.service_title}}</div>
-                        <div class="bk-meta">
-                            👤 ${{b.client_name}}<br>
-                            📅 ${{b.booking_day_label}}, ${{b.booking_time}}
-                        </div>
-                        ${{statusBadge(b.status)}}
-                    </div>
-                `).join('');
-            }} else {{
-                return '<div class="empty">Бронирований пока нет</div>';
+        
+            let filtered = [...bookingsList];
+
+            // Фильтр по статусу "Новые" (pending)
+            filtered = filtered.filter(b => b.status === 'pending');
+
+            if (filtered.length === 0) {{
+                return '<div class="empty">Новых заявок пока нет</div>';
             }}
+
+
+            return filtered.map(b => `
+                <div class="booking-card">
+                    <div class="bk-title">${{b.service_title}}</div>
+                    <div class="bk-meta">
+                         ${{b.client_name}}<br>
+                         ${{b.booking_day_label}}, ${{b.booking_time}}
+                    </div>
+                    ${{statusBadge(b.status)}}
+                </div>
+            `).join('');
         }}
 
        function renderBookings() {{
             const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             
             document.getElementById('main-content').innerHTML = `
-                <!-- Синий блок с содержимым внутри -->
+
                 <div class="stats-header-block">
                     <div class="home-user-inline">
                         <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
@@ -3368,27 +3393,28 @@ async def main_app():
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
-                            <div class="bookings-menu-item" onclick="filterBookings('all')">
+                            <div class="bookings-menu-item active" data-category="all" onclick="filterBookings('all')">
                                 <span class="bookings-menu-label">Услуги</span>
                             </div>
-                            <div class="bookings-menu-item" onclick="filterBookings('products')">
+                            <div class="bookings-menu-item" data-category="products" onclick="filterBookings('products')">
                                 <span class="bookings-menu-label">Товары</span>
                             </div>
-                            <div class="bookings-menu-item" onclick="filterBookings('rent')">
+                            <div class="bookings-menu-item" data-category="rent" onclick="filterBookings('rent')">
                                 <span class="bookings-menu-label">Аренда</span>
                             </div>
-                            <div class="bookings-menu-item" onclick="filterBookings('events')">
+                            <div class="bookings-menu-item" data-category="events" onclick="filterBookings('events')">
                                 <span class="bookings-menu-label">События</span>
                             </div>
                         </div>
                         
                         <div class="bookings-filter-buttons">
-                            <button class="booking-filter-btn active" onclick="filterByStatus('new')">Новые</button>
-                            <button class="booking-filter-btn" onclick="filterByStatus('confirmed')">Подтверждённые</button>
-                            <button class="booking-filter-btn" onclick="filterByStatus('completed')">Завершённые</button>
-                            <button class="booking-filter-btn" onclick="filterByStatus('cancelled')">Отменённые</button>
+                            <button class="booking-filter-btn active" data-status="new" onclick="filterByStatus('new')">Новые</button>
+                            <button class="booking-filter-btn" data-status="confirmed" onclick="filterByStatus('confirmed')">Подтверждённые</button>
+                            <button class="booking-filter-btn" data-status="completed" onclick="filterByStatus('completed')">Завершённые</button>
+                            <button class="booking-filter-btn" data-status="cancelled" onclick="filterByStatus('cancelled')">Отменённые</button>
                         </div>
                     </div>
+                </div>
 
                     
                 </div>
@@ -3401,6 +3427,14 @@ async def main_app():
                 
             `;
 
+            // Сбрасываем фильтры
+            currentBookingCategory = 'all';
+            currentBookingStatus = 'new';
+
+            // Перерисовываем с активными фильтрами
+            renderFilteredBookings();
+    
+
             setTimeout(() => {{
                 loadUserAvatar();
             }}, 50);
@@ -3408,19 +3442,119 @@ async def main_app():
 
 
         
-
+        let currentBookingCategory = 'all'; // all, products, rent, events
+        let currentBookingStatus = 'new'; // new, confirmed, completed, cancelled
 
         
 
 
         // Функции для фильтрации (только один раз!)
         function filterBookings(category) {{
-            tg.showAlert(`Фильтр по категории: ${{category}} в разработке`);
+            currentBookingCategory = category;
+    
+            // Обновляем активную кнопку
+            document.querySelectorAll('.bookings-menu-item').forEach(el => {{
+                el.classList.remove('active');
+            }});
+            document.querySelectorAll('.bookings-menu-item').forEach(el => {{
+                if (el.textContent.trim().toLowerCase() === getCategoryLabel(category)) {{
+                    el.classList.add('active');
+                }}
+            }});
+            
+            // Перерисовываем список
+            renderFilteredBookings();
         }}
 
         function filterByStatus(status) {{
-            tg.showAlert(`Фильтр по статусу: ${{status}} в разработке`);
+            currentBookingStatus = status;
+    
+            // Обновляем активную кнопку статуса
+            document.querySelectorAll('.booking-filter-btn').forEach(el => {{
+                el.classList.remove('active');
+            }});
+            document.querySelectorAll('.booking-filter-btn').forEach(el => {{
+                if (el.textContent.trim().toLowerCase() === getStatusLabel(status)) {{
+                    el.classList.add('active');
+                }}
+            }});
+            
+            // Перерисовываем список
+            renderFilteredBookings();
         }}
+
+        function getCategoryLabel(category) {{
+            const labels = {
+                'all': 'Услуги',
+                'products': 'Товары',
+                'rent': 'Аренда',
+                'events': 'События'
+            };
+            return labels[category] || 'Услуги';
+        }}
+
+        function getStatusLabel(status) {{
+            const labels = {{
+                'new': 'Новые',
+                'confirmed': 'Подтверждённые',
+                'completed': 'Завершённые',
+                'cancelled': 'Отменённые'
+            }};
+            return labels[status] || 'Новые';
+        }}
+
+        function renderFilteredBookings() {{
+            let filtered = [...bookingsList];
+            
+            // Фильтр по категории
+            if (currentBookingCategory !== 'all') {{
+                // Показываем только заглушку для других категорий
+                if (currentBookingCategory === 'products') {{
+                    document.getElementById('bookings-list-container').innerHTML = 
+                        '<div class="empty">Товары временно не доступны</div>';
+                    return;
+                }} else if (currentBookingCategory === 'rent') {{
+                    document.getElementById('bookings-list-container').innerHTML = 
+                        '<div class="empty">Аренда временно не доступна</div>';
+                    return;
+                }} else if (currentBookingCategory === 'events') {{
+                    document.getElementById('bookings-list-container').innerHTML = 
+                        '<div class="empty">События временно не доступны</div>';
+                    return;
+                }}
+            }}
+
+            // Фильтр по статусу
+            if (currentBookingStatus === 'new') {{
+                filtered = filtered.filter(b => b.status === 'pending');
+            }} else if (currentBookingStatus === 'confirmed') {{
+                filtered = filtered.filter(b => b.status === 'confirmed');
+            }} else if (currentBookingStatus === 'completed') {{
+                // Для заглушки показываем confirmed как завершенные
+                filtered = filtered.filter(b => b.status === 'confirmed');
+            }} else if (currentBookingStatus === 'cancelled') {{
+                filtered = filtered.filter(b => b.status === 'cancelled');
+            }}
+            
+            const container = document.getElementById('bookings-list-container');
+            if (filtered.length === 0) {{
+                container.innerHTML = '<div class="empty">Нет заявок с выбранными фильтрами</div>';
+            }} else {{
+                container.innerHTML = filtered.map(b => `
+                    <div class="booking-card">
+                        <div class="bk-title">${{b.service_title}}</div>
+                        <div class="bk-meta">
+                            👤 ${{b.client_name}}<br>
+                            📅 ${{b.booking_day_label}}, ${{b.booking_time}}
+                        </div>
+                        ${{statusBadge(b.status)}}
+                    </div>
+                `).join('');
+            }}
+        }}
+
+
+
 
         function renderProfile() {{
 
