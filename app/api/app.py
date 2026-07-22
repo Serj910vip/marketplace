@@ -5927,6 +5927,8 @@ async def connect_bot_page():
                     </div>
                 </div>
 
+                <div class="divider-line"></div>
+
                 
 
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>

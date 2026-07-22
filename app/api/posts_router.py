@@ -455,13 +455,14 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <span class="ads-header-title">Посты</span>
                         </div>
                     </div>
+                    <div class="divider-line"></div>
                     <div class="container-post">
                         <div class="ads-create-btn-wrapper">
                             <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
                             
                         </div>
                     </div>
-                    <div class="divider-line-post-2"></div>
+                    
                    
                     <div class="ads-filter-tabs" id="status-tabs">
                         <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
@@ -580,7 +581,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <span class="ad-header-title">Создание поста</span>
                         </div>
                     </div>
-                    <div class="divider-line-create-post"></div>
+                    <div class="divider-line"></div>
                     <div class="ad-create-main-block" style="margin-top:15px;">
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок поста:</label>
@@ -724,6 +725,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                             <span class="ad-header-title">Редактирование поста</span>
                         </div>
                     </div>
+                    <div class="divider-line"></div>
                     <div class="ad-create-main-block" style="margin-top:20px;">
                         <div id="loading" style="text-align:center;padding:40px 0;color:#8A9593;">Загрузка...</div>
                         <div id="form-container" class="hidden">
