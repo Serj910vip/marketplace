@@ -2147,8 +2147,7 @@ COMMON_STYLES = """
 
     .ad-header-title {
         color: #FFFFFF;
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 16px;
         margin-right: 20px;
     }
     
