@@ -5941,9 +5941,6 @@ async def connect_bot_page():
                             чтобы публиковать посты
                         </div>
                         
-                        <button class="connect-btn connect-btn-back" onclick="window.location.href='/'">
-                            ← Вернуться на главную
-                        </button>
                     </div>
                 </div>
             </div>
