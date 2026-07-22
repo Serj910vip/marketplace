@@ -5936,7 +5936,7 @@ async def connect_bot_page():
 
                 <div class="market-ads-container">
                     <!-- Блок статуса подключения -->
-                    <div id="linked-chat-info" class="chat-status loading">Проверка подключения...</div>
+                    <div id="linked-chat-info" class="chat-status loading" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; text-align: left; background: rgba(0, 0, 0, 0.2);">Проверка подключения...</div>
                     <div class="connect-container">
                         <div class="connect-title">🤖 Подключите бота</div>
                         <div class="connect-subtitle">
@@ -5963,7 +5963,14 @@ async def connect_bot_page():
                     if (data.linked) {{
                         const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
                         el.className = 'chat-status connected';
-                        el.textContent = `${{typeLabel}}: ${{data.chat_title}} ✅`;
+                        el.textContent = `${{typeLabel}}: ${{data.chat_title}}`;
+                        iconEl.innerHTML = `
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="#121918" stroke="#0073FF"/>
+                                <rect x="2.5" y="2.5" width="9" height="9" rx="4.5" fill="#121918" stroke="#0073FF"/>
+                                <rect x="4.5" y="4.5" width="5" height="5" rx="2.5" fill="#00FF04" stroke="#00FF04"/>
+                            </svg>
+                        `;
                     }} else {{
                         el.className = 'chat-status disconnected';
                         el.textContent = 'Бот не подключён к группе или каналу';
