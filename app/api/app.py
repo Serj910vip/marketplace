@@ -5936,14 +5936,18 @@ async def connect_bot_page():
 
                 <div class="market-ads-container">
                     <!-- Блок статуса подключения -->
-                    <div id="linked-chat-info" class="chat-status loading" >Проверка подключения...</div>
+                    <div id="linked-chat-info" class="chat-status loading" style="padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; background: rgba(0, 0, 0, 0.2);">
+                        <div id="chat-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <span id="chat-title" style="color: #FFFFFF;">Проверка подключения...</span>
+                            <span id="chat-icon" style="display: flex; align-items: center;"></span>
+                        </div>
+                    </div>
                     <div class="connect-container">
                         <div class="connect-title">🤖 Подключите бота</div>
                         <div class="connect-subtitle">
                             Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
                             чтобы публиковать посты
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -5952,7 +5956,9 @@ async def connect_bot_page():
             {WEBAPP_INIT}
             
             // Функция проверки подключения
-            async function loadLinkedChat() {{
+             async function loadLinkedChat() {{
+                const titleEl = document.getElementById('chat-title');
+                const iconEl = document.getElementById('chat-icon');
                 const el = document.getElementById('linked-chat-info');
                 if (!el || !tgUser) return;
                 
@@ -5963,7 +5969,12 @@ async def connect_bot_page():
                     if (data.linked) {{
                         const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
                         el.className = 'chat-status connected';
-                        el.textContent = `${{typeLabel}}: ${{data.chat_title}}`;
+                        
+                        // Меняем только текст
+                        titleEl.textContent = `${{typeLabel}}: ${{data.chat_title}}`;
+                        titleEl.style.color = '#FFFFFF';
+                        
+                        // Вставляем SVG
                         iconEl.innerHTML = `
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="#121918" stroke="#0073FF"/>
@@ -5973,11 +5984,15 @@ async def connect_bot_page():
                         `;
                     }} else {{
                         el.className = 'chat-status disconnected';
-                        el.textContent = 'Бот не подключён к группе или каналу';
+                        titleEl.textContent = 'Бот не подключён к группе или каналу';
+                        titleEl.style.color = '#FFFFFF';
+                        iconEl.innerHTML = '';
                     }}
                 }} catch(e) {{
                     el.className = 'chat-status disconnected';
-                    el.textContent = 'Ошибка проверки подключения';
+                    titleEl.textContent = 'Ошибка проверки подключения';
+                    titleEl.style.color = '#FFFFFF';
+                    iconEl.innerHTML = '';
                 }}
             }}
             
@@ -6026,9 +6041,11 @@ async def connect_bot_page():
                 }});
             }}
             
-            // Загружаем всё при загрузке страницы
-            loadBotUsername();
-            loadLinkedChat();
+             // ✅ Загружаем всё после загрузки DOM
+            document.addEventListener('DOMContentLoaded', function() {{
+                loadBotUsername();
+                loadLinkedChat();
+            }});
         </script>
     </body>
     </html>
