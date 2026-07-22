@@ -2124,8 +2124,8 @@ COMMON_STYLES = """
 
     /* Стили для верхнего блока объявлений */
     .ad-header-block {
-        padding: 20px 20px 0 20px;
-        margin-bottom: 0;
+        padding: 10px 20px 0 20px;
+        margin-bottom: -12px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
