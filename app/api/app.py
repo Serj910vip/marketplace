@@ -560,7 +560,9 @@ COMMON_STYLES = """
     .divider-line-post {
         height: 1px;
         background: #435450;
-        margin-top: 17px;
+        width: 500px;
+        margin-left: -100px;
+        margin-bottom: 19px;
     }
 
     .divider-line-post-2 {
@@ -5927,7 +5929,7 @@ async def connect_bot_page():
                     </div>
                 </div>
 
-                <div class="divider-line"></div>
+                <div class="divider-line-posts"></div>
 
                 
 
