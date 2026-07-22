@@ -5907,7 +5907,7 @@ async def connect_bot_page():
                 text-align: center;
             }}
             .chat-status.connected {{
-                color: #4caf50;
+                color: #FFFFFF;
             }}
             .chat-status.disconnected {{
                 color: #ff5252;
