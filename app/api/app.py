@@ -557,7 +557,7 @@ COMMON_STYLES = """
 
     }   
 
-    .divider-line-post {
+    .divider-line-posts {
         height: 1px;
         background: #435450;
         width: 500px;
