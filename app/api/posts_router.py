@@ -534,7 +534,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                         <div class="add-item">
                             <div class="add-item-date-block">
                                 <div class="add-item-number">#${{num}}</div>
-                                <div class="add-item-date">Создано: ${{date}}${{scheduleInfo}}</div>
+                                <div class="add-item-date">Создано: ${{date.split(' ')[0]}}${{scheduleInfo}}</div>
                             </div>
                             <div class="add-item-title-block">
                                     <div class="add-item-title">${{post.title}}</div>
