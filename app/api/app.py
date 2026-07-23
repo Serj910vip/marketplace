@@ -5936,7 +5936,7 @@ async def connect_bot_page():
 
                 <div class="market-ads-container">
                     <!-- Блок статуса подключения -->
-                    <div id="linked-chat-info" class="chat-status loading" style="padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; background: rgba(0, 0, 0, 0.2);">
+                    <div id="linked-chat-info" class="chat-status loading" style="padding: 12px 16px; margin-bottom: 20px;">
                         <div id="chat-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                             <span id="chat-title" style="color: #FFFFFF;">Проверка подключения...</span>
                             <span id="chat-icon" style="display: flex; align-items: center;"></span>
