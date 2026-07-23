@@ -5938,7 +5938,7 @@ async def connect_bot_page():
                     <!-- Блок статуса подключения -->
                     <div id="linked-chat-info" class="chat-status loading" style="padding: 12px 16px; margin-bottom: 20px;">
                         <div id="chat-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                            <span id="chat-title" style="color: #FFFFFF;">Проверка подключения...</span>
+                            <span id="chat-title" style="color: #FFFFFF; text-align: center;">Проверка подключения...</span>
                             <span id="chat-icon" style="display: flex; align-items: center;"></span>
                         </div>
                     </div>
