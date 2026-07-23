@@ -747,13 +747,13 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                                 <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                             </div>
                             <div class="ad-field-group" style="margin-top:20px;">
-                            <div class="toggle-container" style="display:flex;align-items:center;justify-content:space-between;">
-                                <label class="ad-field-label-hid" style="margin-bottom:0;">Скрыть пост</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
+                                <div class="toggle-container" style="display:flex;align-items:center;justify-content:space-between;">
+                                    <label class="ad-field-label-hid" style="margin-bottom:0;">Скрыть пост</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
                             <div style="display:flex;gap:12px;margin-top:8px;">
                                 <button class="ad-btn-create-posts" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
                                 <button class="ad-btn-create-posts" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
