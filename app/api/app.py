@@ -461,7 +461,6 @@ COMMON_STYLES = """
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 15px rgba(0, 58, 129, 0.25);
-        margin-top: 10px;
         padding: 0 20px;
     }
 
@@ -894,7 +893,7 @@ COMMON_STYLES = """
         margin-bottom: 9px;
         padding-bottom: 4px;
         margin-top: 5px;
-        margin-left: 10px;
+        margin-left: 15px;
         color: #FFFF
     }
     /*
