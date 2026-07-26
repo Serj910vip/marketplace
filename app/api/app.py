@@ -1272,7 +1272,7 @@ COMMON_STYLES = """
         font-size: 20px;
         margin-top: 0px;
         height: 68px;
-        margin-bottom: 10px;
+        margin-bottom: 18px;
         border-radius: 20px;
 
     }
