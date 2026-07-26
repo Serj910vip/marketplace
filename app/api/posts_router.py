@@ -79,10 +79,10 @@ POST_PHOTOS_CSS = """
     }
 
     .ads-filter-tab {
-        width: 110px;
+        width: 115px;
         padding: 14px;
         margin-top: 10px;
-        background: rgba(0, 58, 129, 0.3);
+        background: #121918;
         border: 0.5px solid #0073FF;
         border-radius: 10px;
         color: #FFFFFF;
@@ -430,7 +430,7 @@ async def _publish_post(user: User, post) -> None:
     await send_post_to_chat(bot, user.linked_chat_id, post)
 
 
-def register_post_pages(app, common_styles: str, webapp_init: str):
+def register_post_pages(app, common_styles: str, webapp_init: str, render_subpage_header):
     styles = common_styles + POST_PHOTOS_CSS
 
     @app.get("/posts", response_class=HTMLResponse)
@@ -446,13 +446,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    <div class="ad-header-block">
-                        <div class="ad-header-row">
-                            <button class="back-link-white" onclick="window.location.href='/'">← Назад</button>
-                            <span class="ads-header-title">Посты</span>
-                        </div>
-                    </div>
-                    <div class="divider-line-posts"></div>
+                    {render_subpage_header("window.location.href='/'", "Посты")}
                     <div class="container-post">
                         <div class="ads-create-btn-wrapper">
                             <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
@@ -572,13 +566,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    <div class="ad-header-block">
-                        <div class="ad-header-row">
-                            <button class="back-link-white" onclick="window.location.href='/posts'">← Назад</button>
-                            <span class="ad-header-title">Создание поста</span>
-                        </div>
-                    </div>
-                    <div class="divider-line-posts"></div>
+                    {render_subpage_header("window.location.href='/posts'", "Создание поста")}
                     <div class="ad-create-main-block" style="margin-top:15px;">
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок поста:</label>
@@ -716,13 +704,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    <div class="ad-header-block">
-                        <div class="ad-header-row">
-                            <button class="back-link-white" onclick="window.location.href='/posts'">← Назад</button>
-                            <span class="ad-header-title">Редактирование поста</span>
-                        </div>
-                    </div>
-                    <div class="divider-line-posts"></div>
+                    {render_subpage_header("window.location.href='/posts'", "Редактирование поста")}
                     <div class="ad-create-main-block" style="margin-top:20px;">
                         <div id="loading" style="text-align:center;padding:40px 0;color:#8A9593;">Загрузка...</div>
                         <div id="form-container" class="hidden">

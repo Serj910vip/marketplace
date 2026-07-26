@@ -780,6 +780,30 @@ COMMON_STYLES = """
         margin-top: 10px;
     }
 
+    /* Единая шапка подстраниц с кнопкой «Назад» */
+    .subpage-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .subpage-back-btn {
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 0;
+    }
+
+    .subpage-header-title {
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
     .home-user-role {
         font-size: 14px;
         color: rgba(255, 255, 255, 0.7);
@@ -2832,6 +2856,17 @@ AD_PHOTOS_JS = """
 """
 
 
+def render_subpage_header(back_onclick: str, title: str = "") -> str:
+    title_html = f'<span class="subpage-header-title">{title}</span>' if title else ""
+    return f"""                <div class="page-header-block">
+                    <div class="subpage-header-row">
+                        <button class="subpage-back-btn" onclick="{back_onclick}">← Назад</button>
+                        {title_html}
+                    </div>
+                    <div class="page-header-divider"></div>
+                </div>"""
+
+
 @app.get("/", response_class=HTMLResponse)
 async def main_app():
     return f"""
@@ -3654,7 +3689,7 @@ async def main_app():
                     
                     <div class="profile-menu-card" onclick="window.location.href='/privacy?from=profile'">
                         <div class="left">
-                            <span class="label">Политика и конф.</span>
+                            <span class="label">Политика и Конф.</span>
                         </div>
                         <span class="accordion-arrow" id="arrow-wallet">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -4548,35 +4583,6 @@ async def profile_fill_page():
         <style>{COMMON_STYLES}</style>
         <title>Редактирование профиля</title>
         <style>
-            .profile-header-row {{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px 0 12px 0;
-                margin-bottom: 20px;
-            }}
-            .profile-header-title {{
-                color: #FFFFFF;
-                font-size: 12px;
-            }}
-            .profile-header-back {{
-                color: #FFFFFF;
-                font-size: 12px;
-                cursor: pointer;
-                border: none;
-                background: none;
-                padding: 0;
-                text-decoration: none;
-            }}
-            .profile-header-back:hover {{
-                color: #4a9eff;
-            }}
-            .profile-divider-line {{
-                width: 100%;
-                height: 1px;
-                background: #435450;
-                margin-bottom: 20px;
-            }}
             .profile-photo-square {{
                 width: 80px;
                 height: 80px;
@@ -4615,14 +4621,7 @@ async def profile_fill_page():
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                <!-- Шапка с кнопкой назад и названием -->
-                <div class="profile-header-row">
-                    <button class="profile-header-back" onclick="window.location.href='/?tab=profile'">← Назад</button>
-                    <span class="profile-header-title">Профиль</span>
-                </div>
-                
-                <!-- Линия разделитель -->
-                <div class="profile-divider-line"></div>
+                {render_subpage_header("window.location.href='/?tab=profile'", "Профиль")}
 
                 <!-- Большой черный блок в стиле создания поста -->
                 <div class="ad-create-main-block" style="margin-top: 0; border-radius: 20px; padding: 20px;">
@@ -5754,17 +5753,22 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 starsHtml += `<button class="ad-detail-star ${{isActive}}" onclick="setRating(${{adId}}, ${{i}})">★</button>`;
             }}
 
-            document.getElementById('main-content').innerHTML = `
-
-                <div class="ad-header-block">
-                    <div class="ad-header-row">
-                        <button class="back-link-white" onclick="window.location.href='/market/${{telegramId}}'">← Назад</button>
-                        <span class="ads-header-title">Пост</span>
+            function renderSubpageHeader(backOnclick, title) {{
+                const titleHtml = title ? `<span class="subpage-header-title">${{title}}</span>` : '';
+                return `
+                    <div class="page-header-block">
+                        <div class="subpage-header-row">
+                            <button class="subpage-back-btn" onclick="${{backOnclick}}">← Назад</button>
+                            ${{titleHtml}}
+                        </div>
+                        <div class="page-header-divider"></div>
                     </div>
-                </div>
+                `;
+            }}
 
+            document.getElementById('main-content').innerHTML = `
+                ${{renderSubpageHeader(`window.location.href='/market/${{telegramId}}'`, 'Пост')}}
                 <div class="ad-detail-page">
-                <div class="divider-line-post"></div>
                     ${{photoHtml}}
                     
                     <div class="ad-detail-content">
@@ -5918,17 +5922,8 @@ async def connect_bot_page():
     </head>
     <body>
         <div class="app">
-            <div class="content">
-                <div class="ad-header-block">
-                    <div class="ad-header-row">
-                        <button class="back-link-white" onclick="window.location.href='/'">← Назад</button>
-                        <span class="ad-header-title">Подключение бота</span>
-                    </div>
-                </div>
-
-                <div class="divider-line-posts-2"></div>
-
-                
+            <div class="content" style="padding-top: 0;">
+                {render_subpage_header("window.location.href='/'", "Подключение бота")}
 
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
 
@@ -6075,4 +6070,4 @@ async def get_market_ads(telegram_id: int):
 from app.api.posts_router import router as posts_router, register_post_pages
 
 app.include_router(posts_router)
-register_post_pages(app, COMMON_STYLES, WEBAPP_INIT)
+register_post_pages(app, COMMON_STYLES, WEBAPP_INIT, render_subpage_header)
