@@ -738,7 +738,6 @@ COMMON_STYLES = """
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 16px;
     }
 
     .page-user-avatar {
