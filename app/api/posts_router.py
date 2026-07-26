@@ -743,18 +743,21 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
                                 <div id="photo-slots"></div>
                                 <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                             </div>
+
+                            <!-- Ползунок планирования -->
+                            <!-- Нижний ползунок с перенесёнными стилями -->
                             <div class="ad-field-group" style="margin-top:20px;">
-                                <div class="toggle-container" style="display:flex;align-items:center;justify-content:space-between;">
-                                    <label class="ad-field-label-hid" style="margin-bottom:0;">Скрыть пост</label>
-                                    <label class="switch">
+                                <div class="post-toggle-row"> <!-- Класс из верхнего ползунка -->
+                                    <span class="post-toggle-label">Скрыть пост</span> <!-- Класс из верхнего ползунка -->
+                                    <label class="post-switch"> <!-- Класс из верхнего ползунка -->
                                         <input type="checkbox" id="post-hidden-toggle" onchange="onHiddenToggle(this.checked)">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
-                            <div style="display:flex;gap:12px;margin-top:8px;">
-                                <button class="ad-btn-create-posts" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
-                                <button class="ad-btn-create-posts" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
-                                
+                                <div style="display:flex;gap:12px;margin-top:8px;">
+                                    <button class="ad-btn-create-posts" id="delete-btn" style="flex:1;background:rgba(0, 58, 129, 0.3);border-color:#0073FF;" onclick="deletePost()">Удалить пост</button>
+                                    <button class="ad-btn-create-posts" style="flex:2;" onclick="savePost()">Сохранить изменения</button>
+                                </div>
                             </div>
                             
                         </div>
