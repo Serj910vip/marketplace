@@ -717,34 +717,75 @@ COMMON_STYLES = """
     }
     
 
-    /* Стили для главной страницы */
-    .home-header-block {
+    /* Единая шапка для вкладок: главная, статистика, заявки, профиль */
+    .page-header-block {
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         padding: 20px 20px 2px 20px;
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -24px;  /* Прижимаем к верхнему краю */
+        margin-top: -24px;
     }
 
-    .home-user-inline {
+    .page-header-block--extended {
+        min-height: 314px;
+        margin-bottom: 26px;
+        padding-bottom: 0;
+    }
+
+    .page-user-header-row {
         display: flex;
-        align-items: baseline;
-        gap: 8px;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 16px;
+    }
+
+    .page-user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #003A81;
+        border: 2px solid #0073FF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .page-user-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
+    .page-user-avatar-initials {
+        color: #FFFFFF;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .page-user-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #FFFFFF;
+    }
+
+    .page-header-divider {
+        height: 1px;
+        background: #435450;
+        width: 500px;
+        margin-left: -100px;
+        margin-bottom: 19px;
+        margin-top: 10px;
     }
 
     .home-user-role {
         font-size: 14px;
         color: rgba(255, 255, 255, 0.7);
         font-weight: 500;
-    }
-
-    .home-user-name {
-        font-size: 14px;
-        font-weight: 700;
-        color: #FFFFFF;
     }
 
     .home-business-card {
@@ -1225,13 +1266,6 @@ COMMON_STYLES = """
         background: rgba(67, 84, 80, 0.6);
         margin: 10px 0;
     }
-    .profile-divider-stats {
-        height: 1px;
-        background: rgba(67, 84, 80, 0.6);
-        width: 500px;
-        margin-left: -100px;
-        margin-bottom: 19px;
-    }
 
     .btn-edit-profile {
         background: #003A81;
@@ -1479,18 +1513,6 @@ COMMON_STYLES = """
     }
 
 
-    /* Стили для единого блока статистики */
-    .stats-header-block {
-        height: 314px;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
-        padding: 20px 16px 0 16px;
-        margin-bottom: 26px;  /* Убираем отступ снизу */
-        margin-left: -16px;
-        margin-right: -16px;
-        box-sizing: border-box;
-        margin-top: -16px;
-    }
     /* Стили для блока кошелька */
     .wallet-header-block {
         background: #003A81;
@@ -2927,6 +2949,24 @@ async def main_app():
             const lastName = user.last_name || '';
             return (firstName[0] || '') + (lastName[0] || '');
         }}
+
+        function getUserDisplayName() {{
+            return tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
+        }}
+
+        function renderUserHeader() {{
+            const name = getUserDisplayName();
+            return `
+                <div class="page-user-header-row">
+                    <div id="user-avatar-container" class="page-user-avatar">
+                        <img id="user-avatar-img" class="page-user-avatar-img" src="" alt="">
+                        <span id="user-avatar-initials" class="page-user-avatar-initials">?</span>
+                    </div>
+                    <span class="page-user-name">${{name}}</span>
+                </div>
+                <div class="page-header-divider"></div>
+            `;
+        }}
         
         function renderHome() {{
     
@@ -2938,34 +2978,16 @@ async def main_app():
             const photo = businessData.business_photo_url
                 ? `<img class="business-photo" src="${{businessData.business_photo_url}}" alt="">`
                 : '<div class="photo-placeholder">🏪</div>';
-            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
 
             document.getElementById('main-content').innerHTML = `
 
-                <div class="home-header-block">
-                    <div class="home-user-inline">
-                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
-                            <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-                                <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
-                            </div>
-                            <span class="home-user-name">${{name}}</span>
-                        </div>
-                    </div>
-                    <!-- ЛИНИЯ -->
-                    <div class="divider-line"></div>
-                    <div class="home-user-inline">
-                        
-                    
+                <div class="page-header-block">
+                    ${{renderUserHeader()}}
                     <div class="home-business-card">
                         ${{photo}}
                         <div class="home-business-name">${{businessData.business_name}}</div>
                         <div class="home-business-rating">${{renderStars(businessData.business_rating)}}</div>
                         <div class="home-business-address">📍 ${{businessData.business_address}}</div>
-                    
-                        
-                        
-                        
                     </div>
                 </div>
 
@@ -3141,7 +3163,6 @@ async def main_app():
 
         function renderStats() {{
             const s = statsData || {{ total_requests:0, successful_requests:0, cancelled_requests:0 }};
-            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             
             const adsCount = s.ads_count || 0;
@@ -3154,19 +3175,8 @@ async def main_app():
             const earnedMoney = 25680;
             
             document.getElementById('main-content').innerHTML = `
-                <!-- Единый блок с фоном #003A81 -->
-                <div class="stats-header-block">
-                    <div class="home-user-inline">
-                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
-                            <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-                                <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
-                            </div>
-                            <span class="home-user-name">${{name}}</span>
-                        </div>
-                    </div>
-
-                    <div class="profile-divider-stats"></div>
+                <div class="page-header-block page-header-block--extended">
+                    ${{renderUserHeader()}}
                     
                     <div class="balance-card-flat">
                         
@@ -3380,21 +3390,10 @@ async def main_app():
         }}
 
        function renderBookings() {{
-            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
-            
             document.getElementById('main-content').innerHTML = `
 
-                <div class="stats-header-block">
-                    <div class="home-user-inline">
-                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
-                            <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-                                <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
-                            </div>
-                            <span class="home-user-name">${{name}}</span>
-                        </div>
-                    </div>
-                    <div class="profile-divider-stats"></div>
+                <div class="page-header-block page-header-block--extended">
+                    ${{renderUserHeader()}}
                     
                     <div class="books-stats">
                         <div class="bookings-menu-grid">
@@ -3421,8 +3420,6 @@ async def main_app():
                     </div>
                 </div>
 
-                    
-                </div>
                 <div class="ads-list-container" id="posts-list">
                     <div id="bookings-list-container">
                         ${{generateBookingsList()}}
@@ -3576,21 +3573,9 @@ async def main_app():
             const photo = b.business_photo_url
                 ? `<img src="${{b.business_photo_url}}" id="profile-photo-preview" class="photo-preview" alt="">`
                 : `<div class="photo-upload-box" id="profile-photo-box" onclick="document.getElementById('biz-photo-input').click()">📷</div>`;
-            const name = tgUser?.username ? '@' + tgUser.username : (tgUser?.first_name || 'Пользователь');
             document.getElementById('main-content').innerHTML = `
-                <div class="home-header-block">
-
-                    <div class="home-user-inline">
-                        <div class="user-avatar-wrapper" style="display:flex;align-items:center;gap:10px;">
-                            <div id="user-avatar-container" style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#003A81;border:2px solid #0073FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <img id="user-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-                                <span id="user-avatar-initials" style="color:#FFFFFF;font-size:18px;font-weight:700;">?</span>
-                            </div>
-                            <span class="home-user-name">${{name}}</span>
-                        </div>
-                    </div>
-                    <div class="profile-divider-stats"></div>
-                
+                <div class="page-header-block">
+                    ${{renderUserHeader()}}
                 
                     <div class="profile-card">                        
                         <button class="btn btn-edit-profile" onclick="window.location.href='/profile'">Редактировать профиль</button>
