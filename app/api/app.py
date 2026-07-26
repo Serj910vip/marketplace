@@ -595,7 +595,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: 17px;
+        margin-top: -20px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -658,7 +658,7 @@ COMMON_STYLES = """
     .market-address {
         font-size: 12px;
         color: rgba(255, 255, 255, 0.8);
-        margin-top: 33px;
+        margin-top: 20px;
         padding-bottom: 5px;
     }
 
@@ -5472,7 +5472,6 @@ async def public_market_page(telegram_id: int):
                         <button class="back-header-btn" onclick="${{backOnclick}}">← Назад</button>
                         ${{titleHtml}}
                     </div>
-                    <div class="back-header-divider"></div>
                 </div>
             `;
         }}
@@ -5504,7 +5503,7 @@ async def public_market_page(telegram_id: int):
                     <div class="market-address">📍 ${{businessData.business_address}}</div>
                 </div>
 
-                <div class="divider-line"></div>
+                <div class="divider-line-post-2"></div>
 
                 <div class="market-menu-grid">
                     <div class="market-menu-item active" data-tab="ads" onclick="switchMarketTab('ads')">
