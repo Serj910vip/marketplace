@@ -729,7 +729,7 @@ COMMON_STYLES = """
 
     .page-header-block--extended {
         min-height: 314px;
-        margin-bottom: 26px;
+        margin-bottom: 18px;
         padding-bottom: 0;
     }
 
