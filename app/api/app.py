@@ -777,7 +777,7 @@ COMMON_STYLES = """
         background: #435450;
         width: 500px;
         margin-left: -100px;
-        margin-bottom: 19px;
+        margin-bottom: 18px;
         margin-top: 10px;
     }
 
@@ -3008,7 +3008,7 @@ async def main_app():
                 <!-- БЛОК ПОСТОВ -->
 
                 
-                <div class="menu-container-home" style="margin-top: 20px !important;">
+                <div class="menu-container-home" style="margin-top: 10px !important;">
                     <div class="section-title">Доступно:</div>
                         <!-- КНОПКА MY MARKET -->
                         <div class="home-market-button">
