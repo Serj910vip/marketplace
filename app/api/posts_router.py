@@ -128,7 +128,6 @@ POST_PHOTOS_CSS = """
         align-items: center;
         justify-content: space-between;
         margin-top: 24px;
-        margin-bottom: 16px;
     }
 
     .post-toggle-label {

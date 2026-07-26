@@ -5384,7 +5384,7 @@ async def public_market_page(telegram_id: int):
     </head>
     <body>
         <div class="app">
-            <div class="content" id="main-content"></div>
+            <div class="content" id="main-content" style="padding-top:0;"></div>
         </div>
         <script>
         {WEBAPP_INIT}
@@ -5464,6 +5464,19 @@ async def public_market_page(telegram_id: int):
             return html;
         }}
 
+        function renderBackHeader(backOnclick, title) {{
+            const titleHtml = title ? `<span class="back-header-title">${{title}}</span>` : '';
+            return `
+                <div class="back-header-block">
+                    <div class="back-header-row">
+                        <button class="back-header-btn" onclick="${{backOnclick}}">← Назад</button>
+                        ${{titleHtml}}
+                    </div>
+                    <div class="back-header-divider"></div>
+                </div>
+            `;
+        }}
+
         function renderPublicPage() {{
             if (!businessData) {{
                 document.getElementById('main-content').innerHTML =
@@ -5476,11 +5489,7 @@ async def public_market_page(telegram_id: int):
                 : '<div class="market-photo-placeholder">🏪</div>';
 
             document.getElementById('main-content').innerHTML = `
-                <button class="back-link-white"
-                        onclick="goBack()"
-                        style="position:absolute; top:16px; left:16px; z-index:10; padding:8px 12px; ">
-                    ← Назад
-                </button>
+                ${{renderBackHeader("window.location.href='/?tab=home'", "My Market")}}
                 <div class="market-header-block">
                     <div class="market-info-row">
                         <div class="market-photo-wrapper">
@@ -5671,11 +5680,7 @@ async def public_market_page(telegram_id: int):
         }}
 
         function goBack() {{
-            if (history.length > 1) {{
-                history.back();
-            }} else {{
-                window.location.href = `/main/${{telegramId}}`;
-            }}
+            window.location.href = '/?tab=home';
         }}
         init();
         </script>
