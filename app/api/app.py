@@ -5479,6 +5479,8 @@ async def public_market_page(telegram_id: int):
                     <div class="market-address">📍 ${{businessData.business_address}}</div>
                 </div>
 
+                <div class="divider-line"></div>
+
                 <div class="market-menu-grid">
                     <div class="market-menu-item active" data-tab="ads" onclick="switchMarketTab('ads')">
                         <span class="market-menu-label">Посты</span>
@@ -5928,7 +5930,7 @@ async def connect_bot_page():
                     </div>
                 </div>
 
-                <div class="divider-line-posts"></div>
+                <div class="divider-line-posts-2"></div>
 
                 
 
