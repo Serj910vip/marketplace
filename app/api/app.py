@@ -616,7 +616,7 @@ COMMON_STYLES = """
     .market-photo {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
+        border-radius: 25%;
         object-fit: cover;
         border: 3px solid rgba(255, 255, 255, 0.3);
     }
@@ -637,7 +637,7 @@ COMMON_STYLES = """
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 14px;
     }
 
     .market-name {
