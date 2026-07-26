@@ -788,7 +788,6 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -27px;
     }
 
     .back-header-row {
