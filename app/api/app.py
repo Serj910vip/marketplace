@@ -724,7 +724,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -24px;
+        margin-top: -10px;
     }
 
     .page-header-block--extended {
