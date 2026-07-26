@@ -430,7 +430,7 @@ async def _publish_post(user: User, post) -> None:
     await send_post_to_chat(bot, user.linked_chat_id, post)
 
 
-def register_post_pages(app, common_styles: str, webapp_init: str, render_subpage_header):
+def register_post_pages(app, common_styles: str, webapp_init: str, render_back_header):
     styles = common_styles + POST_PHOTOS_CSS
 
     @app.get("/posts", response_class=HTMLResponse)
@@ -446,7 +446,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_subpag
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    {render_subpage_header("window.location.href='/'", "Посты")}
+                    {render_back_header("window.location.href='/'", "Посты")}
                     <div class="container-post">
                         <div class="ads-create-btn-wrapper">
                             <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
@@ -566,7 +566,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_subpag
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    {render_subpage_header("window.location.href='/posts'", "Создание поста")}
+                    {render_back_header("window.location.href='/posts'", "Создание поста")}
                     <div class="ad-create-main-block" style="margin-top:15px;">
                         <div class="ad-field-group">
                             <label class="ad-field-label">Заголовок поста:</label>
@@ -704,7 +704,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_subpag
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    {render_subpage_header("window.location.href='/posts'", "Редактирование поста")}
+                    {render_back_header("window.location.href='/posts'", "Редактирование поста")}
                     <div class="ad-create-main-block" style="margin-top:20px;">
                         <div id="loading" style="text-align:center;padding:40px 0;color:#8A9593;">Загрузка...</div>
                         <div id="form-container" class="hidden">

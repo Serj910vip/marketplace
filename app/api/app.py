@@ -724,7 +724,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -10px;
+        margin-top: -27px;
     }
 
     .page-header-block--extended {
@@ -777,18 +777,30 @@ COMMON_STYLES = """
         width: 500px;
         margin-left: -100px;
         margin-bottom: 18px;
-        margin-top: 10px;
+        margin-top: 8px;
     }
 
     /* Единая шапка подстраниц с кнопкой «Назад» */
-    .subpage-header-row {
+    .back-header-block {
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 0 20px;
+        margin-left: -16px;
+        margin-right: -16px;
+        box-sizing: border-box;
+        margin-top: -27px;
+    }
+
+    .back-header-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
+        height: 56px;
+        box-sizing: border-box;
     }
 
-    .subpage-back-btn {
+    .back-header-btn {
         color: #FFFFFF;
         font-size: 14px;
         font-weight: 700;
@@ -796,12 +808,22 @@ COMMON_STYLES = """
         border: none;
         background: none;
         padding: 0;
+        line-height: 1;
     }
 
-    .subpage-header-title {
+    .back-header-title {
         color: #FFFFFF;
         font-size: 14px;
         font-weight: 700;
+        line-height: 1;
+    }
+
+    .back-header-divider {
+        height: 1px;
+        background: #435450;
+        width: 500px;
+        margin-left: -100px;
+        margin-bottom: 18px;
     }
 
     .home-user-role {
@@ -2856,14 +2878,14 @@ AD_PHOTOS_JS = """
 """
 
 
-def render_subpage_header(back_onclick: str, title: str = "") -> str:
-    title_html = f'<span class="subpage-header-title">{title}</span>' if title else ""
-    return f"""                <div class="page-header-block">
-                    <div class="subpage-header-row">
-                        <button class="subpage-back-btn" onclick="{back_onclick}">← Назад</button>
+def render_back_header(back_onclick: str, title: str = "") -> str:
+    title_html = f'<span class="back-header-title">{title}</span>' if title else ""
+    return f"""                <div class="back-header-block">
+                    <div class="back-header-row">
+                        <button class="back-header-btn" onclick="{back_onclick}">← Назад</button>
                         {title_html}
                     </div>
-                    <div class="page-header-divider"></div>
+                    <div class="back-header-divider"></div>
                 </div>"""
 
 
@@ -4621,7 +4643,7 @@ async def profile_fill_page():
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                {render_subpage_header("window.location.href='/?tab=profile'", "Профиль")}
+                {render_back_header("window.location.href='/?tab=profile'", "Профиль")}
 
                 <!-- Большой черный блок в стиле создания поста -->
                 <div class="ad-create-main-block" style="margin-top: 0; border-radius: 20px; padding: 20px;">
@@ -5753,21 +5775,21 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                 starsHtml += `<button class="ad-detail-star ${{isActive}}" onclick="setRating(${{adId}}, ${{i}})">★</button>`;
             }}
 
-            function renderSubpageHeader(backOnclick, title) {{
-                const titleHtml = title ? `<span class="subpage-header-title">${{title}}</span>` : '';
+            function renderBackHeader(backOnclick, title) {{
+                const titleHtml = title ? `<span class="back-header-title">${{title}}</span>` : '';
                 return `
-                    <div class="page-header-block">
-                        <div class="subpage-header-row">
-                            <button class="subpage-back-btn" onclick="${{backOnclick}}">← Назад</button>
+                    <div class="back-header-block">
+                        <div class="back-header-row">
+                            <button class="back-header-btn" onclick="${{backOnclick}}">← Назад</button>
                             ${{titleHtml}}
                         </div>
-                        <div class="page-header-divider"></div>
+                        <div class="back-header-divider"></div>
                     </div>
                 `;
             }}
 
             document.getElementById('main-content').innerHTML = `
-                ${{renderSubpageHeader(`window.location.href='/market/${{telegramId}}'`, 'Пост')}}
+                ${{renderBackHeader(`window.location.href='/market/${{telegramId}}'`, 'Пост')}}
                 <div class="ad-detail-page">
                     ${{photoHtml}}
                     
@@ -5923,7 +5945,7 @@ async def connect_bot_page():
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                {render_subpage_header("window.location.href='/'", "Подключение бота")}
+                {render_back_header("window.location.href='/'", "Подключение бота")}
 
                 <button class="add-bot-btn" onclick="addBotToGroup()">Добавить My Market в группу</button>
 
@@ -6070,4 +6092,4 @@ async def get_market_ads(telegram_id: int):
 from app.api.posts_router import router as posts_router, register_post_pages
 
 app.include_router(posts_router)
-register_post_pages(app, COMMON_STYLES, WEBAPP_INIT, render_subpage_header)
+register_post_pages(app, COMMON_STYLES, WEBAPP_INIT, render_back_header)
