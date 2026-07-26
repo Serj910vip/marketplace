@@ -2051,6 +2051,7 @@ COMMON_STYLES = """
 
     .ad-field-input {
         width: 100%;
+        height: 60px;
         padding: 14px 16px;
         background: rgba(0, 58, 129, 0.3);
         border: 0.5px solid #0073FF;
