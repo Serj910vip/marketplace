@@ -1888,7 +1888,7 @@ COMMON_STYLES = """
         padding: 20px;
         border: 0.5px solid rgba(67, 84, 80, 0.6);
         min-height: 200px;
-        margin-top: -19px;
+        margin-top: -11px;
     }
 
     /* Пустой список */
