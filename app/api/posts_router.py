@@ -122,78 +122,75 @@ POST_PHOTOS_CSS = """
         border-radius: 12px 12px 0 0;
     }
 
-    /* Стили для ползунка планирования */
-    .schedule-toggle-container {
+    /* iOS-style toggle для страниц создания и редактирования поста */
+    .post-toggle-row {
         display: flex;
         align-items: center;
-        justify-content: space-between; 
-        border-radius: 12px;
+        justify-content: space-between;
         margin-bottom: 16px;
     }
 
-    .schedule-toggle-label {
+    .post-toggle-label {
         font-size: 14px;
         color: #FFFFFF;
         font-weight: 500;
     }
 
-    .schedule-toggle-status {
-        font-size: 13px;
-        color: #8A9593;
-    }
-
-    .schedule-toggle-status.active {
-        color: #4caf50;
-    }
-
-    .schedule-toggle-status.inactive {
-        color: #ff6b6b;
-    }
-
-    .switch-schedule {
+    .post-switch {
         position: relative;
         display: inline-block;
-        width: 58px;
-        height: 25px;
+        width: 51px;
+        height: 31px;
         flex-shrink: 0;
     }
 
-    .switch-schedule input {
+    .post-switch input {
         opacity: 0;
         width: 0;
         height: 0;
+        position: absolute;
     }
 
-    .switch-schedule .slider {
+    .post-switch .slider {
         position: absolute;
         cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         background: rgba(0, 58, 129, 0.3);
-        transition: .3s;
-        border-radius: 10px;
         border: 1px solid #0073FF;
+        border-radius: 31px;
+        transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-tap-highlight-color: transparent;
     }
 
-    .switch-schedule .slider:before {
+    .post-switch .slider:before {
         position: absolute;
         content: "";
-        height: 21px;
+        height: 27px;
         width: 27px;
-        bottom: 0.55px;
+        left: 1px;
+        bottom: 1px;
         background: #0073FF;
-        transition: 0.3s;
-        border-radius: 25%;
+        border-radius: 50%;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
     }
 
-    .switch-schedule input:checked + .slider {
+    .post-switch input:checked + .slider {
         background: #003A81;
+        border-color: #0073FF;
     }
 
-    .switch-schedule input:checked + .slider:before {
-        transform: translateX(24px);
+    .post-switch input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+
+    .post-switch input:active + .slider:before {
+        width: 30px;
+    }
+
+    .post-switch input:checked:active + .slider:before {
+        transform: translateX(17px);
     }
 
     /* Стили для полей даты и времени */
@@ -603,9 +600,9 @@ def register_post_pages(app, common_styles: str, webapp_init: str):
 
                     
                         <!-- Ползунок планирования -->
-                        <div class="schedule-toggle-container">
-                            <span class="schedule-toggle-label">Запланировать публикацию</span>
-                            <label class="switch-schedule">
+                        <div class="post-toggle-row">
+                            <span class="post-toggle-label">Запланировать публикацию</span>
+                            <label class="post-switch">
                                 <input type="checkbox" id="schedule-toggle" onchange="toggleScheduleFields(this.checked)">
                                 <span class="slider"></span>
                             </label>
