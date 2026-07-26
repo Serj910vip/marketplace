@@ -127,6 +127,7 @@ POST_PHOTOS_CSS = """
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-top: 24px;
         margin-bottom: 16px;
     }
 
@@ -197,7 +198,7 @@ POST_PHOTOS_CSS = """
     .schedule-fields {
         display: none;
         gap: 12px;
-        margin-top: 12px;
+        margin-top: 28px;
         border-radius: 12px;
     }
 

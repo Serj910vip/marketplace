@@ -724,7 +724,7 @@ COMMON_STYLES = """
         margin-left: -16px;
         margin-right: -16px;
         box-sizing: border-box;
-        margin-top: -27px;
+        margin-top: -30px;
     }
 
     .page-header-block--extended {
@@ -2159,7 +2159,7 @@ COMMON_STYLES = """
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
-        margin-top: 8px;
+        margin-top: 42px;
     }
     .ad-btn-create:hover {
         background: rgba(0, 58, 129, 0.8);
