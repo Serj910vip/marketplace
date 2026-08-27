@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.booking import Booking
 from app.models.user import User
 
 
@@ -105,3 +106,42 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
         return user
+
+    async def update_booking_settings(
+        self,
+        user: User,
+        *,
+        booking_auto_confirm: bool | None = None,
+        cancellation_deadline_hours: int | None = ...,
+    ) -> User:
+        if booking_auto_confirm is not None:
+            user.booking_auto_confirm = booking_auto_confirm
+        if cancellation_deadline_hours is not ...:
+            user.cancellation_deadline_hours = cancellation_deadline_hours
+
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
+
+    async def get_client_base(self, owner_id: int) -> list[dict]:
+        """Клиентская база бизнеса, агрегированная по истории записей (без отдельной CRM-таблицы)."""
+        query = (
+            select(Booking)
+            .where(Booking.owner_id == owner_id, Booking.client_telegram_id.isnot(None))
+            .order_by(Booking.created_at.desc())
+        )
+        result = await self.session.execute(query)
+        bookings = list(result.scalars().all())
+
+        clients: dict[int, dict] = {}
+        for booking in bookings:
+            client = clients.setdefault(booking.client_telegram_id, {
+                "client_telegram_id": booking.client_telegram_id,
+                "client_name": booking.client_name,
+                "client_phone": booking.client_phone,
+                "visits_count": 0,
+                "last_visit_at": booking.starts_at or booking.created_at,
+            })
+            client["visits_count"] += 1
+
+        return sorted(clients.values(), key=lambda c: c["last_visit_at"] or datetime.min, reverse=True)

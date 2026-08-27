@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Float, String
+from sqlalchemy import BigInteger, Boolean, DateTime, Float, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -56,6 +56,13 @@ class User(Base):
     linked_chat_title: Mapped[str | None] = mapped_column(String, nullable=True)
 
     linked_chat_type: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    booking_auto_confirm: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    cancellation_deadline_hours: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, default=2
+    )
+    """Сколько часов до начала записи клиент ещё может отменить её сам. 0 — можно отменить вплоть до начала. NULL — самоотмена недоступна."""
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,

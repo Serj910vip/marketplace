@@ -52,6 +52,7 @@ class AdRepository:
         status: str = "published",
         scheduled_at=None,
         published_at=None,
+        service_id: int | None = None,
     ):
         ad = Ad(
             user_id=user_id,
@@ -62,6 +63,7 @@ class AdRepository:
             status=status,
             scheduled_at=scheduled_at,
             published_at=published_at,
+            service_id=service_id,
         )
         if photos:
             set_ad_photos(ad, photos)

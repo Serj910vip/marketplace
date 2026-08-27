@@ -12,11 +12,13 @@ if sys.platform == "win32":
 
 from app.bot.bot import dp, bot
 from app.services.post_scheduler import scheduler_loop
+from app.services.booking_scheduler import booking_scheduler_loop
 
 
 async def run_bot():
     print("🤖 Бот запущен...")
     asyncio.create_task(scheduler_loop())
+    asyncio.create_task(booking_scheduler_loop())
     await dp.start_polling(
         bot,
         skip_updates=True,

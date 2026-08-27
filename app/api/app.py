@@ -15,10 +15,7 @@ from sqlalchemy import func, select
 
 from app.database.session import AsyncSessionLocal
 from app.models.booking import Booking
-from app.models.service import Service
 from app.models.user import User
-from app.repositories.booking_repository import BookingRepository
-from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.models.ad import Ad
 from app.repositories.ad_repository import AdRepository
@@ -36,12 +33,6 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 MARKETPLACE_NAME = "Tipster my market"
 
-DAY_LABELS = {
-    "mon": "Пн", "tue": "Вт", "wed": "Ср", "thu": "Чт",
-    "fri": "Пт", "sat": "Сб", "sun": "Вс",
-}
-
-
 class ProfileUpdateRequest(BaseModel):
     profile_type: Literal["business", "personal"]
     country: str
@@ -53,16 +44,6 @@ class BusinessSettingsRequest(BaseModel):
     market_name: Optional[str] = None
     business_photo_url: Optional[str] = None
 
-
-class ServiceCreateRequest(BaseModel):
-    title: str
-    description: Optional[str] = None
-    photo_url: Optional[str] = None
-    category: Optional[str] = None
-    price: Optional[float] = None
-    training_duration: Optional[int] = None
-    booking_format: Optional[str] = None
-    working_schedule: Optional[dict[str, list[str]]] = None
 
 class AdCreateRequest(BaseModel):
     telegram_id: int
@@ -140,40 +121,6 @@ def _user_to_dict(user: User) -> dict:
     }
 
 
-def _service_to_dict(service: Service) -> dict:
-    schedule = service.get_schedule()
-    days_short = ", ".join(
-        DAY_LABELS.get(d, d) for d in schedule.keys()
-    ) if schedule else "—"
-    return {
-        "id": service.id,
-        "title": service.title,
-        "description": service.description,
-        "photo_url": service.photo_url,
-        "category": service.category,
-        "price": service.price,
-        "training_duration": service.training_duration,
-        "booking_format": service.booking_format,
-        "working_schedule": schedule,
-        "working_days_label": days_short,
-        "created_at": service.created_at.isoformat(),
-    }
-
-
-def _booking_to_dict(booking: Booking, service_title: str) -> dict:
-    return {
-        "id": booking.id,
-        "service_id": booking.service_id,
-        "service_title": service_title,
-        "client_name": booking.client_name,
-        "booking_day": booking.booking_day,
-        "booking_day_label": DAY_LABELS.get(booking.booking_day, booking.booking_day),
-        "booking_time": booking.booking_time,
-        "status": booking.status,
-        "created_at": booking.created_at.isoformat(),
-    }
-
-
 # ========== API ==========
 
 @app.get("/api/business/{telegram_id}")
@@ -241,91 +188,6 @@ async def update_profile(telegram_id: int, body: ProfileUpdateRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/services/{telegram_id}")
-async def get_services(telegram_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(telegram_id)
-            if not user:
-                raise HTTPException(status_code=404, detail="Пользователь не найден")
-            service_repo = ServiceRepository(session)
-            services = await service_repo.get_by_user_id(user.id)
-            return JSONResponse({
-                "services": [_service_to_dict(s) for s in services]
-            })
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/api/services/{telegram_id}")
-async def create_service(telegram_id: int, body: ServiceCreateRequest):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(telegram_id)
-            if not user:
-                raise HTTPException(status_code=404, detail="Пользователь не найден")
-            if not body.title.strip():
-                raise HTTPException(status_code=400, detail="Название услуги обязательно")
-
-            service_repo = ServiceRepository(session)
-            service = await service_repo.create(
-                user_id=user.id,
-                title=body.title.strip(),
-                description=body.description,
-                photo_url=body.photo_url,
-                category=body.category,
-                price=body.price,
-                training_duration=body.training_duration,
-                booking_format=body.booking_format,
-                working_schedule=body.working_schedule,
-            )
-            return JSONResponse({
-                "success": True,
-                "service": _service_to_dict(service),
-            })
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/api/bookings/{telegram_id}")
-async def get_bookings(telegram_id: int):
-    try:
-        async with AsyncSessionLocal() as session:
-            user_repo = UserRepository(session)
-            user = await user_repo.get_by_telegram_id(telegram_id)
-            if not user:
-                raise HTTPException(status_code=404, detail="Пользователь не найден")
-
-            booking_repo = BookingRepository(session)
-            bookings = await booking_repo.get_by_owner_id(user.id)
-
-            service_titles: dict[int, str] = {}
-            if bookings:
-                service_ids = {b.service_id for b in bookings}
-                result = await session.execute(
-                    select(Service).where(Service.id.in_(service_ids))
-                )
-                for svc in result.scalars().all():
-                    service_titles[svc.id] = svc.title
-
-            return JSONResponse({
-                "bookings": [
-                    _booking_to_dict(b, service_titles.get(b.service_id, "Услуга"))
-                    for b in bookings
-                ]
-            })
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @app.get("/api/stats/{telegram_id}")
 async def get_stats(telegram_id: int):
     try:
@@ -341,16 +203,16 @@ async def get_stats(telegram_id: int):
             successful = await session.scalar(
                 select(func.count()).select_from(Booking).where(
                     Booking.owner_id == user.id,
-                    Booking.status == "confirmed",
+                    Booking.status.in_(("confirmed", "completed")),
                 )
             ) or 0
             cancelled = await session.scalar(
                 select(func.count()).select_from(Booking).where(
                     Booking.owner_id == user.id,
-                    Booking.status == "cancelled",
+                    Booking.status.in_(("cancelled_by_client", "cancelled_by_owner", "no_show")),
                 )
             ) or 0
-            
+
             ads_count = await session.scalar(
                 select(func.count()).select_from(Ad).where(Ad.user_id == user.id)
             ) or 0
@@ -2730,27 +2592,17 @@ LOCATION_DATA_JS = """
 """
 
 SERVICE_HELPERS_JS = """
-    const FITNESS_CATEGORIES = [
-        'Персональные тренировки', 'Групповые занятия', 'Йога', 'Пилатес',
-        'Кроссфит', 'Кардио', 'Силовые тренировки', 'Стретчинг',
-        'Бокс / единоборства', 'Функциональный тренинг'
-    ];
     const DURATIONS = [30, 45, 60, 90];
     const DAYS = [
-        {key:'mon',label:'Пн'},{key:'tue',label:'Вт'},{key:'wed',label:'Ср'},
-        {key:'thu',label:'Чт'},{key:'fri',label:'Пт'},{key:'sat',label:'Сб'},{key:'sun',label:'Вс'}
+        {key:0,label:'Пн'},{key:1,label:'Вт'},{key:2,label:'Ср'},
+        {key:3,label:'Чт'},{key:4,label:'Пт'},{key:5,label:'Сб'},{key:6,label:'Вс'}
     ];
-    const DAY_FULL = {mon:'Понедельник',tue:'Вторник',wed:'Среда',thu:'Четверг',fri:'Пятница',sat:'Суббота',sun:'Воскресенье'};
+    const DAY_FULL = {0:'Понедельник',1:'Вторник',2:'Среда',3:'Четверг',4:'Пятница',5:'Суббота',6:'Воскресенье'};
 
-    function generateTimeSlots(durationMin) {
-        const slots = [];
-        const start = 8 * 60, end = 21 * 60;
-        for (let m = start; m + durationMin <= end; m += durationMin) {
-            const h = Math.floor(m/60), min = m % 60;
-            slots.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
-        }
-        return slots;
-    }
+    const SERVICE_STATUS_LABELS = {
+        draft: '📝 Черновик', published: '✅ Опубликована',
+        hidden: '🙈 Скрыта', archived: '🗄️ Архив',
+    };
 
     function formatLabel(fmt) {
         if (fmt === 'online') return '🌐 Онлайн';
@@ -2758,20 +2610,40 @@ SERVICE_HELPERS_JS = """
         return fmt || '—';
     }
 
-    function serviceCardHtml(s) {
+    function ownerServiceCardHtml(s) {
         const photo = s.photo_url
             ? `<img class="svc-photo" src="${s.photo_url}" alt="">`
             : `<div class="svc-photo">🛠️</div>`;
-        const dur = s.training_duration ? s.training_duration + ' мин' : '—';
+        const dur = s.duration_minutes ? s.duration_minutes + ' мин' : '—';
+        const statusLabel = SERVICE_STATUS_LABELS[s.status] || s.status;
+        return `<div class="service-card" onclick="window.location.href='/service/edit/${s.id}'">
+            ${photo}
+            <div class="svc-body">
+                <div class="svc-title">${s.title}</div>
+                <div class="svc-meta">
+                    ${s.category_name || 'Без категории'} · ${dur}<br>
+                    ${formatLabel(s.booking_format)} · ${statusLabel}
+                </div>
+                ${s.price ? `<div class="svc-price">${s.price} ₽</div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    function publicServiceCardHtml(s) {
+        const photo = s.photo_url
+            ? `<img class="svc-photo" src="${s.photo_url}" alt="">`
+            : `<div class="svc-photo">🛠️</div>`;
+        const dur = s.duration_minutes ? s.duration_minutes + ' мин' : '—';
         return `<div class="service-card">
             ${photo}
             <div class="svc-body">
                 <div class="svc-title">${s.title}</div>
                 <div class="svc-meta">
-                    ${s.category || 'Без категории'} · ${dur}<br>
-                    ${formatLabel(s.booking_format)} · ${s.working_days_label}
+                    ${s.category_name || 'Без категории'} · ${dur}<br>
+                    ${formatLabel(s.booking_format)}
                 </div>
                 ${s.price ? `<div class="svc-price">${s.price} ₽</div>` : ''}
+                <button class="btn ad-btn-create" style="margin-top:8px;" onclick="openBookingFlow(${s.id})">Забронировать</button>
             </div>
         </div>`;
     }
@@ -3173,7 +3045,7 @@ async def main_app():
             const servicesContainer = document.getElementById('services-list');
             if (servicesContainer) {{
                 if (servicesList.length) {{
-                    servicesContainer.innerHTML = servicesList.map(serviceCardHtml).join('');
+                    servicesContainer.innerHTML = servicesList.map(ownerServiceCardHtml).join('');
                 }} else {{
                     servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
                 }}
@@ -3424,22 +3296,65 @@ async def main_app():
             document.getElementById('main-content').innerHTML = `
                 <div class="page-title">Мои услуги</div>
                 <button class="btn" onclick="goCreateService()">+ Создать услугу</button>
-                <div style="margin-top:16px">${{servicesList.length ? servicesList.map(serviceCardHtml).join('') : '<div class="empty">Услуги пока не созданы</div>'}}</div>
+                <div style="margin-top:16px">${{servicesList.length ? servicesList.map(ownerServiceCardHtml).join('') : '<div class="empty">Услуги пока не созданы</div>'}}</div>
             `;
         }}
 
         function statusBadge(status) {{
-            const labels = {{pending:'Ожидает',confirmed:'Подтверждена',cancelled:'Отменена'}};
+            const labels = {{
+                pending: 'Ожидает', confirmed: 'Подтверждена', completed: 'Завершена',
+                cancelled_by_client: 'Отменена клиентом', cancelled_by_owner: 'Отклонена',
+                no_show: 'Не пришёл',
+            }};
             return `<span class="status-badge status-${{status}}">${{labels[status] || status}}</span>`;
+        }}
+
+        function formatBookingWhen(isoString) {{
+            if (!isoString) return '—';
+            const d = new Date(isoString);
+            return d.toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }}) + ', ' +
+                d.toLocaleTimeString('ru-RU', {{ hour: '2-digit', minute: '2-digit' }});
+        }}
+
+        async function updateBookingStatus(bookingId, status) {{
+            try {{
+                const res = await fetch(`/api/bookings/${{tgUser.id}}/${{bookingId}}`, {{
+                    method: 'PATCH',
+                    headers: {{'Content-Type': 'application/json'}},
+                    body: JSON.stringify({{ status }}),
+                }});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Ошибка');
+                const idx = bookingsList.findIndex(b => b.id === bookingId);
+                if (idx !== -1) bookingsList[idx] = data.booking;
+                renderFilteredBookings();
+            }} catch (e) {{
+                tg.showAlert('Ошибка: ' + e.message);
+            }}
+        }}
+
+        function bookingActionsHtml(b) {{
+            if (b.status === 'pending') {{
+                return `
+                    <div class="post-actions-row">
+                        <button class="btn ad-btn-create" onclick="updateBookingStatus(${{b.id}}, 'confirmed')">Подтвердить</button>
+                        <button class="btn ad-btn-secondary" onclick="updateBookingStatus(${{b.id}}, 'cancelled_by_owner')">Отклонить</button>
+                    </div>`;
+            }}
+            if (b.status === 'confirmed') {{
+                return `
+                    <div class="post-actions-row">
+                        <button class="btn ad-btn-create" onclick="updateBookingStatus(${{b.id}}, 'completed')">Завершить</button>
+                        <button class="btn ad-btn-secondary" onclick="updateBookingStatus(${{b.id}}, 'no_show')">Не пришёл</button>
+                    </div>`;
+            }}
+            return '';
         }}
 
         // Вспомогательная функция
         function generateBookingsList() {{
-        
-            let filtered = [...bookingsList];
 
-            // Фильтр по статусу "Новые" (pending)
-            filtered = filtered.filter(b => b.status === 'pending');
+            let filtered = bookingsList.filter(b => b.status === 'pending');
 
             if (filtered.length === 0) {{
                 return '<div class="empty">Новых заявок пока нет</div>';
@@ -3450,10 +3365,11 @@ async def main_app():
                 <div class="booking-card">
                     <div class="bk-title">${{b.service_title}}</div>
                     <div class="bk-meta">
-                         ${{b.client_name}}<br>
-                         ${{b.booking_day_label}}, ${{b.booking_time}}
+                         ${{b.client_name}}${{b.client_phone ? ' · ' + b.client_phone : ''}}<br>
+                         ${{formatBookingWhen(b.starts_at)}}
                     </div>
                     ${{statusBadge(b.status)}}
+                    ${{bookingActionsHtml(b)}}
                 </div>
             `).join('');
         }}
@@ -3601,12 +3517,12 @@ async def main_app():
             }} else if (currentBookingStatus === 'confirmed') {{
                 filtered = filtered.filter(b => b.status === 'confirmed');
             }} else if (currentBookingStatus === 'completed') {{
-                // Для заглушки показываем confirmed как завершенные
-                filtered = filtered.filter(b => b.status === 'confirmed');
+                filtered = filtered.filter(b => b.status === 'completed');
             }} else if (currentBookingStatus === 'cancelled') {{
-                filtered = filtered.filter(b => b.status === 'cancelled');
+                filtered = filtered.filter(b =>
+                    ['cancelled_by_client', 'cancelled_by_owner', 'no_show'].includes(b.status));
             }}
-            
+
             const container = document.getElementById('bookings-list-container');
             if (filtered.length === 0) {{
                 container.innerHTML = '<div class="empty">Нет заявок с выбранными фильтрами</div>';
@@ -3615,10 +3531,11 @@ async def main_app():
                     <div class="booking-card">
                         <div class="bk-title">${{b.service_title}}</div>
                         <div class="bk-meta">
-                            👤 ${{b.client_name}}<br>
-                            📅 ${{b.booking_day_label}}, ${{b.booking_time}}
+                            👤 ${{b.client_name}}${{b.client_phone ? ' · ' + b.client_phone : ''}}<br>
+                            📅 ${{formatBookingWhen(b.starts_at)}}
                         </div>
                         ${{statusBadge(b.status)}}
+                        ${{bookingActionsHtml(b)}}
                     </div>
                 `).join('');
             }}
@@ -3906,285 +3823,21 @@ async def main_app():
             }}
         }}
 
-        // ===================== ФУНКЦИЯ СОЗДАНИЯ ТЕСТОВОГО БИЗНЕСА =====================
-        function createTestBusiness() {{
-            console.log('🔧 СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС...');
-            
-            // ТЕСТОВЫЙ БИЗНЕС
-            businessData = {{
-                has_business: true,
-                business_name: "Тестовый Маркет",
-                business_photo_url: null,
-                business_rating: 4.8,
-                business_address: "Москва, ул. Тестовая, д. 1",
-                business_country: "Россия",
-                business_region: "Москва",
-                business_city: "Москва",
-                username: tgUser?.username || "test_user",
-                market_created_at: new Date().toISOString()
-            }};
-            
-            // ТЕСТОВЫЕ УСЛУГИ
-            servicesList = [
-                {{
-                    id: 1,
-                    title: "Персональная тренировка",
-                    description: "Индивидуальное занятие с профессиональным тренером",
-                    price: 1500,
-                    category: "Персональные тренировки",
-                    training_duration: 60,
-                    booking_format: "online",
-                    working_days_label: "Пн, Ср, Пт",
-                    photo_url: null,
-                    created_at: new Date().toISOString()
-                }},
-                {{
-                    id: 2,
-                    title: "Групповая йога",
-                    description: "Занятия йогой в группе до 10 человек",
-                    price: 800,
-                    category: "Йога",
-                    training_duration: 45,
-                    booking_format: "offline",
-                    working_days_label: "Вт, Чт",
-                    photo_url: null,
-                    created_at: new Date().toISOString()
-                }},
-                {{
-                    id: 3,
-                    title: "Кроссфит",
-                    description: "Интенсивные функциональные тренировки",
-                    price: 1200,
-                    category: "Кроссфит",
-                    training_duration: 50,
-                    booking_format: "online",
-                    working_days_label: "Пн, Вт, Чт, Пт",
-                    photo_url: null,
-                    created_at: new Date().toISOString()
-                }}
-            ];
-            
-            // ТЕСТОВАЯ СТАТИСТИКА
-            statsData = {{
-                total_requests: 25,
-                successful_requests: 20,
-                cancelled_requests: 5
-            }};
-            
-            // ТЕСТОВЫЕ БРОНИРОВАНИЯ
-            bookingsList = [
-                {{
-                    id: 1,
-                    service_id: 1,
-                    service_title: "Персональная тренировка",
-                    client_name: "Иван Петров",
-                    booking_day: "mon",
-                    booking_day_label: "Пн",
-                    booking_time: "10:00",
-                    status: "confirmed",
-                    created_at: new Date().toISOString()
-                }},
-                {{
-                    id: 2,
-                    service_id: 2,
-                    service_title: "Групповая йога",
-                    client_name: "Мария Смирнова",
-                    booking_day: "wed",
-                    booking_day_label: "Ср",
-                    booking_time: "18:30",
-                    status: "pending",
-                    created_at: new Date().toISOString()
-                }},
-                {{
-                    id: 3,
-                    service_id: 3,
-                    service_title: "Кроссфит",
-                    client_name: "Алексей Иванов",
-                    booking_day: "fri",
-                    booking_day_label: "Пт",
-                    booking_time: "09:00",
-                    status: "confirmed",
-                    created_at: new Date().toISOString()
-                }}
-            ];
-            
-            console.log('✅ Тестовый бизнес создан!');
-        }}
-
         async function init() {{
-            // ============ ТЕСТОВЫЙ РЕЖИМ ============
-            // Если нет пользователя - создаем тестового
             if (!tgUser) {{
-                console.log('🔧 Создаем тестового пользователя...');
-                
-                // Создаем тестового пользователя
-                tgUser = {{
-                    id: 552386150,
-                    username: 'test_user',
-                    first_name: 'Тестовый',
-                    last_name: 'Пользователь'
-                }};
-                
-                // Показываем предупреждение о тестовом режиме
-                const mainContent = document.getElementById('main-content');
-                if (mainContent) {{
-                    mainContent.innerHTML = `
-                        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-weight: 600; border: 2px solid #ffc107;">
-                            ⚠️ РЕЖИМ ТЕСТИРОВАНИЯ: Данные пользователя заглушка
-                        </div>
-                    `;
-                }}
+                document.getElementById('main-content').innerHTML =
+                    '<div class="error">Откройте приложение через Telegram</div>';
+                return;
             }}
-            // ========================================
-            
+
             try {{
-                // Загружаем данные с сервера
                 await loadAll();
-                
-                // ============ СОЗДАЕМ ТЕСТОВЫЙ БИЗНЕС ============
-                // Если бизнес не найден - создаем тестовый
-                if (!businessData || !businessData.has_business) {{
-                    console.log('🔧 Создаем тестовый бизнес...');
-                    
-                    // Тестовые данные бизнеса
-                    businessData = {{
-                        has_business: true,
-                        business_name: "Тестовый Маркет",
-                        business_photo_url: null,
-                        business_rating: 4.8,
-                        business_address: "Москва, ул. Тестовая, д. 1",
-                        business_country: "Россия",
-                        business_region: "Москва",
-                        business_city: "Москва",
-                        username: tgUser?.username || "test_user",
-                        market_created_at: new Date().toISOString()
-                    }};
-                    
-                    // Тестовые услуги
-                    servicesList = [
-                        {{
-                            id: 1,
-                            title: "Персональная тренировка",
-                            description: "Индивидуальное занятие с профессиональным тренером",
-                            price: 1500,
-                            category: "Персональные тренировки",
-                            training_duration: 60,
-                            booking_format: "online",
-                            working_days_label: "Пн, Ср, Пт",
-                            photo_url: null,
-                            created_at: new Date().toISOString()
-                        }},
-                        {{
-                            id: 2,
-                            title: "Групповая йога",
-                            description: "Занятия йогой в группе до 10 человек",
-                            price: 800,
-                            category: "Йога",
-                            training_duration: 45,
-                            booking_format: "offline",
-                            working_days_label: "Вт, Чт",
-                            photo_url: null,
-                            created_at: new Date().toISOString()
-                        }},
-                        {{
-                            id: 3,
-                            title: "Кроссфит",
-                            description: "Интенсивные функциональные тренировки",
-                            price: 1200,
-                            category: "Кроссфит",
-                            training_duration: 50,
-                            booking_format: "online",
-                            working_days_label: "Пн, Вт, Чт, Пт",
-                            photo_url: null,
-                            created_at: new Date().toISOString()
-                        }}
-                    ];
-                    
-                    // Тестовая статистика
-                    statsData = {{
-                        total_requests: 25,
-                        successful_requests: 20,
-                        cancelled_requests: 5
-                    }};
-                    
-                    // Тестовые бронирования
-                    bookingsList = [
-                        {{
-                            id: 1,
-                            service_id: 1,
-                            service_title: "Персональная тренировка",
-                            client_name: "Иван Петров",
-                            booking_day: "mon",
-                            booking_day_label: "Пн",
-                            booking_time: "10:00",
-                            status: "confirmed",
-                            created_at: new Date().toISOString()
-                        }},
-                        {{
-                            id: 2,
-                            service_id: 2,
-                            service_title: "Групповая йога",
-                            client_name: "Мария Смирнова",
-                            booking_day: "wed",
-                            booking_day_label: "Ср",
-                            booking_time: "18:30",
-                            status: "pending",
-                            created_at: new Date().toISOString()
-                        }},
-                        {{
-                            id: 3,
-                            service_id: 3,
-                            service_title: "Кроссфит",
-                            client_name: "Алексей Иванов",
-                            booking_day: "fri",
-                            booking_day_label: "Пт",
-                            booking_time: "09:00",
-                            status: "confirmed",
-                            created_at: new Date().toISOString()
-                        }}
-                    ];
-                    
-                    // Убираем предупреждение о тестовом режиме, если оно было
-                    const mainContent = document.getElementById('main-content');
-                    if (mainContent && mainContent.innerHTML.includes('РЕЖИМ ТЕСТИРОВАНИЯ')) {{
-                        mainContent.innerHTML = '';
-                    }}
-                }}
-                // ================================================
-                
-                // Проверяем параметр tab в URL
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const tab = urlParams.get('tab') || 'home';
                 switchTab(tab);
-                
             }} catch(e) {{
                 console.error('❌ Ошибка:', e);
-                // При ошибке тоже создаем тестовые данные
-                if (!businessData) {{
-                    businessData = {{
-                        has_business: true,
-                        business_name: "Тестовый Маркет (оффлайн)",
-                        business_photo_url: null,
-                        business_rating: 4.5,
-                        business_address: "Москва, ул. Тестовая, д. 1",
-                        username: tgUser?.username || "test_user"
-                    }};
-                }}
-                if (!servicesList || servicesList.length === 0) {{
-                    servicesList = [
-                        {{
-                            id: 1,
-                            title: "Тестовая услуга",
-                            description: "Описание тестовой услуги",
-                            price: 1000,
-                            category: "Персональные тренировки",
-                            training_duration: 60,
-                            booking_format: "online",
-                            working_days_label: "Пн, Ср, Пт",
-                            photo_url: null
-                        }}
-                    ];
-                }}
                 document.getElementById('main-content').innerHTML = `<div class="error">Ошибка: ${{e.message}}</div>`;
             }}
         }}
@@ -4197,222 +3850,33 @@ async def main_app():
 
 
 
-# @app.get("/service/create", response_class=HTMLResponse)
-# async def create_service_page():
-#     return f"""
-#     <html>
-#     <head>
-#         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-#         <script src="https://telegram.org/js/telegram-web-app.js"></script>
-#         <style>{COMMON_STYLES}</style>
-#         <title>Создание услуги</title>
-#     </head>
-#     <body>
-#         <div class="app">
-#             <div class="content">
-#                 <button class="back-link" onclick="window.location.href='/?tab=home'">← Назад</button>
-#                 <div class="page-title">Создание услуги</div>
-
-#                 <div class="form-card" style="text-align:center">
-#                     <div class="field-label">Добавить фото</div>
-#                     <div class="photo-upload-box lg" id="svc-photo-box" onclick="document.getElementById('svc-photo-input').click()">📷</div>
-#                     <input type="file" id="svc-photo-input" accept="image/*" onchange="onSvcPhotoSelect(this)">
-#                 </div>
-
-#                 <div class="field-group">
-#                     <div class="field-label">Название услуги *</div>
-#                     <input type="text" id="svc-title" maxlength="100" placeholder="Например: Персональная тренировка">
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Описание</div>
-#                     <textarea id="svc-desc" placeholder="Опишите услугу"></textarea>
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Категория</div>
-#                     <select id="svc-category"></select>
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Цена услуги (₽)</div>
-#                     <input type="number" id="svc-price" min="0" placeholder="1500">
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Время тренировки</div>
-#                     <select id="svc-duration" onchange="onDurationChange()"></select>
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Формат брони</div>
-#                     <div class="format-toggle">
-#                         <button type="button" class="format-btn active" id="fmt-online" onclick="setFormat('online')">🌐 Онлайн</button>
-#                         <button type="button" class="format-btn" id="fmt-offline" onclick="setFormat('offline')">🏢 Офлайн</button>
-#                     </div>
-#                 </div>
-#                 <div class="field-group">
-#                     <div class="field-label">Рабочие дни</div>
-#                     <div class="days-row" id="days-row"></div>
-#                     <div id="schedule-area"></div>
-#                 </div>
-
-#                 <button class="btn" onclick="createService()">Создать</button>
-#             </div>
-#         </div>
-#         <script>
-#         {WEBAPP_INIT}
-#         {SERVICE_HELPERS_JS}
-
-#         let svcPhoto = null;
-#         let bookingFormat = 'online';
-#         let activeDays = {{}};
-#         let selectedDuration = 60;
-
-#         function onSvcPhotoSelect(input) {{
-#             readPhotoFile(input, dataUrl => {{
-#                 svcPhoto = dataUrl;
-#                 document.getElementById('svc-photo-box').innerHTML =
-#                     `<img src="${{dataUrl}}" style="width:100%;height:100%;object-fit:cover">`;
-#             }});
-#         }}
-
-#         function setFormat(fmt) {{
-#             bookingFormat = fmt;
-#             document.getElementById('fmt-online').classList.toggle('active', fmt === 'online');
-#             document.getElementById('fmt-offline').classList.toggle('active', fmt === 'offline');
-#         }}
-
-#         function renderDays() {{
-#             document.getElementById('days-row').innerHTML = DAYS.map(d => `
-#                 <button type="button" class="day-btn ${{activeDays[d.key] ? 'active' : ''}}"
-#                     onclick="toggleDay('${{d.key}}')">${{d.label}}</button>
-#             `).join('');
-#             renderSchedule();
-#         }}
-
-#         function toggleDay(key) {{
-#             if (activeDays[key]) delete activeDays[key];
-#             else activeDays[key] = [];
-#             renderDays();
-#         }}
-
-#         function toggleTime(dayKey, time) {{
-#             if (!activeDays[dayKey]) return;
-#             const arr = activeDays[dayKey];
-#             const idx = arr.indexOf(time);
-#             if (idx >= 0) arr.splice(idx, 1);
-#             else arr.push(time);
-#             arr.sort();
-#             renderSchedule();
-#         }}
-
-#         function onDurationChange() {{
-#             selectedDuration = parseInt(document.getElementById('svc-duration').value) || 60;
-#             for (const key of Object.keys(activeDays)) activeDays[key] = [];
-#             renderSchedule();
-#         }}
-
-#         function renderSchedule() {{
-#             const duration = selectedDuration;
-#             const slots = generateTimeSlots(duration);
-#             const html = Object.keys(activeDays).map(key => `
-#                 <div class="day-schedule">
-#                     <div class="day-name">${{DAY_FULL[key]}}</div>
-#                     <div class="time-slots">
-#                         ${{slots.map(t => `
-#                             <button type="button" class="time-chip ${{(activeDays[key]||[]).includes(t)?'active':''}}"
-#                                 onclick="toggleTime('${{key}}','${{t}}')">${{t}}</button>
-#                         `).join('')}}
-#                     </div>
-#                 </div>
-#             `).join('');
-#             document.getElementById('schedule-area').innerHTML = html;
-#         }}
-
-#         async function createService() {{
-#             const title = document.getElementById('svc-title').value.trim();
-#             if (!title) {{ tg.showAlert('Введите название услуги'); return; }}
-#             const category = document.getElementById('svc-category').value;
-#             const description = document.getElementById('svc-desc').value.trim();
-#             const priceVal = document.getElementById('svc-price').value;
-#             const price = priceVal ? parseFloat(priceVal) : null;
-#             const training_duration = selectedDuration;
-
-#             const schedule = {{}};
-#             for (const [day, times] of Object.entries(activeDays)) {{
-#                 if (times.length) schedule[day] = times;
-#             }}
-#             if (!Object.keys(schedule).length) {{
-#                 tg.showAlert('Выберите рабочие дни и время занятий');
-#                 return;
-#             }}
-
-#             try {{
-#                 const res = await fetch(`/api/services/${{tgUser.id}}`, {{
-#                     method: 'POST',
-#                     headers: {{'Content-Type':'application/json'}},
-#                     body: JSON.stringify({{
-#                         title, description: description || null, photo_url: svcPhoto,
-#                         category, price, training_duration,
-#                         booking_format: bookingFormat,
-#                         working_schedule: schedule,
-#                     }}),
-#                 }});
-#                 if (!res.ok) throw new Error('Ошибка сохранения');
-#                 tg.showAlert('Услуга создана!', () => {{ window.location.href = '/'; }});
-#             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
-#         }}
-
-#         function init() {{
-#             if (!tgUser) return;
-#             fillSelect(document.getElementById('svc-category'),
-#                 FITNESS_CATEGORIES, 'Выберите категорию', '');
-#             const durEl = document.getElementById('svc-duration');
-#             durEl.innerHTML = '<option value="">Выберите длительность</option>' +
-#                 DURATIONS.map(d => `<option value="${{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
-#             selectedDuration = 60;
-#             renderDays();
-#         }}
-#         init();
-
-#         function fillSelect(el, items, placeholder, selected) {{
-#             if (!el) return;
-#             el.innerHTML = `<option value="">${{placehol{{d}}" ${{d===60?'selected':''}}>${{d}} мин</option>`).join('');
-
-#             // Устанавливаем начальную длительность
-#             selectedDuration = 60;
-
-#             // Добавляем обработчик изменения длительности
-#             durEl.onchange = function() {{
-#                 selectedDuration = parseInt(this.value) || 60;
-#                 // Очищаем выбранные времена для всех дней (так как слоты изменятся)
-#                 for (const key of Object.keys(activeDays)) {{
-#                     activeDays[key] = [];
-#                 }}
-#                 renderSchedule(); // Перерисовываем расписание с новыми слотами
-#                 renderDays();     // Обновляем отображение дней
-#             }};
-
-#             // Отрисовываем дни и расписание
-#             renderDays();
-#         }}
-#         init();
-#         </script>
-#     </body>
-#     </html>
-#     """
 
 @app.get("/service/create", response_class=HTMLResponse)
 async def create_service_page():
+    return await _render_service_form_page(service_id=None)
+
+
+@app.get("/service/edit/{service_id}", response_class=HTMLResponse)
+async def edit_service_page(service_id: int):
+    return await _render_service_form_page(service_id=service_id)
+
+
+async def _render_service_form_page(service_id: int | None):
+    is_edit = service_id is not None
+    title_text = "Редактирование услуги" if is_edit else "Создание услуги"
     return f"""
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
-        <title>Создание услуги</title>
+        <title>{title_text}</title>
     </head>
     <body>
         <div class="app">
             <div class="content">
                 <button class="back-link" onclick="history.back()">← Назад</button>
-                <div class="page-title">Создание услуги</div>
+                <div class="page-title">{title_text}</div>
 
                 <div class="form-card" style="text-align:center">
                     <div class="field-label">Добавить фото</div>
@@ -4422,7 +3886,7 @@ async def create_service_page():
 
                 <div class="field-group">
                     <div class="field-label">Название услуги *</div>
-                    <input type="text" id="svc-title" maxlength="100" placeholder="Например: Персональная тренировка">
+                    <input type="text" id="svc-title" maxlength="100" placeholder="Например: Стрижка мужская">
                 </div>
                 <div class="field-group">
                     <div class="field-label">Описание</div>
@@ -4431,14 +3895,23 @@ async def create_service_page():
                 <div class="field-group">
                     <div class="field-label">Категория</div>
                     <select id="svc-category"></select>
+                    <div id="new-category-row" class="hidden" style="margin-top:8px; display:flex; gap:8px;">
+                        <input type="text" id="new-category-name" placeholder="Название категории" style="flex:1;">
+                        <button type="button" class="btn" style="width:auto;padding:0 16px;" onclick="submitNewCategory()">OK</button>
+                    </div>
+                    <button type="button" class="add-bot-btn" onclick="toggleNewCategoryRow()">+ Новая категория</button>
                 </div>
                 <div class="field-group">
                     <div class="field-label">Цена услуги (₽)</div>
                     <input type="number" id="svc-price" min="0" placeholder="1500">
                 </div>
                 <div class="field-group">
-                    <div class="field-label">Время тренировки</div>
+                    <div class="field-label">Длительность</div>
                     <select id="svc-duration"></select>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Вместимость (клиентов на один слот)</div>
+                    <input type="number" id="svc-capacity" min="1" value="1">
                 </div>
                 <div class="field-group">
                     <div class="field-label">Формат брони</div>
@@ -4448,22 +3921,24 @@ async def create_service_page():
                     </div>
                 </div>
                 <div class="field-group">
-                    <div class="field-label">Рабочие дни</div>
+                    <div class="field-label">Рабочие дни и время</div>
                     <div class="days-row" id="days-row"></div>
                     <div id="schedule-area"></div>
                 </div>
 
-                <button class="btn" onclick="createService()">Создать</button>
+                <button class="btn" onclick="saveService()">{'Сохранить' if is_edit else 'Создать'}</button>
             </div>
         </div>
         <script>
         {WEBAPP_INIT}
         {SERVICE_HELPERS_JS}
 
+        const EDIT_SERVICE_ID = {service_id if is_edit else 'null'};
         let svcPhoto = null;
         let bookingFormat = 'online';
         let activeDays = {{}};
         let selectedDuration = 60;
+        let categoriesList = [];
 
         function onSvcPhotoSelect(input) {{
             readPhotoFile(input, dataUrl => {{
@@ -4479,112 +3954,158 @@ async def create_service_page():
             document.getElementById('fmt-offline').classList.toggle('active', fmt === 'offline');
         }}
 
+        async function loadCategories() {{
+            const res = await fetch(`/api/categories/${{tgUser.id}}`);
+            const data = await res.json();
+            categoriesList = data.categories || [];
+        }}
+
+        function renderCategorySelect(selectedId) {{
+            const sel = document.getElementById('svc-category');
+            sel.innerHTML = '<option value="">Без категории</option>' +
+                categoriesList.map(c => `<option value="${{c.id}}" ${{String(c.id) === String(selectedId) ? 'selected' : ''}}>${{c.name}}</option>`).join('');
+        }}
+
+        function toggleNewCategoryRow() {{
+            document.getElementById('new-category-row').classList.toggle('hidden');
+        }}
+
+        async function submitNewCategory() {{
+            const name = document.getElementById('new-category-name').value.trim();
+            if (!name) return;
+            const res = await fetch(`/api/categories/${{tgUser.id}}`, {{
+                method: 'POST', headers: {{'Content-Type':'application/json'}},
+                body: JSON.stringify({{ name }}),
+            }});
+            const data = await res.json();
+            if (!res.ok) {{ tg.showAlert(data.detail || 'Ошибка'); return; }}
+            categoriesList.push(data.category);
+            renderCategorySelect(data.category.id);
+            document.getElementById('new-category-name').value = '';
+            document.getElementById('new-category-row').classList.add('hidden');
+        }}
+
         function renderDays() {{
             const container = document.getElementById('days-row');
             if (!container) return;
             container.innerHTML = DAYS.map(d => `
-                <button type="button" class="day-btn ${{activeDays[d.key] ? 'active' : ''}}"
-                    onclick="toggleDay('${{d.key}}')">${{d.label}}</button>
+                <button type="button" class="day-btn ${{activeDays[d.key] !== undefined ? 'active' : ''}}"
+                    onclick="toggleDay(${{d.key}})">${{d.label}}</button>
             `).join('');
             renderSchedule();
         }}
 
         function toggleDay(key) {{
-            if (activeDays[key]) delete activeDays[key];
-            else activeDays[key] = [];
+            if (activeDays[key] !== undefined) delete activeDays[key];
+            else activeDays[key] = {{ start: '10:00', end: '18:00' }};
             renderDays();
         }}
 
-        function toggleTime(dayKey, time) {{
-            if (!activeDays[dayKey]) return;
-            const arr = activeDays[dayKey];
-            const idx = arr.indexOf(time);
-            if (idx >= 0) arr.splice(idx, 1);
-            else arr.push(time);
-            arr.sort();
-            renderSchedule();
+        function updateDayTime(key, field, value) {{
+            if (!activeDays[key]) return;
+            activeDays[key][field] = value;
         }}
 
         function renderSchedule() {{
-            const duration = selectedDuration;
-            const slots = generateTimeSlots(duration);
             const container = document.getElementById('schedule-area');
             if (!container) return;
-            const html = Object.keys(activeDays).map(key => `
+            const keys = Object.keys(activeDays);
+            if (!keys.length) {{
+                container.innerHTML = '<div class="empty">Выберите рабочие дни</div>';
+                return;
+            }}
+            container.innerHTML = keys.map(key => {{
+                const w = activeDays[key];
+                return `
                 <div class="day-schedule">
                     <div class="day-name">${{DAY_FULL[key]}}</div>
-                    <div class="time-slots">
-                        ${{slots.map(t => `
-                            <button type="button" class="time-chip ${{(activeDays[key]||[]).includes(t) ? 'active' : ''}}"
-                                onclick="toggleTime('${{key}}','${{t}}')">${{t}}</button>
-                        `).join('')}}
+                    <div class="time-slots" style="display:flex; gap:8px; align-items:center;">
+                        <input type="time" value="${{w.start}}" onchange="updateDayTime(${{key}}, 'start', this.value)">
+                        <span>—</span>
+                        <input type="time" value="${{w.end}}" onchange="updateDayTime(${{key}}, 'end', this.value)">
                     </div>
-                </div>
-            `).join('');
-            container.innerHTML = html;
+                </div>`;
+            }}).join('');
         }}
 
-        async function createService() {{
+        async function loadServiceForEdit() {{
+            const res = await fetch(`/api/services/${{tgUser.id}}`);
+            const data = await res.json();
+            const service = (data.services || []).find(s => s.id === EDIT_SERVICE_ID);
+            if (!service) {{ tg.showAlert('Услуга не найдена'); return; }}
+
+            document.getElementById('svc-title').value = service.title || '';
+            document.getElementById('svc-desc').value = service.description || '';
+            document.getElementById('svc-price').value = service.price ?? '';
+            document.getElementById('svc-capacity').value = service.capacity || 1;
+            selectedDuration = service.duration_minutes || 60;
+            document.getElementById('svc-duration').value = selectedDuration;
+            bookingFormat = service.booking_format || 'online';
+            setFormat(bookingFormat);
+            if (service.photo_url) {{
+                svcPhoto = service.photo_url;
+                document.getElementById('svc-photo-box').innerHTML =
+                    `<img src="${{service.photo_url}}" style="width:100%;height:100%;object-fit:cover">`;
+            }}
+            renderCategorySelect(service.category_id);
+        }}
+
+        async function saveService() {{
             const title = document.getElementById('svc-title').value.trim();
             if (!title) {{ tg.showAlert('Введите название услуги'); return; }}
-            const category = document.getElementById('svc-category').value;
+            const categoryIdVal = document.getElementById('svc-category').value;
             const description = document.getElementById('svc-desc').value.trim();
             const priceVal = document.getElementById('svc-price').value;
             const price = priceVal ? parseFloat(priceVal) : null;
-            const training_duration = selectedDuration;
+            const capacityVal = document.getElementById('svc-capacity').value;
+            const capacity = capacityVal ? parseInt(capacityVal) : 1;
 
-            const schedule = {{}};
-            for (const [day, times] of Object.entries(activeDays)) {{
-                if (times.length) schedule[day] = times;
-            }}
-            if (!Object.keys(schedule).length) {{
-                tg.showAlert('Выберите рабочие дни и время занятий');
+            const availability = Object.entries(activeDays).map(([weekday, w]) => ({{
+                weekday: parseInt(weekday), time_start: w.start, time_end: w.end,
+            }}));
+            if (!availability.length) {{
+                tg.showAlert('Выберите рабочие дни и время');
                 return;
             }}
 
+            const payload = {{
+                title, description: description || null, photo_url: svcPhoto,
+                category_id: categoryIdVal ? parseInt(categoryIdVal) : null,
+                price, duration_minutes: selectedDuration, capacity,
+                booking_format: bookingFormat, availability,
+            }};
+            if (!EDIT_SERVICE_ID) payload.status = 'published';
+
             try {{
-                const res = await fetch(`/api/services/${{tgUser.id}}`, {{
-                    method: 'POST',
+                const url = EDIT_SERVICE_ID
+                    ? `/api/services/${{tgUser.id}}/${{EDIT_SERVICE_ID}}`
+                    : `/api/services/${{tgUser.id}}`;
+                const res = await fetch(url, {{
+                    method: EDIT_SERVICE_ID ? 'PATCH' : 'POST',
                     headers: {{'Content-Type':'application/json'}},
-                    body: JSON.stringify({{
-                        title, description: description || null, photo_url: svcPhoto,
-                        category, price, training_duration,
-                        booking_format: bookingFormat,
-                        working_schedule: schedule,
-                    }}),
+                    body: JSON.stringify(payload),
                 }});
-                if (!res.ok) throw new Error('Ошибка сохранения');
-                tg.showAlert('Услуга создана!', () => {{ window.location.href = '/'; }});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Ошибка сохранения');
+                tg.showAlert(EDIT_SERVICE_ID ? 'Услуга обновлена!' : 'Услуга создана!', () => {{ window.location.href = '/'; }});
             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
         }}
 
-        function init() {{
+        async function init() {{
             if (!tgUser) return;
 
-            // Заполняем категории
-            const catSelect = document.getElementById('svc-category');
-            if (catSelect) {{
-                catSelect.innerHTML = '<option value="">Выберите категорию</option>' +
-                    FITNESS_CATEGORIES.map(c => `<option value="${{c}}">${{c}}</option>`).join('');
-            }}
+            await loadCategories();
+            renderCategorySelect(null);
 
-            // Заполняем длительности
             const durEl = document.getElementById('svc-duration');
-            if (durEl) {{
-                durEl.innerHTML = '<option value="">Выберите длительность</option>' +
-                    DURATIONS.map(d => `<option value="${{d}}" ${{d === 60 ? 'selected' : ''}}>${{d}} мин</option>`).join('');
-                
-                durEl.onchange = function() {{
-                    selectedDuration = parseInt(this.value) || 60;
-                    for (const key of Object.keys(activeDays)) {{
-                        activeDays[key] = [];
-                    }}
-                    renderSchedule();
-                    renderDays();
-                }};
-            }}
+            durEl.innerHTML = DURATIONS.map(d => `<option value="${{d}}" ${{d === 60 ? 'selected' : ''}}>${{d}} мин</option>`).join('');
+            durEl.onchange = function() {{ selectedDuration = parseInt(this.value) || 60; }};
 
             renderDays();
+
+            if (EDIT_SERVICE_ID) {{
+                await loadServiceForEdit();
+            }}
         }}
 
         init();
@@ -4954,75 +4475,63 @@ async def clients_page():
                 <div class="clients-header-block">
                     <button class="back-link-white" onclick="window.location.href='/?tab=profile'">← Назад</button>
                     <div class="clients-title">👥 Клиентская база</div>
-                    <div class="clients-count">Всего клиентов: 156</div>
+                    <div class="clients-count" id="clients-count">Всего клиентов: —</div>
                 </div>
-                
-                <div class="profile-card" style="margin-top: 20px;">
-                    <div class="profile-info-section">
-                        <div style="font-size:48px; margin-bottom:16px;">📊</div>
-                        <div class="profile-business-name">Активных клиентов: 89</div>
-                        <div class="profile-business-address" style="margin-top:8px;">Новых за месяц: 24</div>
-                    </div>
-                </div>
-                
+
                 <div class="profile-menu-section">
                     <div class="section-title">Список клиентов</div>
-                    
-                    <div class="profile-menu-item" onclick="tg.showAlert('Иван Петров - +7 999 123-45-67')">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">👤 Иван Петров</span>
-                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">3 записи</span>
-                        </div>
-                        <span class="profile-menu-arrow">▶</span>
-                    </div>
-                    
-                    <div class="profile-menu-item" onclick="tg.showAlert('Мария Смирнова - +7 999 234-56-78')">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">👤 Мария Смирнова</span>
-                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">5 записей</span>
-                        </div>
-                        <span class="profile-menu-arrow">▶</span>
-                    </div>
-                    
-                    <div class="profile-menu-item" onclick="tg.showAlert('Алексей Иванов - +7 999 345-67-89')">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">👤 Алексей Иванов</span>
-                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">2 записи</span>
-                        </div>
-                        <span class="profile-menu-arrow">▶</span>
-                    </div>
-                    
-                    <div class="profile-menu-item" onclick="tg.showAlert('Екатерина Козлова - +7 999 456-78-90')">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">👤 Екатерина Козлова</span>
-                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">7 записей</span>
-                        </div>
-                        <span class="profile-menu-arrow">▶</span>
-                    </div>
-                    
-                    <div class="profile-menu-item" onclick="tg.showAlert('Дмитрий Сидоров - +7 999 567-89-01')">
-                        <div class="profile-menu-left">
-                            <span class="profile-menu-label">👤 Дмитрий Сидоров</span>
-                            <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">1 запись</span>
-                        </div>
-                        <span class="profile-menu-arrow">▶</span>
-                    </div>
+                    <div id="clients-list-container"><div class="empty">Загрузка...</div></div>
                 </div>
             </div>
         </div>
         <script>
         {WEBAPP_INIT}
-        
+
         function goBack() {{
             const urlParams = new URLSearchParams(window.location.search);
             const from = urlParams.get('from');
-            
+
             if (from === 'profile') {{
                 window.location.href = '/?tab=profile';
             }} else {{
                 history.back();
             }}
         }}
+
+        function clientRowHtml(c) {{
+            const lastVisit = c.last_visit_at
+                ? new Date(c.last_visit_at).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }})
+                : '—';
+            const phoneNote = c.client_phone ? ` · ${{c.client_phone}}` : '';
+            return `
+                <div class="profile-menu-item" onclick="tg.showAlert('${{c.client_name}}${{phoneNote}}\\nПоследний визит: ${{lastVisit}}')">
+                    <div class="profile-menu-left">
+                        <span class="profile-menu-label">👤 ${{c.client_name}}</span>
+                        <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">${{c.visits_count}} ${{c.visits_count === 1 ? 'запись' : 'записей'}}</span>
+                    </div>
+                    <span class="profile-menu-arrow">▶</span>
+                </div>
+            `;
+        }}
+
+        async function loadClients() {{
+            if (!tgUser) return;
+            try {{
+                const res = await fetch(`/api/clients/${{tgUser.id}}`);
+                const data = await res.json();
+                const clients = data.clients || [];
+                document.getElementById('clients-count').textContent = `Всего клиентов: ${{clients.length}}`;
+                const container = document.getElementById('clients-list-container');
+                container.innerHTML = clients.length
+                    ? clients.map(clientRowHtml).join('')
+                    : '<div class="empty">Клиентов пока нет</div>';
+            }} catch(e) {{
+                document.getElementById('clients-list-container').innerHTML =
+                    `<div class="error">Ошибка загрузки: ${{e.message}}</div>`;
+            }}
+        }}
+
+        loadClients();
         </script>
     </body>
     </html>
@@ -5546,7 +5055,7 @@ async def public_market_page(telegram_id: int):
         function renderTabContent(tab) {{
             if (tab === 'services') {{
                 if (servicesList && servicesList.length) {{
-                    return servicesList.map(serviceCardHtml).join('');
+                    return servicesList.map(publicServiceCardHtml).join('') + '<div id="booking-flow-container"></div>';
                 }} else {{
                     return '<div class="empty">Услуги пока не созданы</div>';
                 }}
@@ -5601,88 +5110,128 @@ async def public_market_page(telegram_id: int):
             document.getElementById('market-content').innerHTML = renderTabContent(tab);
         }}
 
+        let bookingFlowState = {{ serviceId: null, slots: [], selectedDate: null, selectedSlot: null }};
+
+        async function openBookingFlow(serviceId) {{
+            bookingFlowState = {{ serviceId, slots: [], selectedDate: null, selectedSlot: null }};
+            const container = document.getElementById('booking-flow-container');
+            if (!container) return;
+            container.innerHTML = '<div class="empty">Загрузка доступного времени...</div>';
+            container.scrollIntoView({{ behavior: 'smooth' }});
+
+            try {{
+                const today = new Date();
+                const in14 = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                const res = await fetch(`/api/services/${{serviceId}}/slots?date_from=${{today.toISOString().slice(0,10)}}&date_to=${{in14.toISOString().slice(0,10)}}`);
+                const data = await res.json();
+                bookingFlowState.slots = data.slots || [];
+                renderBookingFlow();
+            }} catch(e) {{
+                container.innerHTML = `<div class="error">Не удалось загрузить время: ${{e.message}}</div>`;
+            }}
+        }}
+
+        function renderBookingFlow() {{
+            const container = document.getElementById('booking-flow-container');
+            if (!bookingFlowState.slots.length) {{
+                container.innerHTML = '<div class="empty">Нет свободного времени в ближайшие 2 недели</div>';
+                return;
+            }}
+
+            const byDate = {{}};
+            bookingFlowState.slots.forEach(s => {{
+                const d = s.starts_at.slice(0, 10);
+                (byDate[d] = byDate[d] || []).push(s);
+            }});
+            const dates = Object.keys(byDate).sort();
+            if (!bookingFlowState.selectedDate) bookingFlowState.selectedDate = dates[0];
+
+            const dateChips = dates.map(d => {{
+                const label = new Date(d).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }});
+                return `<button type="button" class="day-btn ${{d === bookingFlowState.selectedDate ? 'active' : ''}}" onclick="selectBookingDate('${{d}}')">${{label}}</button>`;
+            }}).join('');
+
+            const timesForDate = byDate[bookingFlowState.selectedDate] || [];
+            const timeChips = timesForDate.map(s => {{
+                const timeLabel = s.starts_at.slice(11, 16);
+                const active = bookingFlowState.selectedSlot && bookingFlowState.selectedSlot.starts_at === s.starts_at;
+                return `<button type="button" class="time-chip ${{active ? 'active' : ''}}" onclick='selectBookingSlot(${{JSON.stringify(s)}})'>${{timeLabel}}</button>`;
+            }}).join('');
+
+            container.innerHTML = `
+                <div class="form-card">
+                    <div class="field-label">Выберите день</div>
+                    <div class="days-row">${{dateChips}}</div>
+                    <div class="field-label" style="margin-top:12px;">Выберите время</div>
+                    <div class="time-slots">${{timeChips || '<div class="empty">На эту дату нет времени</div>'}}</div>
+                    <div id="booking-contact-form" class="${{bookingFlowState.selectedSlot ? '' : 'hidden'}}" style="margin-top:16px;">
+                        <div class="field-group">
+                            <div class="field-label">Ваше имя *</div>
+                            <input type="text" id="booking-client-name" placeholder="Имя">
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">Телефон</div>
+                            <input type="tel" id="booking-client-phone" placeholder="+7...">
+                        </div>
+                        <button class="btn" onclick="submitBooking()">Подтвердить запись</button>
+                    </div>
+                </div>
+            `;
+        }}
+
+        function selectBookingDate(date) {{
+            bookingFlowState.selectedDate = date;
+            bookingFlowState.selectedSlot = null;
+            renderBookingFlow();
+        }}
+
+        function selectBookingSlot(slot) {{
+            bookingFlowState.selectedSlot = slot;
+            renderBookingFlow();
+        }}
+
+        async function submitBooking() {{
+            const name = document.getElementById('booking-client-name').value.trim();
+            if (!name) {{ tg.showAlert('Введите имя'); return; }}
+            const phone = document.getElementById('booking-client-phone').value.trim();
+            const clientTelegramId = (tgUser && tgUser.id) || null;
+            if (!clientTelegramId) {{ tg.showAlert('Не удалось определить пользователя Telegram'); return; }}
+
+            try {{
+                const res = await fetch('/api/bookings', {{
+                    method: 'POST',
+                    headers: {{'Content-Type':'application/json'}},
+                    body: JSON.stringify({{
+                        service_id: bookingFlowState.serviceId,
+                        client_telegram_id: clientTelegramId,
+                        client_name: name,
+                        client_phone: phone || null,
+                        starts_at: bookingFlowState.selectedSlot.starts_at,
+                    }}),
+                }});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Ошибка бронирования');
+                tg.showAlert('Запись создана! Ожидайте подтверждения.', () => {{
+                    document.getElementById('booking-flow-container').innerHTML = '';
+                }});
+            }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
+        }}
+
         async function loadMarketData() {{
             try {{
                 const [biz, svc, ads] = await Promise.all([
                     fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
-                    fetch(`/api/services/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/services/${{telegramId}}?status=published`).then(r => r.json()),
                     fetch(`/api/market/posts/${{telegramId}}`).then(r => r.json()),
                 ]);
-                
-                if (!biz || !biz.has_business) {{
-                    console.log('🔧 Создаем тестовый бизнес...');
-                    businessData = {{
-                        has_business: true,
-                        business_name: "Тестовый Маркет",
-                        business_photo_url: null,
-                        business_rating: 4.8,
-                        business_address: "Москва, ул. Тестовая, д. 1",
-                        business_country: "Россия",
-                        business_region: "Москва",
-                        business_city: "Москва",
-                        username: "test_user"
-                    }};
-                    
-                    servicesList = [
-                        {{
-                            id: 1,
-                            title: "Персональная тренировка",
-                            description: "Индивидуальное занятие с профессиональным тренером",
-                            price: 1500,
-                            category: "Персональные тренировки",
-                            training_duration: 60,
-                            booking_format: "online",
-                            working_days_label: "Пн, Ср, Пт",
-                            photo_url: null,
-                            created_at: new Date().toISOString()
-                        }},
-                        {{
-                            id: 2,
-                            title: "Групповая йога",
-                            description: "Занятия йогой в группе до 10 человек",
-                            price: 800,
-                            category: "Йога",
-                            training_duration: 45,
-                            booking_format: "offline",
-                            working_days_label: "Вт, Чт",
-                            photo_url: null,
-                            created_at: new Date().toISOString()
-                        }}
-                    ];
-                }} else {{
-                    businessData = biz;
-                    servicesList = svc.services || [];
-                }}
 
-                if (ads.posts && ads.posts.length > 0) {{
-                    adsList = ads.posts;
-                }} else {{
-                    adsList = [];
-                }}
-
+                businessData = (biz && biz.has_business) ? biz : null;
+                servicesList = svc.services || [];
+                adsList = ads.posts || [];
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
-                businessData = {{
-                    has_business: true,
-                    business_name: "Тестовый Маркет (оффлайн)",
-                    business_photo_url: null,
-                    business_rating: 4.5,
-                    business_address: "Москва, ул. Тестовая, д. 1",
-                    username: "test_user"
-                }};
-                servicesList = [
-                    {{
-                        id: 1,
-                        title: "Тестовая услуга",
-                        description: "Описание тестовой услуги",
-                        price: 1000,
-                        category: "Персональные тренировки",
-                        training_duration: 60,
-                        booking_format: "online",
-                        working_days_label: "Пн, Ср, Пт",
-                        photo_url: null
-                    }}
-                ];
+                businessData = null;
+                servicesList = [];
                 adsList = [];
             }}
         }}
@@ -5696,6 +5245,78 @@ async def public_market_page(telegram_id: int):
             window.location.href = '/?tab=home';
         }}
         init();
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/review/{booking_id}", response_class=HTMLResponse)
+async def review_page(booking_id: int):
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Оценить услугу</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content">
+                <div class="page-title">Оцените услугу</div>
+
+                <div class="form-card">
+                    <div class="field-label">Ваша оценка</div>
+                    <div id="review-stars" style="font-size:32px; text-align:center; margin:12px 0;"></div>
+                    <div class="field-group">
+                        <div class="field-label">Комментарий</div>
+                        <textarea id="review-comment" placeholder="Расскажите, как всё прошло (необязательно)"></textarea>
+                    </div>
+                    <button class="btn" onclick="submitReview()">Отправить отзыв</button>
+                </div>
+            </div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+
+        const BOOKING_ID = {booking_id};
+        let selectedRating = 0;
+
+        function renderStars() {{
+            const el = document.getElementById('review-stars');
+            el.innerHTML = [1,2,3,4,5].map(i =>
+                `<span style="cursor:pointer; color:${{i <= selectedRating ? '#f5a623' : '#8A9593'}}" onclick="setRating(${{i}})">★</span>`
+            ).join('');
+        }}
+
+        function setRating(i) {{
+            selectedRating = i;
+            renderStars();
+        }}
+
+        async function submitReview() {{
+            if (!selectedRating) {{ tg.showAlert('Поставьте оценку от 1 до 5'); return; }}
+            if (!tgUser) {{ tg.showAlert('Не удалось определить пользователя Telegram'); return; }}
+
+            try {{
+                const res = await fetch('/api/reviews', {{
+                    method: 'POST',
+                    headers: {{'Content-Type':'application/json'}},
+                    body: JSON.stringify({{
+                        booking_id: BOOKING_ID,
+                        client_telegram_id: tgUser.id,
+                        rating: selectedRating,
+                        comment: document.getElementById('review-comment').value.trim() || null,
+                    }}),
+                }});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Ошибка отправки отзыва');
+                tg.showAlert('Спасибо за отзыв!', () => {{ tg.close(); }});
+            }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
+        }}
+
+        renderStars();
         </script>
     </body>
     </html>
@@ -6107,6 +5728,10 @@ async def get_market_ads(telegram_id: int):
 
 
 from app.api.posts_router import router as posts_router, register_post_pages
+from app.api.services_router import router as services_router, register_service_pages
 
 app.include_router(posts_router)
 register_post_pages(app, COMMON_STYLES, WEBAPP_INIT, render_back_header)
+
+app.include_router(services_router)
+register_service_pages(app, COMMON_STYLES, WEBAPP_INIT, render_back_header)

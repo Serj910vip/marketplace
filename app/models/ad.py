@@ -9,6 +9,7 @@ class Ad(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    service_id = Column(Integer, ForeignKey("services.id"), nullable=True)
     title = Column(String(200), nullable=False)
     subtitle = Column(String(200), nullable=True)
     description = Column(Text, nullable=True)
