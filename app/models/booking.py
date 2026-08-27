@@ -32,7 +32,7 @@ class Booking(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending")
     """pending / confirmed / completed / cancelled_by_client / cancelled_by_owner / no_show"""
 
-    price_at_booking: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
+    price_at_booking: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
 
     cancel_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
 

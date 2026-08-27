@@ -28,7 +28,7 @@ class Service(Base):
     category: Mapped[str | None] = mapped_column(String(100), nullable=True)
     """Устаревшее свободнотекстовое поле, сохранено для совместимости — используйте category_id."""
 
-    price: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
+    price: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
 
     training_duration: Mapped[int | None] = mapped_column(Integer, nullable=True)
     """Устаревшее имя, сохранено для совместимости — используйте duration_minutes."""

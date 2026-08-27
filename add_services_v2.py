@@ -102,7 +102,7 @@ async def add_services_v2():
             ("client_phone", "VARCHAR(30)"),
             ("starts_at", "TIMESTAMP"),
             ("ends_at", "TIMESTAMP"),
-            ("price_at_booking", "NUMERIC(10, 2)"),
+            ("price_at_booking", "NUMERIC(12, 2)"),
             ("cancel_reason", "TEXT"),
             ("reminder_sent_at", "TIMESTAMP"),
         ])
@@ -118,7 +118,7 @@ async def add_services_v2():
 
         # ---- корректировки существующих колонок ----
 
-        # services.price: FLOAT -> NUMERIC(10, 2), чтобы деньги не округлялись float'ом
+        # services.price: FLOAT -> NUMERIC(12, 2), чтобы деньги не округлялись float'ом
         result = await conn.execute(text("""
             SELECT data_type FROM information_schema.columns
             WHERE table_name = 'services' AND column_name = 'price'
@@ -126,9 +126,9 @@ async def add_services_v2():
         price_type = result.scalar()
         if price_type == "double precision":
             await conn.execute(text(
-                "ALTER TABLE services ALTER COLUMN price TYPE NUMERIC(10, 2) USING price::numeric(10, 2)"
+                "ALTER TABLE services ALTER COLUMN price TYPE NUMERIC(12, 2) USING price::numeric(12, 2)"
             ))
-            print("✅ services.price переведён на NUMERIC(10, 2)")
+            print("✅ services.price переведён на NUMERIC(12, 2)")
         else:
             print("ℹ️ services.price уже не FLOAT — пропускаю")
 
