@@ -1118,7 +1118,7 @@ COMMON_STYLES = """
         color: var(--tg-theme-hint-color, #707579); 
     }
     .field-group { margin-bottom: 16px; }
-    select, input[type="text"], input[type="number"], textarea {
+    select, input[type="text"], input[type="number"], input[type="tel"], textarea {
         width: 100%; 
         height: 68px;
         padding: 12px; 
@@ -5136,6 +5136,106 @@ async def view_service_page(telegram_id: int, service_id: int):
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
+        <style>
+            .booking-section-title {{
+                font-size: 12px;
+                font-weight: 600;
+                color: #8A9593;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin: 20px 0 10px;
+            }}
+
+            .ios-date-strip {{
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+                scroll-snap-type: x proximity;
+                padding: 2px 2px 8px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }}
+            .ios-date-strip::-webkit-scrollbar {{ display: none; }}
+
+            .ios-date-card {{
+                scroll-snap-align: start;
+                flex: 0 0 auto;
+                width: 52px;
+                padding: 10px 0;
+                border-radius: 18px;
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.08);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+                transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            }}
+            .ios-date-card .ios-date-weekday {{
+                font-size: 10px;
+                font-weight: 700;
+                color: #8A9593;
+                text-transform: uppercase;
+            }}
+            .ios-date-card .ios-date-num {{
+                font-size: 18px;
+                font-weight: 700;
+                color: #FFFFFF;
+            }}
+            .ios-date-card.today .ios-date-weekday {{ color: #0073FF; }}
+            .ios-date-card.active {{
+                background: #0073FF;
+                border-color: #0073FF;
+                transform: scale(1.06);
+                box-shadow: 0 4px 14px rgba(0, 115, 255, 0.45);
+            }}
+            .ios-date-card.active .ios-date-weekday,
+            .ios-date-card.active .ios-date-num {{ color: #FFFFFF; }}
+
+            .ios-time-group {{ margin-bottom: 14px; }}
+            .ios-time-group-label {{
+                font-size: 11px;
+                font-weight: 600;
+                color: #8A9593;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }}
+            .ios-time-grid {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+            .ios-time-pill {{
+                padding: 10px 16px;
+                border-radius: 14px;
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.08);
+                color: #FFFFFF;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            }}
+            .ios-time-pill:active {{ transform: scale(0.94); }}
+            .ios-time-pill.active {{
+                background: #0073FF;
+                border-color: #0073FF;
+                box-shadow: 0 4px 14px rgba(0, 115, 255, 0.45);
+            }}
+
+            .ios-slot-summary {{
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(0, 115, 255, 0.12);
+                border: 1px solid #0073FF;
+                border-radius: 16px;
+                padding: 14px 16px;
+                margin: 16px 0;
+                font-size: 14px;
+                font-weight: 600;
+                color: #FFFFFF;
+            }}
+            .ios-slot-summary .ios-slot-icon {{ font-size: 20px; }}
+        </style>
         <title>Услуга</title>
     </head>
     <body>
@@ -5220,37 +5320,73 @@ async def view_service_page(telegram_id: int, service_id: int):
             const dates = Object.keys(byDate).sort();
             if (!bookingFlowState.selectedDate) bookingFlowState.selectedDate = dates[0];
 
-            const dateChips = dates.map(d => {{
-                const label = new Date(d).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }});
-                return `<button type="button" class="day-btn ${{d === bookingFlowState.selectedDate ? 'active' : ''}}" onclick="selectBookingDate('${{d}}')">${{label}}</button>`;
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const weekdayShort = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
+
+            const dateCards = dates.map(d => {{
+                const dateObj = new Date(d + 'T00:00:00');
+                const isActive = d === bookingFlowState.selectedDate;
+                const isToday = d === todayStr;
+                return `
+                    <div class="ios-date-card ${{isActive ? 'active' : ''}} ${{isToday ? 'today' : ''}}" onclick="selectBookingDate('${{d}}')">
+                        <span class="ios-date-weekday">${{weekdayShort[dateObj.getDay()]}}</span>
+                        <span class="ios-date-num">${{dateObj.getDate()}}</span>
+                    </div>
+                `;
             }}).join('');
 
             const timesForDate = byDate[bookingFlowState.selectedDate] || [];
-            const timeChips = timesForDate.map(s => {{
-                const timeLabel = s.starts_at.slice(11, 16);
-                const active = bookingFlowState.selectedSlot && bookingFlowState.selectedSlot.starts_at === s.starts_at;
-                return `<button type="button" class="time-chip ${{active ? 'active' : ''}}" onclick='selectBookingSlot(${{JSON.stringify(s)}})'>${{timeLabel}}</button>`;
-            }}).join('');
+            const groups = {{ 'Утро': [], 'День': [], 'Вечер': [] }};
+            timesForDate.forEach(s => {{
+                const hour = parseInt(s.starts_at.slice(11, 13));
+                if (hour < 12) groups['Утро'].push(s);
+                else if (hour < 17) groups['День'].push(s);
+                else groups['Вечер'].push(s);
+            }});
+
+            const timeGroupsHtml = Object.entries(groups)
+                .filter(([, slots]) => slots.length)
+                .map(([label, slots]) => `
+                    <div class="ios-time-group">
+                        <div class="ios-time-group-label">${{label}}</div>
+                        <div class="ios-time-grid">
+                            ${{slots.map(s => {{
+                                const timeLabel = s.starts_at.slice(11, 16);
+                                const active = bookingFlowState.selectedSlot && bookingFlowState.selectedSlot.starts_at === s.starts_at;
+                                return `<button type="button" class="ios-time-pill ${{active ? 'active' : ''}}" onclick='selectBookingSlot(${{JSON.stringify(s)}})'>${{timeLabel}}</button>`;
+                            }}).join('')}}
+                        </div>
+                    </div>
+                `).join('');
+
+            const summaryHtml = bookingFlowState.selectedSlot ? `
+                <div class="ios-slot-summary">
+                    <span class="ios-slot-icon">📅</span>
+                    <span>${{new Date(bookingFlowState.selectedSlot.starts_at).toLocaleDateString('ru-RU', {{ weekday: 'long', day: 'numeric', month: 'long' }})}} · ${{bookingFlowState.selectedSlot.starts_at.slice(11,16)}}</span>
+                </div>
+            ` : '';
 
             container.innerHTML = `
-                <div class="form-card">
-                    <div class="field-label">Выберите день</div>
-                    <div class="days-row">${{dateChips}}</div>
-                    <div class="field-label" style="margin-top:12px;">Выберите время</div>
-                    <div class="time-slots">${{timeChips || '<div class="empty">На эту дату нет времени</div>'}}</div>
-                    <div id="booking-contact-form" class="${{bookingFlowState.selectedSlot ? '' : 'hidden'}}" style="margin-top:16px;">
-                        <div class="field-group">
-                            <div class="field-label">Ваше имя *</div>
-                            <input type="text" id="booking-client-name" placeholder="Имя">
-                        </div>
-                        <div class="field-group">
-                            <div class="field-label">Телефон</div>
-                            <input type="tel" id="booking-client-phone" placeholder="+7...">
-                        </div>
-                        <button class="btn" onclick="submitBooking()">Подтвердить запись</button>
+                <div class="booking-section-title">Выберите день</div>
+                <div class="ios-date-strip">${{dateCards}}</div>
+                <div class="booking-section-title">Выберите время</div>
+                ${{timeGroupsHtml || '<div class="empty">На эту дату нет времени</div>'}}
+                ${{summaryHtml}}
+                <div id="booking-contact-form" class="${{bookingFlowState.selectedSlot ? '' : 'hidden'}}" style="margin-top:8px;">
+                    <div class="field-group">
+                        <div class="field-label">Ваше имя *</div>
+                        <input type="text" id="booking-client-name" placeholder="Имя">
                     </div>
+                    <div class="field-group">
+                        <div class="field-label">Телефон</div>
+                        <input type="tel" id="booking-client-phone" placeholder="+7...">
+                    </div>
+                    <button class="btn" onclick="submitBooking()">Подтвердить запись</button>
                 </div>
             `;
+
+            const activeCard = container.querySelector('.ios-date-card.active');
+            if (activeCard) activeCard.scrollIntoView({{ behavior: 'smooth', inline: 'center', block: 'nearest' }});
         }}
 
         function selectBookingDate(date) {{
