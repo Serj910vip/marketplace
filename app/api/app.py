@@ -2970,20 +2970,16 @@ async def main_app():
                 <div class="menu-container-home" style="margin-top: 20px !important;">
                     <div class="section-title">Создать по подписке:</div>
                     <!-- Услуги -->
-                    <div class="menu-card accordion-header" onclick="toggleAccordion('service')">
+                    <div class="menu-card posts" onclick="window.location.href='/services'">
                         <div class="left">
                             <span class="label">Услуги</span>
                         </div>
-                        <span class="accordion-arrow" id="arrow-service">
+                        <span class="accordion-arrow">
                             <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.12 18.4798L1.19209e-07 17.3998L8.16 9.23984L1.19209e-07 1.07984L1.12 -0.000156403L10.36 9.23984L1.12 18.4798Z" fill="#FFFF"/>
                             </svg>
 
                         </span>
-                    </div>
-                    <div class="accordion-content" id="content-service">
-                        <button class="btn-sm accordion-btn" onclick="goCreateService()">+ Создать услугу</button>
-                        <div id="services-list" class="services-list"></div>
                     </div>
 
                     <!-- Товары -->
@@ -3039,17 +3035,7 @@ async def main_app():
             setTimeout(() => {{
                 loadUserAvatar();
             }}, 50);
-                
-            
-            // Отображаем услуги в списке
-            const servicesContainer = document.getElementById('services-list');
-            if (servicesContainer) {{
-                if (servicesList.length) {{
-                    servicesContainer.innerHTML = servicesList.map(ownerServiceCardHtml).join('');
-                }} else {{
-                    servicesContainer.innerHTML = '<div class="empty">Услуги пока не созданы</div>';
-                }}
-            }}
+
             loadLinkedChat();
         }}
 
@@ -3290,14 +3276,6 @@ async def main_app():
                 content.style.display = 'block';
                 arrow.innerHTML = openedSvg;
             }}
-        }}
-
-        function renderServices() {{
-            document.getElementById('main-content').innerHTML = `
-                <div class="page-title">Мои услуги</div>
-                <button class="btn" onclick="goCreateService()">+ Создать услугу</button>
-                <div style="margin-top:16px">${{servicesList.length ? servicesList.map(ownerServiceCardHtml).join('') : '<div class="empty">Услуги пока не созданы</div>'}}</div>
-            `;
         }}
 
         function statusBadge(status) {{
@@ -3732,8 +3710,6 @@ async def main_app():
             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
         }}
 
-        function goCreateService() {{ window.location.href = '/service/create'; }}
-
         async function loadLinkedChat() {{
             const el = document.getElementById('linked-chat-info');
             if (!el || !tgUser) return;
@@ -3874,9 +3850,8 @@ async def _render_service_form_page(service_id: int | None):
     </head>
     <body>
         <div class="app">
-            <div class="content">
-                <button class="back-link" onclick="history.back()">← Назад</button>
-                <div class="page-title">{title_text}</div>
+            <div class="content" style="padding-top:0;">
+                {render_back_header("window.location.href='/services'", title_text)}
 
                 <div class="form-card" style="text-align:center">
                     <div class="field-label">Добавить фото</div>

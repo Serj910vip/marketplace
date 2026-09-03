@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Literal, Optional
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 from app.bot.bot import bot
@@ -510,6 +510,141 @@ async def get_clients(telegram_id: int):
         })
 
 
+SERVICES_LIST_CSS = """
+    .services-filter-tabs {
+        display: flex;
+        justify-content: space-around;
+        gap: 8px;
+        margin-bottom: 19px;
+    }
+
+    .services-filter-tab {
+        flex: 1;
+        padding: 14px 4px;
+        margin-top: 10px;
+        background: #121918;
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .services-filter-tab.active {
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        color: #FFFFFF;
+    }
+
+    .services-filter-tab:hover {
+        background: #003A81;
+    }
+"""
+
+SERVICE_STATUS_TAB_LABELS = {
+    "published": "Активные",
+    "draft": "Черновики",
+    "hidden": "Скрытые",
+    "archived": "Архив",
+}
+
+
 def register_service_pages(app, common_styles: str, webapp_init: str, render_back_header):
-    """HTML-страницы услуг (создание/редактирование, бронирование) регистрируются здесь."""
-    pass
+    styles = common_styles + SERVICES_LIST_CSS
+
+    @app.get("/services", response_class=HTMLResponse)
+    async def services_list_page():
+        return f"""
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+            <script src="https://telegram.org/js/telegram-web-app.js"></script>
+            <style>{styles}</style>
+            <title>Услуги</title>
+        </head>
+        <body>
+            <div class="app">
+                <div class="content" style="padding-top:0;">
+                    {render_back_header("window.location.href='/'", "Услуги")}
+                    <div class="container-post">
+                        <div class="ads-create-btn-wrapper">
+                            <button class="ads-create-btn" onclick="window.location.href='/service/create'">Создать услугу</button>
+                        </div>
+                    </div>
+
+                    <div class="services-filter-tabs" id="status-tabs">
+                        <button class="services-filter-tab active" data-status="published" onclick="filterServices('published')">Активные</button>
+                        <button class="services-filter-tab" data-status="draft" onclick="filterServices('draft')">Черновики</button>
+                        <button class="services-filter-tab" data-status="hidden" onclick="filterServices('hidden')">Скрытые</button>
+                        <button class="services-filter-tab" data-status="archived" onclick="filterServices('archived')">Архив</button>
+                    </div>
+                    <div class="ads-count" id="services-count">Услуги: 0</div>
+                    <div class="ads-list-container" id="services-list">
+                        <div class="ads-empty">Список услуг пуст</div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            {webapp_init}
+            let allServices = [];
+            let currentFilter = 'published';
+            let telegramId = tgUser?.id;
+
+            function filterServices(status) {{
+                currentFilter = status;
+                document.querySelectorAll('.services-filter-tab').forEach(el =>
+                    el.classList.toggle('active', el.dataset.status === status));
+                renderServicesList();
+            }}
+
+            function renderServicesList() {{
+                const filtered = allServices.filter(s => s.status === currentFilter);
+                const container = document.getElementById('services-list');
+                document.getElementById('services-count').textContent = `Услуги: ${{filtered.length}}`;
+
+                if (!filtered.length) {{
+                    const labels = {{
+                        published: 'активных', draft: 'черновиков', hidden: 'скрытых', archived: 'архивных',
+                    }};
+                    container.innerHTML = `<div class="ads-empty">Нет ${{labels[currentFilter]}} услуг</div>`;
+                    return;
+                }}
+
+                container.innerHTML = filtered.map((s, index) => {{
+                    const num = String(index + 1).padStart(3, '0');
+                    const date = s.created_at ? new Date(s.created_at).toLocaleString('ru-RU') : '';
+                    const meta = [s.category_name || 'Без категории', s.price ? s.price + ' ₽' : null]
+                        .filter(Boolean).join(' · ');
+                    return `
+                        <div class="add-item">
+                            <div class="add-item-date-block">
+                                <div class="add-item-number">#${{num}}</div>
+                                <div class="add-item-date">Создано: ${{date.split(' ')[0]}}</div>
+                            </div>
+                            <div class="add-item-title-block">
+                                <div class="add-item-title">${{s.title}}</div>
+                                <div class="add-item-subtitle">${{meta}}</div>
+                            </div>
+                            <div class="add-item-actions">
+                                <button class="add-item-btn add-item-btn-edit" onclick="editService(${{s.id}})">Редактировать</button>
+                            </div>
+                        </div>`;
+                }}).join('');
+            }}
+
+            function editService(id) {{ window.location.href = `/service/edit/${{id}}`; }}
+
+            async function loadServices() {{
+                if (!telegramId) return;
+                const res = await fetch(`/api/services/${{telegramId}}`);
+                const data = await res.json();
+                allServices = data.services || [];
+                renderServicesList();
+            }}
+            loadServices();
+            </script>
+        </body>
+        </html>
+        """
