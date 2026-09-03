@@ -2629,25 +2629,6 @@ SERVICE_HELPERS_JS = """
         </div>`;
     }
 
-    function publicServiceCardHtml(s) {
-        const photo = s.photo_url
-            ? `<img class="svc-photo" src="${s.photo_url}" alt="">`
-            : `<div class="svc-photo">🛠️</div>`;
-        const dur = s.duration_minutes ? s.duration_minutes + ' мин' : '—';
-        return `<div class="service-card">
-            ${photo}
-            <div class="svc-body">
-                <div class="svc-title">${s.title}</div>
-                <div class="svc-meta">
-                    ${s.category_name || 'Без категории'} · ${dur}<br>
-                    ${formatLabel(s.booking_format)}
-                </div>
-                ${s.price ? `<div class="svc-price">${s.price} ₽</div>` : ''}
-                <button class="btn ad-btn-create" style="margin-top:8px;" onclick="openBookingFlow(${s.id})">Забронировать</button>
-            </div>
-        </div>`;
-    }
-
     function readPhotoFile(input, callback) {
         const file = input.files[0];
         if (!file) return;
@@ -5030,7 +5011,31 @@ async def public_market_page(telegram_id: int):
         function renderTabContent(tab) {{
             if (tab === 'services') {{
                 if (servicesList && servicesList.length) {{
-                    return servicesList.map(publicServiceCardHtml).join('') + '<div id="booking-flow-container"></div>';
+                    return `
+                        <div class="market-ads-container">
+                            ${{servicesList.map(s => {{
+                                const subtitle = [s.category_name, s.duration_minutes ? s.duration_minutes + ' мин' : null]
+                                    .filter(Boolean).join(' · ') || 'Без категории';
+                                const priceLabel = s.price ? `${{s.price}} ₽` : '';
+                                const photoHtml = s.photo_url
+                                    ? `<img class="market-ad-card-image" src="${{s.photo_url}}" alt="${{s.title}}">`
+                                    : `<div class="market-ad-card-image-placeholder">🛠️</div>`;
+                                return `
+                                    <div class="market-ad-card">
+                                        ${{photoHtml}}
+                                        <div class="market-ad-card-body">
+                                            <div class="market-ad-card-title">${{s.title}}</div>
+                                            <div class="market-ad-card-subtitle">${{subtitle}}</div>
+                                            <div class="market-ad-card-footer">
+                                                <span class="market-ad-card-date">${{priceLabel}}</span>
+                                                <button class="market-ad-card-btn" onclick="viewService(${{s.id}})">Посмотреть</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }}).join('')}}
+                        </div>
+                    `;
                 }} else {{
                     return '<div class="empty">Услуги пока не созданы</div>';
                 }}
@@ -5078,6 +5083,10 @@ async def public_market_page(telegram_id: int):
             window.location.href = `/market/ad/${{telegramId}}/${{adId}}`;
         }}
 
+        function viewService(serviceId) {{
+            window.location.href = `/market/service/${{telegramId}}/${{serviceId}}`;
+        }}
+
         function switchMarketTab(tab) {{
             currentTab = tab;
             document.querySelectorAll('.market-menu-item').forEach(el =>
@@ -5085,14 +5094,104 @@ async def public_market_page(telegram_id: int):
             document.getElementById('market-content').innerHTML = renderTabContent(tab);
         }}
 
-        let bookingFlowState = {{ serviceId: null, slots: [], selectedDate: null, selectedSlot: null }};
+        async function loadMarketData() {{
+            try {{
+                const [biz, svc, ads] = await Promise.all([
+                    fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
+                    fetch(`/api/services/${{telegramId}}?status=published`).then(r => r.json()),
+                    fetch(`/api/market/posts/${{telegramId}}`).then(r => r.json()),
+                ]);
 
-        async function openBookingFlow(serviceId) {{
-            bookingFlowState = {{ serviceId, slots: [], selectedDate: null, selectedSlot: null }};
+                businessData = (biz && biz.has_business) ? biz : null;
+                servicesList = svc.services || [];
+                adsList = ads.posts || [];
+            }} catch(e) {{
+                console.error('Ошибка загрузки:', e);
+                businessData = null;
+                servicesList = [];
+                adsList = [];
+            }}
+        }}
+
+        async function init() {{
+            await loadMarketData();
+            renderPublicPage();
+        }}
+
+        function goBack() {{
+            window.location.href = '/?tab=home';
+        }}
+        init();
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/market/service/{telegram_id}/{service_id}", response_class=HTMLResponse)
+async def view_service_page(telegram_id: int, service_id: int):
+    return f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <style>{COMMON_STYLES}</style>
+        <title>Услуга</title>
+    </head>
+    <body>
+        <div class="app">
+            <div class="content" id="main-content" style="padding-top: 0;"></div>
+        </div>
+        <script>
+        {WEBAPP_INIT}
+
+        const telegramId = {telegram_id};
+        const serviceId = {service_id};
+
+        let serviceData = null;
+        let bookingFlowState = {{ slots: [], selectedDate: null, selectedSlot: null }};
+
+        function renderServiceDetail() {{
+            if (!serviceData) {{
+                document.getElementById('main-content').innerHTML =
+                    '<div class="error">Услуга не найдена</div>';
+                return;
+            }}
+
+            const createdDate = serviceData.created_at
+                ? new Date(serviceData.created_at).toLocaleDateString('ru-RU')
+                : '';
+            const photoHtml = serviceData.photo_url
+                ? `<img class="ad-detail-image" src="${{serviceData.photo_url}}" alt="${{serviceData.title}}">`
+                : `<div class="ad-detail-image-placeholder">🛠️</div>`;
+            const meta = [
+                serviceData.category_name || 'Без категории',
+                serviceData.duration_minutes ? serviceData.duration_minutes + ' мин' : null,
+                serviceData.price ? serviceData.price + ' ₽' : null,
+            ].filter(Boolean).join(' · ');
+
+            document.getElementById('main-content').innerHTML = `
+                {render_back_header(f"window.location.href='/market/{telegram_id}'", "Услуга")}
+                <div class="ad-detail-page">
+                    ${{photoHtml}}
+                    <div class="ad-detail-content">
+                        <div class="ad-detail-meta">
+                            <span class="ad-detail-date">${{createdDate}}</span>
+                        </div>
+                        <div class="ad-detail-title">${{serviceData.title}}</div>
+                        <div class="ad-detail-description">${{meta}}</div>
+                        <div class="ad-detail-description">${{serviceData.description || ''}}</div>
+                    </div>
+                    <div id="booking-flow-container"></div>
+                </div>
+            `;
+
+            loadSlots();
+        }}
+
+        async function loadSlots() {{
             const container = document.getElementById('booking-flow-container');
-            if (!container) return;
             container.innerHTML = '<div class="empty">Загрузка доступного времени...</div>';
-            container.scrollIntoView({{ behavior: 'smooth' }});
 
             try {{
                 const today = new Date();
@@ -5177,7 +5276,7 @@ async def public_market_page(telegram_id: int):
                     method: 'POST',
                     headers: {{'Content-Type':'application/json'}},
                     body: JSON.stringify({{
-                        service_id: bookingFlowState.serviceId,
+                        service_id: serviceId,
                         client_telegram_id: clientTelegramId,
                         client_name: name,
                         client_phone: phone || null,
@@ -5187,37 +5286,25 @@ async def public_market_page(telegram_id: int):
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Ошибка бронирования');
                 tg.showAlert('Запись создана! Ожидайте подтверждения.', () => {{
-                    document.getElementById('booking-flow-container').innerHTML = '';
+                    window.location.href = `/market/{telegram_id}`;
                 }});
             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
         }}
 
-        async function loadMarketData() {{
+        async function loadServiceData() {{
             try {{
-                const [biz, svc, ads] = await Promise.all([
-                    fetch(`/api/business/${{telegramId}}`).then(r => r.json()),
-                    fetch(`/api/services/${{telegramId}}?status=published`).then(r => r.json()),
-                    fetch(`/api/market/posts/${{telegramId}}`).then(r => r.json()),
-                ]);
-
-                businessData = (biz && biz.has_business) ? biz : null;
-                servicesList = svc.services || [];
-                adsList = ads.posts || [];
+                const res = await fetch(`/api/services/${{telegramId}}?status=published`);
+                const data = await res.json();
+                serviceData = (data.services || []).find(s => s.id === serviceId) || null;
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
-                businessData = null;
-                servicesList = [];
-                adsList = [];
+                serviceData = null;
             }}
+            renderServiceDetail();
         }}
 
         async function init() {{
-            await loadMarketData();
-            renderPublicPage();
-        }}
-
-        function goBack() {{
-            window.location.href = '/?tab=home';
+            await loadServiceData();
         }}
         init();
         </script>
