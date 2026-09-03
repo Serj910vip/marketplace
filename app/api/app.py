@@ -1118,17 +1118,25 @@ COMMON_STYLES = """
         color: var(--tg-theme-hint-color, #707579); 
     }
     .field-group { margin-bottom: 16px; }
-    select, input[type="text"], input[type="number"], input[type="tel"], textarea {
-        width: 100%; 
+    select, input[type="text"], input[type="number"], input[type="tel"], input[type="time"], textarea {
+        width: 100%;
         height: 68px;
-        padding: 12px; 
+        padding: 12px;
         border-radius: 20px;
         border: 0.5px solid #0073FF;
-        font-size: 15px; 
+        font-size: 15px;
         background: rgba(0, 58, 129, 0.3);
         color: #FFFF;
     }
     textarea { resize: vertical; min-height: 80px; }
+    .time-slots input[type="time"] {
+        width: auto;
+        height: 44px;
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+    .time-slots span { color: #8A9593; font-size: 14px; }
     .back-link {
         display: inline-block; margin-bottom: 16px;
         color: var(--tg-theme-link-color, #2481cc);
@@ -1202,33 +1210,31 @@ COMMON_STYLES = """
         color: #fff;
     }
 
-    .days-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .days-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .day-btn {
-        width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--tg-theme-hint-color, #ccc);
-        background: var(--tg-theme-bg-color, #fff); font-size: 12px; font-weight: 700;
+        width: 48px; height: 48px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.06); font-size: 12px; font-weight: 700; color: #FFFFFF;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .day-btn.active {
-        border-color: var(--tg-theme-button-color, #2481cc);
-        background: var(--tg-theme-button-color, #2481cc);
-        color: var(--tg-theme-button-text-color, #fff);
+        border-color: #0073FF;
+        background: #0073FF;
+        color: #FFFFFF;
+        transform: scale(1.06);
+        box-shadow: 0 4px 14px rgba(0, 115, 255, 0.45);
     }
 
     .day-schedule {
-        background: var(--tg-theme-secondary-bg-color, #f8f8f8);
-        border-radius: 10px; padding: 12px; margin-bottom: 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; padding: 14px; margin-bottom: 10px;
     }
-    .day-schedule .day-name { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-    .time-slots { display: flex; flex-wrap: wrap; gap: 6px; }
-    .time-chip {
-        padding: 8px 12px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #ccc);
-        background: var(--tg-theme-bg-color, #fff); font-size: 13px; cursor: pointer;
+    .day-schedule .day-name {
+        font-weight: 600; font-size: 12px; margin-bottom: 10px;
+        color: #8A9593; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .time-chip.active {
-        background: var(--tg-theme-button-color, #2481cc);
-        color: var(--tg-theme-button-text-color, #fff);
-        border-color: var(--tg-theme-button-color, #2481cc);
-    }
+    .time-slots { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
     .form-card {
         background: var(--tg-theme-secondary-bg-color, #fff);
