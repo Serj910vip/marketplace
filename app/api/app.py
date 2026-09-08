@@ -1032,6 +1032,10 @@ COMMON_STYLES = """
     }
     .status-pending { background: #fff3cd; color: #856404; }
     .status-confirmed { background: #d4edda; color: #155724; }
+    .status-completed { background: rgba(0, 200, 120, 0.15); color: #00c878; }
+    .status-cancelled_by_client { background: rgba(255, 130, 130, 0.15); color: #FF8282; }
+    .status-cancelled_by_owner { background: rgba(255, 130, 130, 0.15); color: #FF8282; }
+    .status-no_show { background: rgba(138, 149, 147, 0.2); color: #8A9593; }
     .status-cancelled { background: #f8d7da; color: #721c24; }
 
     .empty { text-align: center; color: var(--tg-theme-hint-color, #999); padding: 30px 10px; font-size: 14px; }
@@ -4428,6 +4432,73 @@ async def clients_page():
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
+        <style>
+            .client-segment-tabs {{
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                margin-bottom: 16px;
+                scrollbar-width: none;
+            }}
+            .client-segment-tabs::-webkit-scrollbar {{ display: none; }}
+            .client-segment-tab {{
+                flex: 0 0 auto;
+                padding: 8px 14px;
+                border-radius: 14px;
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.08);
+                color: #FFFFFF;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: background 0.2s ease, border-color 0.2s ease;
+            }}
+            .client-segment-tab.active {{
+                background: #0073FF;
+                border-color: #0073FF;
+            }}
+
+            .client-card {{
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 16px;
+                padding: 14px 16px;
+                margin-bottom: 10px;
+                cursor: pointer;
+                transition: background 0.2s ease;
+            }}
+            .client-card:hover {{ background: rgba(255,255,255,0.07); }}
+            .client-card-top {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; }}
+            .client-card-name {{ font-size: 15px; font-weight: 600; color: #FFFFFF; }}
+            .client-card-meta {{ font-size: 13px; color: #8A9593; margin-top: 6px; }}
+            .client-card-footer {{ font-size: 12px; color: #8A9593; margin-top: 4px; }}
+
+            .client-badge {{
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 8px;
+                border-radius: 8px;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }}
+            .client-badge.vip {{ background: rgba(245, 166, 35, 0.2); color: #f5a623; }}
+            .client-badge.new {{ background: rgba(0, 115, 255, 0.2); color: #0073FF; }}
+            .client-badge.lost {{ background: rgba(255, 130, 130, 0.15); color: #FF8282; }}
+
+            .client-detail-header {{ margin: 16px 0; }}
+
+            .client-history-row {{
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px;
+                padding: 12px 14px;
+                margin-bottom: 8px;
+            }}
+            .client-history-service {{ font-size: 14px; font-weight: 600; color: #FFFFFF; }}
+            .client-history-meta {{ font-size: 12px; color: #8A9593; margin: 4px 0 6px; }}
+        </style>
         <title>Клиентская база</title>
     </head>
     <body>
@@ -4440,14 +4511,30 @@ async def clients_page():
                     <div class="clients-count" id="clients-count">Всего клиентов: —</div>
                 </div>
 
+                <div id="clients-search-row">
+                    <div class="field-group" style="margin-top:16px;">
+                        <input type="text" placeholder="Поиск по имени или телефону" oninput="onSearchInput(this.value)">
+                    </div>
+                    <div class="client-segment-tabs">
+                        <button class="client-segment-tab active" data-segment="all" onclick="selectSegment('all')">Все</button>
+                        <button class="client-segment-tab" data-segment="new" onclick="selectSegment('new')">Новые</button>
+                        <button class="client-segment-tab" data-segment="regular" onclick="selectSegment('regular')">Постоянные</button>
+                        <button class="client-segment-tab" data-segment="lost" onclick="selectSegment('lost')">Давно не были</button>
+                        <button class="client-segment-tab" data-segment="vip" onclick="selectSegment('vip')">VIP</button>
+                    </div>
+                </div>
+
                 <div class="profile-menu-section">
-                    <div class="section-title">Список клиентов</div>
                     <div id="clients-list-container"><div class="empty">Загрузка...</div></div>
                 </div>
             </div>
         </div>
         <script>
         {WEBAPP_INIT}
+
+        let allClients = [];
+        let currentSegment = 'all';
+        let searchQuery = '';
 
         function goBack() {{
             const urlParams = new URLSearchParams(window.location.search);
@@ -4460,20 +4547,81 @@ async def clients_page():
             }}
         }}
 
-        function clientRowHtml(c) {{
+        function daysSince(dateStr) {{
+            if (!dateStr) return Infinity;
+            return (Date.now() - new Date(dateStr).getTime()) / 86400000;
+        }}
+
+        function computeSegments(clients) {{
+            const spentSorted = [...clients].filter(c => c.total_spent > 0).sort((a, b) => b.total_spent - a.total_spent);
+            const vipIds = new Set(spentSorted.slice(0, 3).map(c => c.client_telegram_id));
+            return clients.map(c => ({{
+                ...c,
+                is_new: c.visits_count === 1,
+                is_regular: c.visits_count >= 3,
+                is_lost: daysSince(c.last_visit_at) > 60,
+                is_vip: vipIds.has(c.client_telegram_id),
+            }}));
+        }}
+
+        function filterClients() {{
+            let list = allClients;
+            if (searchQuery) {{
+                const q = searchQuery.toLowerCase();
+                list = list.filter(c =>
+                    (c.client_name || '').toLowerCase().includes(q) ||
+                    (c.client_phone || '').includes(q));
+            }}
+            if (currentSegment === 'new') list = list.filter(c => c.is_new);
+            else if (currentSegment === 'regular') list = list.filter(c => c.is_regular);
+            else if (currentSegment === 'lost') list = list.filter(c => c.is_lost);
+            else if (currentSegment === 'vip') list = list.filter(c => c.is_vip);
+            return list;
+        }}
+
+        function selectSegment(segment) {{
+            currentSegment = segment;
+            document.querySelectorAll('.client-segment-tab').forEach(el =>
+                el.classList.toggle('active', el.dataset.segment === segment));
+            renderClientsList();
+        }}
+
+        function onSearchInput(value) {{
+            searchQuery = value;
+            renderClientsList();
+        }}
+
+        function clientCardHtml(c) {{
             const lastVisit = c.last_visit_at
                 ? new Date(c.last_visit_at).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }})
                 : '—';
             const phoneNote = c.client_phone ? ` · ${{c.client_phone}}` : '';
+            const spentLabel = c.total_spent > 0 ? `${{Math.round(c.total_spent)}} ₽` : '—';
+            let badge = '';
+            if (c.is_vip) badge = '<span class="client-badge vip">VIP</span>';
+            else if (c.is_new) badge = '<span class="client-badge new">Новый</span>';
+            else if (c.is_lost) badge = '<span class="client-badge lost">Давно не был</span>';
             return `
-                <div class="profile-menu-item" onclick="tg.showAlert('${{c.client_name}}${{phoneNote}}\\nПоследний визит: ${{lastVisit}}')">
-                    <div class="profile-menu-left">
-                        <span class="profile-menu-label">👤 ${{c.client_name}}</span>
-                        <span style="font-size:12px;color:var(--tg-theme-hint-color,#707579);">${{c.visits_count}} ${{c.visits_count === 1 ? 'запись' : 'записей'}}</span>
+                <div class="client-card" onclick="openClientDetail(${{c.client_telegram_id}})">
+                    <div class="client-card-top">
+                        <span class="client-card-name">👤 ${{c.client_name}}${{phoneNote}}</span>
+                        ${{badge}}
                     </div>
-                    <span class="profile-menu-arrow">▶</span>
+                    <div class="client-card-meta">
+                        ${{c.visits_count}} ${{c.visits_count === 1 ? 'визит' : 'визитов'}} · ${{spentLabel}} · ${{c.last_service_title || '—'}}
+                    </div>
+                    <div class="client-card-footer">Последний визит: ${{lastVisit}}</div>
                 </div>
             `;
+        }}
+
+        function renderClientsList() {{
+            const filtered = filterClients();
+            document.getElementById('clients-count').textContent = `Всего клиентов: ${{allClients.length}}`;
+            const container = document.getElementById('clients-list-container');
+            container.innerHTML = filtered.length
+                ? filtered.map(clientCardHtml).join('')
+                : '<div class="empty">Клиенты не найдены</div>';
         }}
 
         async function loadClients() {{
@@ -4481,16 +4629,63 @@ async def clients_page():
             try {{
                 const res = await fetch(`/api/clients/${{tgUser.id}}`);
                 const data = await res.json();
-                const clients = data.clients || [];
-                document.getElementById('clients-count').textContent = `Всего клиентов: ${{clients.length}}`;
-                const container = document.getElementById('clients-list-container');
-                container.innerHTML = clients.length
-                    ? clients.map(clientRowHtml).join('')
-                    : '<div class="empty">Клиентов пока нет</div>';
+                allClients = computeSegments(data.clients || []);
+                renderClientsList();
             }} catch(e) {{
                 document.getElementById('clients-list-container').innerHTML =
                     `<div class="error">Ошибка загрузки: ${{e.message}}</div>`;
             }}
+        }}
+
+        function statusLabelRu(status) {{
+            const labels = {{
+                pending: 'Ожидает', confirmed: 'Подтверждена', completed: 'Завершена',
+                cancelled_by_client: 'Отменена клиентом', cancelled_by_owner: 'Отклонена', no_show: 'Не пришёл',
+            }};
+            return labels[status] || status;
+        }}
+
+        async function openClientDetail(clientTelegramId) {{
+            const client = allClients.find(c => c.client_telegram_id === clientTelegramId);
+            const container = document.getElementById('clients-list-container');
+            container.innerHTML = '<div class="empty">Загрузка истории...</div>';
+            document.getElementById('clients-search-row').classList.add('hidden');
+
+            try {{
+                const res = await fetch(`/api/clients/${{tgUser.id}}/${{clientTelegramId}}`);
+                const data = await res.json();
+                const bookings = data.bookings || [];
+                const rows = bookings.map(b => {{
+                    const when = b.starts_at
+                        ? new Date(b.starts_at).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }}) + ', ' +
+                          new Date(b.starts_at).toLocaleTimeString('ru-RU', {{ hour: '2-digit', minute: '2-digit' }})
+                        : '—';
+                    const price = b.price_at_booking ? `${{b.price_at_booking}} ₽` : '';
+                    return `
+                        <div class="client-history-row">
+                            <div class="client-history-service">${{b.service_title}}</div>
+                            <div class="client-history-meta">${{when}}${{price ? ' · ' + price : ''}}</div>
+                            <span class="status-badge status-${{b.status}}">${{statusLabelRu(b.status)}}</span>
+                        </div>
+                    `;
+                }}).join('');
+
+                container.innerHTML = `
+                    <button class="back-link" onclick="closeClientDetail()">← К списку клиентов</button>
+                    <div class="client-detail-header">
+                        <div class="client-card-name">👤 ${{client ? client.client_name : ''}}</div>
+                        <div class="client-card-meta">${{client ? (client.client_phone || '') : ''}}</div>
+                    </div>
+                    ${{rows || '<div class="empty">Записей нет</div>'}}
+                `;
+            }} catch(e) {{
+                container.innerHTML = `<div class="error">Ошибка загрузки: ${{e.message}}</div>`;
+            }}
+        }}
+
+        function closeClientDetail() {{
+            document.getElementById('clients-search-row').classList.remove('hidden');
+            renderClientsList();
         }}
 
         loadClients();

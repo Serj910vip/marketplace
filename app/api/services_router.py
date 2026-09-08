@@ -510,6 +510,29 @@ async def get_clients(telegram_id: int):
         })
 
 
+@router.get("/api/clients/{telegram_id}/{client_telegram_id}")
+async def get_client_history(telegram_id: int, client_telegram_id: int):
+    async with AsyncSessionLocal() as session:
+        user_repo = UserRepository(session)
+        user = await user_repo.get_by_telegram_id(telegram_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+        booking_repo = BookingRepository(session)
+        bookings = await booking_repo.get_by_owner_and_client(user.id, client_telegram_id)
+
+        svc_repo = ServiceRepository(session)
+        service_titles: dict[int, str] = {}
+        for b in bookings:
+            if b.service_id not in service_titles:
+                svc = await svc_repo.get_by_id(b.service_id)
+                service_titles[b.service_id] = svc.title if svc else "Услуга"
+
+        return JSONResponse({
+            "bookings": [_booking_to_dict(b, service_titles.get(b.service_id, "Услуга")) for b in bookings]
+        })
+
+
 SERVICES_LIST_CSS = """
     .services-filter-tabs {
         display: flex;

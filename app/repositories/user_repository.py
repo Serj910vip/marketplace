@@ -4,7 +4,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.booking import Booking
+from app.models.service import Service
 from app.models.user import User
+
+CANCELLED_BOOKING_STATUSES = ("cancelled_by_client", "cancelled_by_owner", "no_show")
 
 
 class UserRepository:
@@ -133,15 +136,44 @@ class UserRepository:
         result = await self.session.execute(query)
         bookings = list(result.scalars().all())
 
+        service_ids = {b.service_id for b in bookings}
+        service_titles: dict[int, str] = {}
+        if service_ids:
+            svc_result = await self.session.execute(
+                select(Service).where(Service.id.in_(service_ids))
+            )
+            service_titles = {s.id: s.title for s in svc_result.scalars().all()}
+
         clients: dict[int, dict] = {}
+        service_counts: dict[int, dict[int, int]] = {}
+
         for booking in bookings:
-            client = clients.setdefault(booking.client_telegram_id, {
-                "client_telegram_id": booking.client_telegram_id,
+            cid = booking.client_telegram_id
+            client = clients.setdefault(cid, {
+                "client_telegram_id": cid,
                 "client_name": booking.client_name,
                 "client_phone": booking.client_phone,
                 "visits_count": 0,
+                "completed_count": 0,
+                "cancelled_count": 0,
+                "total_spent": 0.0,
                 "last_visit_at": booking.starts_at or booking.created_at,
+                "last_service_title": service_titles.get(booking.service_id, "Услуга"),
             })
             client["visits_count"] += 1
+            if booking.status == "completed":
+                client["completed_count"] += 1
+                if booking.price_at_booking:
+                    client["total_spent"] += float(booking.price_at_booking)
+            elif booking.status in CANCELLED_BOOKING_STATUSES:
+                client["cancelled_count"] += 1
+
+            counts = service_counts.setdefault(cid, {})
+            counts[booking.service_id] = counts.get(booking.service_id, 0) + 1
+
+        for cid, client in clients.items():
+            counts = service_counts.get(cid, {})
+            favorite_id = max(counts, key=counts.get) if counts else None
+            client["favorite_service_title"] = service_titles.get(favorite_id) if favorite_id else None
 
         return sorted(clients.values(), key=lambda c: c["last_visit_at"] or datetime.min, reverse=True)

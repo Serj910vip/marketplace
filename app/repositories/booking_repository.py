@@ -32,6 +32,17 @@ class BookingRepository:
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
+    async def get_by_owner_and_client(
+        self, owner_id: int, client_telegram_id: int
+    ) -> list[Booking]:
+        query = (
+            select(Booking)
+            .where(Booking.owner_id == owner_id, Booking.client_telegram_id == client_telegram_id)
+            .order_by(Booking.starts_at.desc().nullslast(), Booking.created_at.desc())
+        )
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+
     async def get_by_id(self, booking_id: int) -> Booking | None:
         result = await self.session.execute(select(Booking).where(Booking.id == booking_id))
         return result.scalar_one_or_none()
