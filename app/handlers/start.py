@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandObject, CommandStart
 from aiogram.types import (
     Message,
     InlineKeyboardMarkup,
@@ -14,6 +14,9 @@ from aiogram.fsm.context import FSMContext
 
 from app.bot.states.market import MarketCreation
 from app.database.session import async_session
+from app.models.user import User
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from datetime import datetime
 
@@ -47,9 +50,72 @@ async def _set_business_menu_button(message: Message):
     )
 
 
+async def _handle_client_start(message: Message, payload: str) -> None:
+    """Клиент пришёл по ссылке от конкретного бизнеса (кнопка под постом, после брони и т.п.) —
+    показываем ему нужный маркет/услугу, а не предложение создать свой бизнес."""
+    try:
+        kind, raw_id = payload.split("_", 1)
+        entity_id = int(raw_id)
+    except ValueError:
+        await message.answer("Ссылка не распознана.")
+        return
+
+    async with async_session() as session:
+        owner: User | None = None
+        url: str | None = None
+        button_text = "Открыть"
+        intro_text = "Нажмите, чтобы открыть:"
+
+        if kind == "service":
+            service_repo = ServiceRepository(session)
+            service = await service_repo.get_by_id(entity_id)
+            if not service:
+                await message.answer("Услуга не найдена.")
+                return
+            owner = await session.get(User, service.user_id)
+            if owner:
+                url = f"{MINI_APP_URL}/market/service/{owner.telegram_id}/{service.id}"
+                button_text = f"Открыть «{service.title}»"
+
+        elif kind == "biz":
+            owner_repo = UserRepository(session)
+            owner = await owner_repo.get_by_telegram_id(entity_id)
+            if owner:
+                url = f"{MINI_APP_URL}/market/{owner.telegram_id}"
+                button_text = f"Открыть {owner.market_name or 'маркет'}"
+
+        elif kind == "booking":
+            booking_repo = BookingRepository(session)
+            booking = await booking_repo.get_by_id(entity_id)
+            if not booking:
+                await message.answer("Запись не найдена.")
+                return
+            owner = await session.get(User, booking.owner_id)
+            if owner:
+                url = f"{MINI_APP_URL}/market/{owner.telegram_id}"
+                button_text = f"Открыть {owner.market_name or 'маркет'}"
+                intro_text = (
+                    "✅ Готово! Теперь вы будете получать уведомления по своей записи.\n\n"
+                    "Можете также открыть маркет бизнеса:"
+                )
+
+        if not owner or not url:
+            await message.answer("Бизнес не найден.")
+            return
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text=button_text, web_app=WebAppInfo(url=url)),
+        ]])
+        await message.answer(intro_text, reply_markup=keyboard)
+
+
 @router.message(CommandStart())
-async def start_handler(message: Message, state: FSMContext):
+async def start_handler(message: Message, state: FSMContext, command: CommandObject):
     user_id = message.from_user.id
+
+    if command.args:
+        await _handle_client_start(message, command.args)
+        return
 
     async with async_session() as session:
         repo = UserRepository(session)

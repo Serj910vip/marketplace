@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
-from app.bot.bot import bot
+from app.bot.bot import bot, get_bot_username
 from app.database.session import AsyncSessionLocal
 from app.models.booking import Booking
 from app.models.service import Service
@@ -386,7 +386,14 @@ async def create_booking(body: BookingCreateRequest):
         else:
             await _safe_notify(notify_client_status_change(bot, booking, service))
 
-        return JSONResponse({"success": True, "booking": _booking_to_dict(booking, service.title)})
+        username = await get_bot_username()
+        notify_link = f"https://t.me/{username}?start=booking_{booking.id}"
+
+        return JSONResponse({
+            "success": True,
+            "booking": _booking_to_dict(booking, service.title),
+            "notify_link": notify_link,
+        })
 
 
 @router.get("/api/bookings/{telegram_id}")

@@ -2,8 +2,9 @@ import html
 from pathlib import Path
 
 from aiogram import Bot
-from aiogram.types import FSInputFile, InputMediaPhoto
+from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 
+from app.bot.bot import get_bot_username
 from app.models.ad import Ad
 from app.repositories.ad_repository import photos_from_ad
 
@@ -26,16 +27,34 @@ def _resolve_photo_path(url: str) -> Path | None:
     return None
 
 
+async def _booking_keyboard(post: Ad) -> InlineKeyboardMarkup | None:
+    """Кнопка «Забронировать» под постом, если он привязан к услуге.
+
+    В группах/каналах кнопки с web_app не работают (ограничение Bot API) — используем
+    обычную url-кнопку на t.me/<bot>?start=service_<id>, которая заодно даёт боту право
+    писать этому клиенту дальше (см. app/handlers/start.py::_handle_client_start).
+    """
+    if not post.service_id:
+        return None
+    username = await get_bot_username()
+    url = f"https://t.me/{username}?start=service_{post.service_id}"
+    return InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text="📅 Забронировать", url=url),
+    ]])
+
+
 async def send_post_to_chat(bot: Bot, chat_id: int, post: Ad) -> int:
     text = format_post_message(post)
     photo_urls = photos_from_ad(post)
     local_files = [p for p in (_resolve_photo_path(u) for u in photo_urls) if p]
+    keyboard = await _booking_keyboard(post)
 
     if not local_files:
         message = await bot.send_message(
             chat_id=chat_id,
             text=text,
             parse_mode="HTML",
+            reply_markup=keyboard,
         )
         return message.message_id
 
@@ -45,6 +64,7 @@ async def send_post_to_chat(bot: Bot, chat_id: int, post: Ad) -> int:
             photo=FSInputFile(local_files[0]),
             caption=text[:1024],
             parse_mode="HTML",
+            reply_markup=keyboard,
         )
         return message.message_id
 
@@ -58,4 +78,7 @@ async def send_post_to_chat(bot: Bot, chat_id: int, post: Ad) -> int:
             )
         )
     messages = await bot.send_media_group(chat_id=chat_id, media=media)
+    if keyboard:
+        # send_media_group не поддерживает reply_markup на самой группе — шлём кнопку отдельным сообщением следом
+        await bot.send_message(chat_id=chat_id, text="Хотите записаться?", reply_markup=keyboard)
     return messages[0].message_id

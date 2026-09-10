@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
-from app.bot.bot import bot
+from app.bot.bot import bot, get_bot_username as get_cached_bot_username
 from app.database.session import AsyncSessionLocal
 from app.models.user import User
 from app.repositories.ad_repository import AdRepository, photos_from_ad
@@ -397,6 +397,7 @@ def post_to_dict(post) -> dict:
         "title": post.title,
         "subtitle": post.subtitle,
         "content": post.description,
+        "service_id": post.service_id,
         "photos": photo_list,
         "photo_url": photo_list[0] if photo_list else None,
         "status": post.status or "published",
@@ -586,7 +587,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                             <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                         </div>
 
-                    
+                        <div class="ad-field-group">
+                            <label class="ad-field-label">Привязать к услуге (необязательно)</label>
+                            <select class="ad-field-input" id="post-service"><option value="">Без привязки</option></select>
+                        </div>
+
                         <!-- Ползунок планирования -->
                         <div class="post-toggle-row">
                             <span class="post-toggle-label">Запланировать публикацию</span>
@@ -617,6 +622,19 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
             {webapp_init}
             {POST_PHOTOS_JS}
             let scheduleVisible = false;
+
+            async function loadServiceOptions(selectId, selectedId) {{
+                const sel = document.getElementById(selectId);
+                if (!sel || !tgUser) return;
+                try {{
+                    const res = await fetch(`/api/services/${{tgUser.id}}?status=published`);
+                    const data = await res.json();
+                    const services = data.services || [];
+                    sel.innerHTML = '<option value="">Без привязки</option>' +
+                        services.map(s => `<option value="${{s.id}}" ${{String(s.id) === String(selectedId) ? 'selected' : ''}}>${{s.title}}</option>`).join('');
+                }} catch(e) {{ /* без привязки, если не удалось загрузить */ }}
+            }}
+            loadServiceOptions('post-service');
 
           
 
@@ -672,6 +690,8 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                 formData.append('content', content);
                 formData.append('action', action);
                 if (scheduled_at) formData.append('scheduled_at', scheduled_at);
+                const selectedService = document.getElementById('post-service').value;
+                if (selectedService) formData.append('service_id', selectedService);
                 appendPhotosToFormData(formData);
 
                 try {{
@@ -726,6 +746,11 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                                 <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                             </div>
 
+                            <div class="ad-field-group">
+                                <label class="ad-field-label">Привязать к услуге (необязательно)</label>
+                                <select class="ad-field-input" id="post-service"><option value="">Без привязки</option></select>
+                            </div>
+
                             <!-- Ползунок планирования -->
                             <!-- Нижний ползунок с перенесёнными стилями -->
                             <div class="ad-field-group" style="margin-top:20px;">
@@ -758,12 +783,24 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
 
             }}
 
+            async function loadServiceOptions(selectId, selectedId) {{
+                const sel = document.getElementById(selectId);
+                if (!sel || !tgUser) return;
+                try {{
+                    const res = await fetch(`/api/services/${{tgUser.id}}?status=published`);
+                    const data = await res.json();
+                    const services = data.services || [];
+                    sel.innerHTML = '<option value="">Без привязки</option>' +
+                        services.map(s => `<option value="${{s.id}}" ${{String(s.id) === String(selectedId) ? 'selected' : ''}}>${{s.title}}</option>`).join('');
+                }} catch(e) {{ /* без привязки, если не удалось загрузить */ }}
+            }}
+
             async function loadPost() {{
                 const res = await fetch(`/api/posts/get/${{postId}}`);
-                if (!res.ok) {{ 
+                if (!res.ok) {{
                     if (tg && tg.showAlert) tg.showAlert('Пост не найден');
                     else alert('Пост не найден');
-                    return; 
+                    return;
                 }}
                 const data = await res.json();
                 const p = data.post;
@@ -771,6 +808,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                 document.getElementById('post-subtitle').value = p.subtitle || '';
                 document.getElementById('post-content').value = p.content || '';
                 initPhotoSlotsFromUrls(p.photos || []);
+                await loadServiceOptions('post-service', p.service_id);
                 isHidden = !!p.hidden;
                 document.getElementById('post-hidden-toggle').checked = isHidden;
                 onHiddenToggle(isHidden);
@@ -780,16 +818,18 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
 
             async function savePost() {{
                 const title = document.getElementById('post-title').value.trim();
-                if (!title) {{ 
-                    if (tg && tg.showAlert) tg.showAlert('Введите заголовок'); 
+                if (!title) {{
+                    if (tg && tg.showAlert) tg.showAlert('Введите заголовок');
                     else alert('Введите заголовок');
-                    return; 
+                    return;
                 }}
                 const formData = new FormData();
                 formData.append('title', title);
                 formData.append('subtitle', document.getElementById('post-subtitle').value.trim());
                 formData.append('content', document.getElementById('post-content').value.trim());
                 formData.append('hidden', isHidden ? 'true' : 'false');
+                const selectedService = document.getElementById('post-service').value;
+                if (selectedService) formData.append('service_id', selectedService);
                 appendPhotosToFormData(formData);
                 const res = await fetch(`/api/posts/update/${{postId}}`, {{
                     method: 'PUT',
@@ -894,8 +934,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
 
 @router.get("/api/bot/username")
 async def get_bot_username():
-    me = await bot.get_me()
-    return JSONResponse({"username": me.username})
+    return JSONResponse({"username": await get_cached_bot_username()})
 
 
 @router.get("/api/user/{telegram_id}/channel")
@@ -938,6 +977,7 @@ async def create_post(
     content: str = Form(""),
     action: str = Form(...),
     scheduled_at: Optional[str] = Form(None),
+    service_id: Optional[int] = Form(None),
     existing_photos: str = Form("[]"),
     files: list[UploadFile] = File(default=[]),
 ):
@@ -970,6 +1010,7 @@ async def create_post(
                 status="published",
                 hidden=False,
                 published_at=datetime.utcnow(),
+                service_id=service_id,
             )
             await _publish_post(user, post)
         else:
@@ -982,6 +1023,7 @@ async def create_post(
                 status="scheduled",
                 hidden=False,
                 scheduled_at=parsed_schedule,
+                service_id=service_id,
             )
 
         return JSONResponse({"success": True, "post": post_to_dict(post)})
@@ -994,6 +1036,7 @@ async def update_post(
     subtitle: str = Form(""),
     content: str = Form(""),
     hidden: str = Form("false"),
+    service_id: Optional[int] = Form(None),
     existing_photos: str = Form("[]"),
     files: list[UploadFile] = File(default=[]),
 ):
@@ -1018,6 +1061,7 @@ async def update_post(
             "subtitle": subtitle or None,
             "description": content or None,
             "hidden": _parse_hidden(hidden),
+            "service_id": service_id,
             "photos": final_photos,
         })
         return JSONResponse({"success": True, "post": post_to_dict(updated)})

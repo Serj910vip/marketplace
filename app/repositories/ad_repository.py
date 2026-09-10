@@ -88,7 +88,7 @@ class AdRepository:
 
         for field in (
             "title", "subtitle", "description", "hidden",
-            "status", "scheduled_at", "published_at",
+            "status", "scheduled_at", "published_at", "service_id",
         ):
             if field in data:
                 setattr(ad, field, data[field])

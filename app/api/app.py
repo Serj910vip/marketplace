@@ -5622,10 +5622,28 @@ async def view_service_page(telegram_id: int, service_id: int):
                 }});
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Ошибка бронирования');
-                tg.showAlert('Запись создана! Ожидайте подтверждения.', () => {{
-                    window.location.href = `/market/{telegram_id}`;
-                }});
+                renderBookingSuccess(data.notify_link);
             }} catch(e) {{ tg.showAlert('Ошибка: ' + e.message); }}
+        }}
+
+        function renderBookingSuccess(notifyLink) {{
+            const container = document.getElementById('booking-flow-container');
+            container.innerHTML = `
+                <div class="ios-slot-summary">
+                    <span class="ios-slot-icon">✅</span>
+                    <span>Заявка отправлена! Ожидайте подтверждения.</span>
+                </div>
+                <button class="btn" onclick="openNotifyBot('${{notifyLink}}')">Получать уведомления в Telegram</button>
+                <button class="back-link" style="display:block; text-align:center; margin-top:12px;" onclick="window.location.href='/market/{telegram_id}'">← Вернуться в маркет</button>
+            `;
+        }}
+
+        function openNotifyBot(url) {{
+            if (tg && tg.openTelegramLink) {{
+                tg.openTelegramLink(url);
+            }} else {{
+                window.open(url, '_blank');
+            }}
         }}
 
         async function loadServiceData() {{

@@ -22,3 +22,14 @@ dp.include_router(start_router)
 dp.include_router(groups_router)
 dp.include_router(bookings_router)
 
+_bot_username: str | None = None
+
+
+async def get_bot_username() -> str:
+    """Юзернейм бота для диплинков вида t.me/<username>?start=..., кэшируется после первого запроса."""
+    global _bot_username
+    if _bot_username is None:
+        me = await bot.get_me()
+        _bot_username = me.username
+    return _bot_username
+
