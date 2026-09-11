@@ -17,15 +17,15 @@ class ReviewRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_by_service_id(self, service_id: int) -> list[Review]:
+    async def get_by_service_id(self, service_id: int) -> list[tuple[Review, str]]:
         query = (
-            select(Review)
+            select(Review, Booking.client_name)
             .join(Booking, Review.booking_id == Booking.id)
             .where(Booking.service_id == service_id)
             .order_by(Review.created_at.desc())
         )
         result = await self.session.execute(query)
-        return list(result.scalars().all())
+        return [(row[0], row[1]) for row in result.all()]
 
     async def create(self, booking: Booking, rating: int, comment: str | None = None) -> Review:
         review = Review(booking_id=booking.id, rating=rating, comment=comment)

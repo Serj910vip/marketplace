@@ -106,7 +106,11 @@ def _parse_time(value: str) -> time:
     return time(int(hours), int(minutes))
 
 
-def _service_to_dict(service: Service, category_name: str | None = None) -> dict:
+def _service_to_dict(
+    service: Service,
+    category_name: str | None = None,
+    availability: list[dict] | None = None,
+) -> dict:
     return {
         "id": service.id,
         "title": service.title,
@@ -120,6 +124,7 @@ def _service_to_dict(service: Service, category_name: str | None = None) -> dict
         "status": service.status,
         "booking_format": service.booking_format,
         "created_at": service.created_at.isoformat(),
+        "availability": availability or [],
     }
 
 
@@ -198,11 +203,21 @@ async def get_services(telegram_id: int, status: Optional[str] = Query(default=N
         cat_repo = ServiceCategoryRepository(session)
         categories = {c.id: c.name for c in await cat_repo.get_by_user_id(user.id)}
 
-        return JSONResponse({
-            "services": [
-                _service_to_dict(s, categories.get(s.category_id)) for s in services
+        avail_repo = AvailabilityRepository(session)
+        services_data = []
+        for s in services:
+            rules = await avail_repo.get_rules(s.id)
+            availability = [
+                {
+                    "weekday": r.weekday,
+                    "time_start": r.time_start.strftime("%H:%M"),
+                    "time_end": r.time_end.strftime("%H:%M"),
+                }
+                for r in rules
             ]
-        })
+            services_data.append(_service_to_dict(s, categories.get(s.category_id), availability))
+
+        return JSONResponse({"services": services_data})
 
 
 @router.post("/api/services/{telegram_id}")
@@ -336,11 +351,17 @@ async def get_service_slots(
 async def get_service_reviews(service_id: int):
     async with AsyncSessionLocal() as session:
         review_repo = ReviewRepository(session)
-        reviews = await review_repo.get_by_service_id(service_id)
+        rows = await review_repo.get_by_service_id(service_id)
         return JSONResponse({
             "reviews": [
-                {"id": r.id, "rating": r.rating, "comment": r.comment, "created_at": r.created_at.isoformat()}
-                for r in reviews
+                {
+                    "id": r.id,
+                    "rating": r.rating,
+                    "comment": r.comment,
+                    "created_at": r.created_at.isoformat(),
+                    "client_name": (client_name or "Клиент").split()[0],
+                }
+                for r, client_name in rows
             ]
         })
 

@@ -3992,6 +3992,12 @@ async def _render_service_form_page(service_id: int | None):
                     `<img src="${{service.photo_url}}" style="width:100%;height:100%;object-fit:cover">`;
             }}
             renderCategorySelect(service.category_id);
+
+            activeDays = {{}};
+            (service.availability || []).forEach(r => {{
+                activeDays[r.weekday] = {{ start: r.time_start, end: r.time_end }};
+            }});
+            renderDays();
         }}
 
         async function saveService() {{
@@ -5497,6 +5503,32 @@ async def view_service_page(telegram_id: int, service_id: int):
                 color: #FFFFFF;
             }}
             .ios-slot-summary .ios-slot-icon {{ font-size: 20px; }}
+
+            .review-summary {{
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 4px 0 14px;
+            }}
+            .review-summary .review-summary-stars {{ color: #f5a623; font-size: 15px; letter-spacing: 1px; }}
+            .review-summary .review-summary-text {{ font-size: 13px; color: #8A9593; }}
+            .review-card {{
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 16px;
+                padding: 12px 14px;
+                margin-bottom: 10px;
+            }}
+            .review-card-head {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 6px;
+            }}
+            .review-card-name {{ font-size: 14px; font-weight: 600; color: #FFFFFF; }}
+            .review-card-stars {{ color: #f5a623; font-size: 13px; letter-spacing: 1px; }}
+            .review-card-date {{ font-size: 11px; color: #8A9593; margin-top: 2px; }}
+            .review-card-comment {{ font-size: 13px; color: #C7CDCB; line-height: 1.4; }}
         </style>
         <title>Услуга</title>
     </head>
@@ -5511,6 +5543,7 @@ async def view_service_page(telegram_id: int, service_id: int):
         const serviceId = {service_id};
 
         let serviceData = null;
+        let reviewsList = [];
         let bookingFlowState = {{ slots: [], selectedDate: null, selectedSlot: null }};
 
         function renderServiceDetail() {{
@@ -5544,11 +5577,62 @@ async def view_service_page(telegram_id: int, service_id: int):
                         <div class="ad-detail-description">${{meta}}</div>
                         <div class="ad-detail-description">${{serviceData.description || ''}}</div>
                     </div>
+                    <div class="booking-section-title">Отзывы</div>
+                    <div id="reviews-container"></div>
                     <div id="booking-flow-container"></div>
                 </div>
             `;
 
+            renderReviews();
             loadSlots();
+        }}
+
+        function renderReviews() {{
+            const container = document.getElementById('reviews-container');
+            if (!container) return;
+
+            if (!reviewsList.length) {{
+                container.innerHTML = '<div class="empty">Отзывов пока нет</div>';
+                return;
+            }}
+
+            const avg = reviewsList.reduce((sum, r) => sum + r.rating, 0) / reviewsList.length;
+            const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+
+            const cardsHtml = reviewsList.map(r => {{
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                const date = new Date(r.created_at).toLocaleDateString('ru-RU');
+                return `
+                    <div class="review-card">
+                        <div class="review-card-head">
+                            <span class="review-card-name">${{r.client_name}}</span>
+                            <span class="review-card-stars">${{stars}}</span>
+                        </div>
+                        <div class="review-card-date">${{date}}</div>
+                        ${{r.comment ? `<div class="review-card-comment">${{r.comment}}</div>` : ''}}
+                    </div>
+                `;
+            }}).join('');
+
+            container.innerHTML = `
+                <div class="review-summary">
+                    <span class="review-summary-stars">${{avgStars}}</span>
+                    <span class="review-summary-text">${{avg.toFixed(1)}} · ${{reviewsList.length}} отзыв(ов)</span>
+                </div>
+                ${{cardsHtml}}
+            `;
+        }}
+
+        async function loadReviews() {{
+            try {{
+                const res = await fetch(`/api/services/${{serviceId}}/reviews`);
+                const data = await res.json();
+                reviewsList = data.reviews || [];
+            }} catch(e) {{
+                console.error('Ошибка загрузки отзывов:', e);
+                reviewsList = [];
+            }}
+            renderReviews();
         }}
 
         async function loadSlots() {{
@@ -5721,6 +5805,7 @@ async def view_service_page(telegram_id: int, service_id: int):
 
         async function init() {{
             await loadServiceData();
+            await loadReviews();
         }}
         init();
         </script>
@@ -5825,33 +5910,6 @@ async def view_ad_page(telegram_id: int, ad_id: int):
         const adId = {ad_id};
 
         // ТЕСТОВЫЕ ДАННЫЕ
-        const TEST_ADS = [
-            {{
-                id: 1,
-                title: "Скидка на персональные тренировки",
-                description: "Персональные тренировки со скидкой 20%\\nАкция действует до конца месяца!\\nУспейте записаться!\\n\\nПодробности:\\n- Индивидуальный подход\\n- Профессиональный тренер\\n- Современное оборудование",
-                rating: 4.5,
-                created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-                photo_url: null
-            }},
-            {{
-                id: 2,
-                title: "Новый курс по йоге",
-                description: "Набор в группу по хатха-йоге\\nЗанятия 3 раза в неделю\\nПервый урок бесплатно!\\n\\nДля начинающих и продолжающих",
-                rating: 4.8,
-                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-                photo_url: null
-            }},
-            {{
-                id: 3,
-                title: "Спецпредложение",
-                description: "Абонемент на месяц со скидкой 30%\\nТолько до конца недели!\\n\\nВключает:\\n- Неограниченные тренировки\\n- Доступ к тренажерному залу\\n- Консультация тренера",
-                rating: 4.2,
-                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-                photo_url: null
-            }}
-        ];
-
         let adData = null;
         let userRating = 0;
 
@@ -5870,8 +5928,8 @@ async def view_ad_page(telegram_id: int, ad_id: int):
 
         function renderAdDetail() {{
             if (!adData) {{
-                document.getElementById('main-content').innerHTML = 
-                    '<div class="error">Объявление не найдено</div>';
+                document.getElementById('main-content').innerHTML =
+                    '<div class="error">Пост не найден</div>';
                 return;
             }}
 
@@ -5916,8 +5974,8 @@ async def view_ad_page(telegram_id: int, ad_id: int):
                           
                         </div>
                         <div class="ad-detail-title">${{adData.title}}</div>
-                        <div class="ad-detail-description">${{adData.description || 'Описание отсутствует'}}</div>
-                        
+                        <div class="ad-detail-description">${{adData.content || 'Описание отсутствует'}}</div>
+
                     </div>
                 </div>
             `;
@@ -5937,28 +5995,13 @@ async def view_ad_page(telegram_id: int, ad_id: int):
 
         async function loadAdData() {{
             try {{
-                const response = await fetch(`/api/ads/get/${{adId}}`);
-                if (response.ok) {{
-                    const data = await response.json();
-                    if (data.ad) {{
-                        adData = data.ad;
-                        console.log('✅ Загружено реальное объявление');
-                        renderAdDetail();
-                        return;
-                    }}
-                }}
-                
-                const found = TEST_ADS.find(a => a.id === adId);
-                if (found) {{
-                    adData = found;
-                    console.log('📢 Используем тестовое объявление');
-                }} else {{
-                    adData = TEST_ADS[0];
-                    console.log('📢 Используем первое тестовое объявление');
-                }}
+                const response = await fetch(`/api/posts/get/${{adId}}`);
+                if (!response.ok) throw new Error('Пост не найден');
+                const data = await response.json();
+                adData = data.post || null;
             }} catch(e) {{
                 console.error('Ошибка загрузки:', e);
-                adData = TEST_ADS[0];
+                adData = null;
             }}
             renderAdDetail();
         }}
