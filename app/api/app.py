@@ -1020,23 +1020,22 @@ COMMON_STYLES = """
     .service-card .svc-price { font-weight: 700; color: var(--tg-theme-button-color, #2481cc); margin-top: 4px; font-size: 14px; }
 
     .booking-card {
-        background: var(--tg-theme-secondary-bg-color, #fff);
-        border-radius: 12px; padding: 14px; margin-bottom: 10px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        background: rgba(0, 58, 129, 0.3);
+        border: 0.5px solid #0073FF;
+        border-radius: 20px; padding: 14px; margin-bottom: 10px;
     }
-    .booking-card .bk-title { font-weight: 700; margin-bottom: 6px; }
-    .booking-card .bk-meta { font-size: 13px; color: var(--tg-theme-hint-color, #707579); }
+    .booking-card .bk-title { font-weight: 700; margin-bottom: 6px; color: #FFFFFF; }
+    .booking-card .bk-meta { font-size: 13px; color: #8A9593; }
     .status-badge {
         display: inline-block; font-size: 11px; padding: 3px 8px;
         border-radius: 6px; font-weight: 600; margin-top: 6px;
     }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-confirmed { background: #d4edda; color: #155724; }
+    .status-pending { background: rgba(245, 166, 35, 0.15); color: #F5A623; }
+    .status-confirmed { background: rgba(0, 115, 255, 0.15); color: #0073FF; }
     .status-completed { background: rgba(0, 200, 120, 0.15); color: #00c878; }
     .status-cancelled_by_client { background: rgba(255, 130, 130, 0.15); color: #FF8282; }
     .status-cancelled_by_owner { background: rgba(255, 130, 130, 0.15); color: #FF8282; }
     .status-no_show { background: rgba(138, 149, 147, 0.2); color: #8A9593; }
-    .status-cancelled { background: #f8d7da; color: #721c24; }
 
     .empty { text-align: center; color: var(--tg-theme-hint-color, #999); padding: 30px 10px; font-size: 14px; }
     .stat-card {
