@@ -3407,56 +3407,24 @@ async def main_app():
         // Функции для фильтрации (только один раз!)
         function filterBookings(category) {{
             currentBookingCategory = category;
-    
-            // Обновляем активную кнопку
+
             document.querySelectorAll('.bookings-menu-item').forEach(el => {{
-                el.classList.remove('active');
+                el.classList.toggle('active', el.dataset.category === category);
             }});
-            document.querySelectorAll('.bookings-menu-item').forEach(el => {{
-                if (el.textContent.trim().toLowerCase() === getCategoryLabel(category)) {{
-                    el.classList.add('active');
-                }}
-            }});
-            
+
             // Перерисовываем список
             renderFilteredBookings();
         }}
 
         function filterByStatus(status) {{
             currentBookingStatus = status;
-    
-            // Обновляем активную кнопку статуса
+
             document.querySelectorAll('.booking-filter-btn').forEach(el => {{
-                el.classList.remove('active');
+                el.classList.toggle('active', el.dataset.status === status);
             }});
-            document.querySelectorAll('.booking-filter-btn').forEach(el => {{
-                if (el.textContent.trim().toLowerCase() === getStatusLabel(status)) {{
-                    el.classList.add('active');
-                }}
-            }});
-            
+
             // Перерисовываем список
             renderFilteredBookings();
-        }}
-
-        function getCategoryLabel(category) {{
-            const labels = {{
-                'all': 'Услуги',
-                'products': 'Товары',
-                'rent': 'Аренда',
-                'events': 'События'
-            }};
-            return labels[category] || 'Услуги';
-        }}
-
-        function getStatusLabel(status) {{
-            const labels = {{
-                'new': 'Новые',
-                'confirmed': 'Подтверждённые',
-                'completed': 'Завершённые',
-                'cancelled': 'Отменённые'
-            }};
-            return labels[status] || 'Новые';
         }}
 
         function renderFilteredBookings() {{
