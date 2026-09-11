@@ -4401,47 +4401,111 @@ async def clients_page():
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>{COMMON_STYLES}</style>
         <style>
-            .client-segment-tabs {{
+            .ios-search-bar {{
                 display: flex;
-                gap: 6px;
-                overflow-x: auto;
-                padding-bottom: 4px;
+                align-items: center;
+                gap: 8px;
+                background: rgba(255,255,255,0.08);
+                border-radius: 14px;
+                padding: 10px 12px;
+                margin: 4px 0 12px;
+            }}
+            .ios-search-bar .ios-search-icon {{
+                font-size: 15px;
+                color: #8A9593;
+                flex-shrink: 0;
+            }}
+            .ios-search-bar input {{
+                flex: 1;
+                min-width: 0;
+                border: none;
+                background: transparent;
+                outline: none;
+                font-size: 15px;
+                height: auto;
+                padding: 0;
+            }}
+            .ios-search-bar input::placeholder {{ color: #8A9593; }}
+            .ios-search-clear {{
+                display: none;
+                border: none;
+                background: rgba(255,255,255,0.15);
+                color: #FFFFFF;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                font-size: 11px;
+                line-height: 18px;
+                text-align: center;
+                cursor: pointer;
+                padding: 0;
+                flex-shrink: 0;
+            }}
+            .ios-search-clear.visible {{ display: block; }}
+
+            .ios-segmented-control {{
+                display: flex;
+                background: rgba(255,255,255,0.06);
+                border-radius: 12px;
+                padding: 3px;
+                gap: 2px;
                 margin-bottom: 16px;
+                overflow-x: auto;
                 scrollbar-width: none;
             }}
-            .client-segment-tabs::-webkit-scrollbar {{ display: none; }}
-            .client-segment-tab {{
-                flex: 0 0 auto;
-                padding: 8px 14px;
-                border-radius: 14px;
-                background: rgba(255,255,255,0.06);
-                border: 1px solid rgba(255,255,255,0.08);
-                color: #FFFFFF;
+            .ios-segmented-control::-webkit-scrollbar {{ display: none; }}
+            .ios-segment {{
+                flex: 1 0 auto;
+                border: none;
+                background: transparent;
+                color: #8A9593;
                 font-size: 12px;
                 font-weight: 600;
+                padding: 7px 10px;
+                border-radius: 9px;
                 cursor: pointer;
                 white-space: nowrap;
-                transition: background 0.2s ease, border-color 0.2s ease;
+                transition: background 0.2s ease, color 0.2s ease;
             }}
-            .client-segment-tab.active {{
+            .ios-segment.active {{
                 background: #0073FF;
-                border-color: #0073FF;
+                color: #FFFFFF;
             }}
 
             .client-card {{
+                display: flex;
+                align-items: center;
+                gap: 12px;
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 16px;
-                padding: 14px 16px;
+                padding: 12px 14px;
                 margin-bottom: 10px;
                 cursor: pointer;
-                transition: background 0.2s ease;
+                transition: background 0.15s ease;
             }}
-            .client-card:hover {{ background: rgba(255,255,255,0.07); }}
+            .client-card:active {{ background: rgba(255,255,255,0.09); }}
+            .client-avatar {{
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                font-weight: 700;
+                color: #FFFFFF;
+                flex-shrink: 0;
+            }}
+            .client-card-body {{ flex: 1; min-width: 0; }}
             .client-card-top {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; }}
-            .client-card-name {{ font-size: 15px; font-weight: 600; color: #FFFFFF; }}
-            .client-card-meta {{ font-size: 13px; color: #8A9593; margin-top: 6px; }}
-            .client-card-footer {{ font-size: 12px; color: #8A9593; margin-top: 4px; }}
+            .client-card-name {{
+                font-size: 15px; font-weight: 600; color: #FFFFFF;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            }}
+            .client-card-meta {{ font-size: 13px; color: #8A9593; margin-top: 4px; }}
+            .client-card-footer {{ font-size: 12px; color: #8A9593; margin-top: 2px; }}
+            .client-card-chevron {{ color: #8A9593; font-size: 20px; flex-shrink: 0; }}
 
             .client-badge {{
                 font-size: 10px;
@@ -4450,14 +4514,24 @@ async def clients_page():
                 border-radius: 8px;
                 text-transform: uppercase;
                 white-space: nowrap;
+                flex-shrink: 0;
             }}
             .client-badge.vip {{ background: rgba(245, 166, 35, 0.2); color: #f5a623; }}
             .client-badge.new {{ background: rgba(0, 115, 255, 0.2); color: #0073FF; }}
             .client-badge.lost {{ background: rgba(255, 130, 130, 0.15); color: #FF8282; }}
 
-            .client-detail-header {{ margin: 16px 0; }}
+            .client-detail-header {{
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin: 4px 0 16px;
+            }}
 
             .client-history-row {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px;
@@ -4465,36 +4539,32 @@ async def clients_page():
                 margin-bottom: 8px;
             }}
             .client-history-service {{ font-size: 14px; font-weight: 600; color: #FFFFFF; }}
-            .client-history-meta {{ font-size: 12px; color: #8A9593; margin: 4px 0 6px; }}
+            .client-history-meta {{ font-size: 12px; color: #8A9593; margin-top: 4px; }}
         </style>
         <title>Клиентская база</title>
     </head>
     <body>
         <div class="app">
             <div class="content" style="padding-top: 0;">
-                <!-- Синий блок с кнопкой назад внутри, прижат к верху -->
-                <div class="clients-header-block">
-                    <button class="back-link-white" onclick="window.location.href='/?tab=profile'">← Назад</button>
-                    <div class="clients-title">👥 Клиентская база</div>
-                    <div class="clients-count" id="clients-count">Всего клиентов: —</div>
-                </div>
+                {render_back_header("window.location.href='/?tab=profile'", "Клиентская база")}
+                <div class="ads-count" id="clients-count">Клиенты: —</div>
 
                 <div id="clients-search-row">
-                    <div class="field-group" style="margin-top:16px;">
-                        <input type="text" placeholder="Поиск по имени или телефону" oninput="onSearchInput(this.value)">
+                    <div class="ios-search-bar">
+                        <span class="ios-search-icon">🔍</span>
+                        <input type="text" id="clients-search-input" placeholder="Поиск по имени или телефону" oninput="onSearchInput(this.value)">
+                        <button class="ios-search-clear" id="clients-search-clear" onclick="clearSearch()">✕</button>
                     </div>
-                    <div class="client-segment-tabs">
-                        <button class="client-segment-tab active" data-segment="all" onclick="selectSegment('all')">Все</button>
-                        <button class="client-segment-tab" data-segment="new" onclick="selectSegment('new')">Новые</button>
-                        <button class="client-segment-tab" data-segment="regular" onclick="selectSegment('regular')">Постоянные</button>
-                        <button class="client-segment-tab" data-segment="lost" onclick="selectSegment('lost')">Давно не были</button>
-                        <button class="client-segment-tab" data-segment="vip" onclick="selectSegment('vip')">VIP</button>
+                    <div class="ios-segmented-control">
+                        <button class="ios-segment active" data-segment="all" onclick="selectSegment('all')">Все</button>
+                        <button class="ios-segment" data-segment="new" onclick="selectSegment('new')">Новые</button>
+                        <button class="ios-segment" data-segment="regular" onclick="selectSegment('regular')">Постоянные</button>
+                        <button class="ios-segment" data-segment="lost" onclick="selectSegment('lost')">Давно не были</button>
+                        <button class="ios-segment" data-segment="vip" onclick="selectSegment('vip')">VIP</button>
                     </div>
                 </div>
 
-                <div class="profile-menu-section">
-                    <div id="clients-list-container"><div class="empty">Загрузка...</div></div>
-                </div>
+                <div id="clients-list-container"><div class="empty">Загрузка...</div></div>
             </div>
         </div>
         <script>
@@ -4504,15 +4574,21 @@ async def clients_page():
         let currentSegment = 'all';
         let searchQuery = '';
 
-        function goBack() {{
-            const urlParams = new URLSearchParams(window.location.search);
-            const from = urlParams.get('from');
+        const AVATAR_COLORS = ['#0073FF', '#f5a623', '#00c878', '#FF8282', '#8e44ec', '#00b8d9'];
 
-            if (from === 'profile') {{
-                window.location.href = '/?tab=profile';
-            }} else {{
-                history.back();
-            }}
+        function avatarColor(id) {{
+            return AVATAR_COLORS[Math.abs(id) % AVATAR_COLORS.length];
+        }}
+
+        function initials(name) {{
+            const parts = (name || '?').trim().split(/\\s+/);
+            return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
+        }}
+
+        function clearSearch() {{
+            const input = document.getElementById('clients-search-input');
+            input.value = '';
+            onSearchInput('');
         }}
 
         function daysSince(dateStr) {{
@@ -4549,13 +4625,14 @@ async def clients_page():
 
         function selectSegment(segment) {{
             currentSegment = segment;
-            document.querySelectorAll('.client-segment-tab').forEach(el =>
+            document.querySelectorAll('.ios-segment').forEach(el =>
                 el.classList.toggle('active', el.dataset.segment === segment));
             renderClientsList();
         }}
 
         function onSearchInput(value) {{
             searchQuery = value;
+            document.getElementById('clients-search-clear').classList.toggle('visible', value.length > 0);
             renderClientsList();
         }}
 
@@ -4563,7 +4640,6 @@ async def clients_page():
             const lastVisit = c.last_visit_at
                 ? new Date(c.last_visit_at).toLocaleDateString('ru-RU', {{ day: 'numeric', month: 'short' }})
                 : '—';
-            const phoneNote = c.client_phone ? ` · ${{c.client_phone}}` : '';
             const spentLabel = c.total_spent > 0 ? `${{Math.round(c.total_spent)}} ₽` : '—';
             let badge = '';
             if (c.is_vip) badge = '<span class="client-badge vip">VIP</span>';
@@ -4571,21 +4647,23 @@ async def clients_page():
             else if (c.is_lost) badge = '<span class="client-badge lost">Давно не был</span>';
             return `
                 <div class="client-card" onclick="openClientDetail(${{c.client_telegram_id}})">
-                    <div class="client-card-top">
-                        <span class="client-card-name">👤 ${{c.client_name}}${{phoneNote}}</span>
-                        ${{badge}}
+                    <div class="client-avatar" style="background:${{avatarColor(c.client_telegram_id)}}">${{initials(c.client_name)}}</div>
+                    <div class="client-card-body">
+                        <div class="client-card-top">
+                            <span class="client-card-name">${{c.client_name}}</span>
+                            ${{badge}}
+                        </div>
+                        <div class="client-card-meta">${{c.visits_count}} ${{c.visits_count === 1 ? 'визит' : 'визитов'}} · ${{spentLabel}} · ${{c.last_service_title || '—'}}</div>
+                        <div class="client-card-footer">${{c.client_phone ? c.client_phone + ' · ' : ''}}Был ${{lastVisit}}</div>
                     </div>
-                    <div class="client-card-meta">
-                        ${{c.visits_count}} ${{c.visits_count === 1 ? 'визит' : 'визитов'}} · ${{spentLabel}} · ${{c.last_service_title || '—'}}
-                    </div>
-                    <div class="client-card-footer">Последний визит: ${{lastVisit}}</div>
+                    <span class="client-card-chevron">›</span>
                 </div>
             `;
         }}
 
         function renderClientsList() {{
             const filtered = filterClients();
-            document.getElementById('clients-count').textContent = `Всего клиентов: ${{allClients.length}}`;
+            document.getElementById('clients-count').textContent = `Клиенты: ${{allClients.length}}`;
             const container = document.getElementById('clients-list-container');
             container.innerHTML = filtered.length
                 ? filtered.map(clientCardHtml).join('')
@@ -4631,8 +4709,10 @@ async def clients_page():
                     const price = b.price_at_booking ? `${{b.price_at_booking}} ₽` : '';
                     return `
                         <div class="client-history-row">
-                            <div class="client-history-service">${{b.service_title}}</div>
-                            <div class="client-history-meta">${{when}}${{price ? ' · ' + price : ''}}</div>
+                            <div>
+                                <div class="client-history-service">${{b.service_title}}</div>
+                                <div class="client-history-meta">${{when}}${{price ? ' · ' + price : ''}}</div>
+                            </div>
                             <span class="status-badge status-${{b.status}}">${{statusLabelRu(b.status)}}</span>
                         </div>
                     `;
@@ -4641,8 +4721,11 @@ async def clients_page():
                 container.innerHTML = `
                     <button class="back-link" onclick="closeClientDetail()">← К списку клиентов</button>
                     <div class="client-detail-header">
-                        <div class="client-card-name">👤 ${{client ? client.client_name : ''}}</div>
-                        <div class="client-card-meta">${{client ? (client.client_phone || '') : ''}}</div>
+                        <div class="client-avatar" style="background:${{client ? avatarColor(client.client_telegram_id) : '#0073FF'}}">${{initials(client ? client.client_name : '')}}</div>
+                        <div>
+                            <div class="client-card-name">${{client ? client.client_name : ''}}</div>
+                            <div class="client-card-meta">${{client ? (client.client_phone || '') : ''}}</div>
+                        </div>
                     </div>
                     ${{rows || '<div class="empty">Записей нет</div>'}}
                 `;
