@@ -2836,7 +2836,7 @@ async def main_app():
         {SERVICE_HELPERS_JS}
 
         const MARKETPLACE = "{MARKETPLACE_NAME}";
-        let businessData = null, servicesList = [], statsData = null, bookingsList = [];
+        let businessData = null, servicesList = [], statsData = null, bookingsList = [], postsList = [];
         let currentTab = 'home';
 
         function renderStars(rating) {{
@@ -3080,18 +3080,23 @@ async def main_app():
         }}
 
         function renderStats() {{
-            const s = statsData || {{ total_requests:0, successful_requests:0, cancelled_requests:0 }};
             const accountNumber = 'TIP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-            
-            const adsCount = s.ads_count || 0;
 
-            // Данные для заглушек
-            const servicesCount = 2;
-            const bookingsCount = 218;
-            const confirmedBookings = 198;
-            const cancelledBookings = 20;
-            const earnedMoney = 25680;
-            
+            // ===== Посты: реальные данные из postsList =====
+            const postsCount = postsList.length;
+            const activePostsCount = postsList.filter(p => !p.hidden && p.status === 'published').length;
+
+            // ===== Услуги: реальные данные из servicesList / bookingsList =====
+            const servicesCount = servicesList.length;
+            const newBookings = bookingsList.filter(b => b.status === 'pending').length;
+            const confirmedBookings = bookingsList.filter(b => b.status === 'confirmed').length;
+            const completedBookings = bookingsList.filter(b => b.status === 'completed').length;
+            const cancelledBookings = bookingsList.filter(b =>
+                ['cancelled_by_client', 'cancelled_by_owner', 'no_show'].includes(b.status)).length;
+            const earnedMoney = bookingsList
+                .filter(b => b.status === 'completed')
+                .reduce((sum, b) => sum + (b.price_at_booking || 0), 0);
+
             document.getElementById('main-content').innerHTML = `
                 <div class="page-header-block page-header-block--extended">
                     ${{renderUserHeader()}}
@@ -3123,7 +3128,7 @@ async def main_app():
                         <div class="menu-card" onclick="toggleStatsAccordionMerged('ads-detail')" style="cursor:pointer;">
                             <div class="left">
                                 <span class="label">Посты</span>
-                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{adsCount}}</span>
+                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{postsCount}}</span>
                             </div>
                             <span class="accordion-arrow-merged" id="stats-arrow-ads-detail-merged">
                                 <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3133,11 +3138,9 @@ async def main_app():
                         </div>
                         <div class="accordion-content-merged" id="stats-content-ads-detail-merged">
                             <div class="stats-detail">
-                                <div class="stats-row"><span>Активных постов:</span><span class="stats-value">${{adsCount}}</span></div>
-                                <div class="stats-row"><span>Всего просмотров:</span><span class="stats-value">2 847</span></div>
-                                <div class="stats-row"><span>Кликов:</span><span class="stats-value">126</span></div>
-                                <div class="stats-row"><span>Заявок с постов:</span><span class="stats-value">19</span></div>
-                                <div class="stats-row"><span>Конверсия:</span><span class="stats-value">15%</span></div>
+                                <div class="stats-row"><span>Всего постов:</span><span class="stats-value">${{postsCount}}</span></div>
+                                <div class="stats-row"><span>Активных (опубликованных):</span><span class="stats-value">${{activePostsCount}}</span></div>
+                                <div class="stats-row" style="opacity:0.6;"><span>Просмотры, клики, конверсия</span><span class="stats-value">пока не отслеживаются</span></div>
                             </div>
                         </div>
                     </div>
@@ -3147,6 +3150,7 @@ async def main_app():
                         <div class="menu-card" onclick="toggleStatsAccordionMerged('services-detail')" style="cursor:pointer;">
                             <div class="left">
                                 <span class="label">Услуги</span>
+                                <span style="background: #003A81; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #FFFFFF;">${{servicesCount}}</span>
                             </div>
                             <span class="accordion-arrow-merged" id="stats-arrow-services-detail-merged">
                                 <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3156,15 +3160,17 @@ async def main_app():
                         </div>
                         <div class="accordion-content-merged" id="stats-content-services-detail-merged">
                             <div class="stats-detail">
-                                <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Количество заявок:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Подтверждённые заявки:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Отменённые заявки:</span><span class="stats-value">0</span></div>
-                                <div class="stats-row"><span>Заработано денег:</span><span class="stats-value">0</span></div>
+                                <div class="stats-row"><span>Количество услуг:</span><span class="stats-value">${{servicesCount}}</span></div>
+                                <div class="stats-row"><span>Всего заявок:</span><span class="stats-value">${{bookingsList.length}}</span></div>
+                                <div class="stats-row"><span>Новые:</span><span class="stats-value">${{newBookings}}</span></div>
+                                <div class="stats-row"><span>Подтверждённые:</span><span class="stats-value">${{confirmedBookings}}</span></div>
+                                <div class="stats-row"><span>Завершённые:</span><span class="stats-value">${{completedBookings}}</span></div>
+                                <div class="stats-row"><span>Отменённые:</span><span class="stats-value">${{cancelledBookings}}</span></div>
+                                <div class="stats-row"><span>Заработано:</span><span class="stats-value">${{earnedMoney}} ₽</span></div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Товары - объединенный аккордеон -->
                     <div class="accordion-item-merged" id="accordion-wrapper-products-detail">
                         <div class="menu-card" onclick="toggleStatsAccordionMerged('products-detail')" style="cursor:pointer;">
@@ -3728,13 +3734,14 @@ async def main_app():
             try {{
                 console.log('🔄 Загружаем данные с сервера...');
                 
-                const [biz, svc, stats, bookings] = await Promise.all([
+                const [biz, svc, stats, bookings, posts] = await Promise.all([
                     fetch(`/api/business/${{tgUser.id}}`).then(r => r.json()),
                     fetch(`/api/services/${{tgUser.id}}`).then(r => r.json()),
                     fetch(`/api/stats/${{tgUser.id}}`).then(r => r.json()),
                     fetch(`/api/bookings/${{tgUser.id}}`).then(r => r.json()),
+                    fetch(`/api/posts/${{tgUser.id}}`).then(r => r.json()),
                 ]);
-                
+
                 // Проверяем: есть ли бизнес на сервере
                 if (biz && biz.has_business === true) {{
                     console.log('✅ Бизнес найден на сервере:', biz.business_name);
@@ -3742,12 +3749,14 @@ async def main_app():
                     servicesList = svc.services || [];
                     statsData = stats;
                     bookingsList = bookings.bookings || [];
+                    postsList = posts.posts || [];
                 }} else {{
                     console.log('ℹ️ Бизнес НЕ найден на сервере, будут созданы тестовые данные');
                     businessData = null;
                     servicesList = [];
                     statsData = null;
                     bookingsList = [];
+                    postsList = [];
                 }}
             }} catch(e) {{
                 console.warn('⚠️ Ошибка загрузки с сервера:', e.message);
@@ -3755,6 +3764,7 @@ async def main_app():
                 servicesList = [];
                 statsData = null;
                 bookingsList = [];
+                postsList = [];
             }}
         }}
 
