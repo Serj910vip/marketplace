@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "marketplace-preview",
+      "runtimeExecutable": "C:/Users/user/AppData/Local/Temp/claude/C--Users-user-Desktop-python-marketplace/c32fadb9-2707-4e80-afbb-cd6c84826655/scratchpad/venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "app.api.app:app", "--host", "127.0.0.1", "--port", "8027"],
+      "port": 8027
+    }
+  ]
+}

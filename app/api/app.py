@@ -90,6 +90,20 @@ async def _save_upload_files(files: list[UploadFile]) -> list[str]:
             urls.append(await save_file(file))
     return urls
 
+
+MAX_PHOTO_SIZE = 3 * 1024 * 1024
+
+
+@app.post("/api/upload-photo")
+async def upload_photo(file: UploadFile = File(...)):
+    content = await file.read()
+    if len(content) > MAX_PHOTO_SIZE:
+        raise HTTPException(status_code=400, detail="Фото не больше 3 МБ")
+    await file.seek(0)
+    url = await save_file(file)
+    return JSONResponse({"url": url})
+
+
 def _format_address(city: str | None, region: str | None, country: str | None) -> str:
     parts = [p for p in (city, region, country) if p]
     return ", ".join(parts) if parts else "Не указан"
@@ -2638,13 +2652,21 @@ SERVICE_HELPERS_JS = """
         </div>`;
     }
 
-    function readPhotoFile(input, callback) {
+    async function readPhotoFile(input, callback) {
         const file = input.files[0];
+        input.value = '';
         if (!file) return;
         if (file.size > 3 * 1024 * 1024) { tg.showAlert('Фото не больше 3 МБ'); return; }
-        const reader = new FileReader();
-        reader.onload = e => callback(e.target.result);
-        reader.readAsDataURL(file);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload-photo', { method: 'POST', body: formData });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || 'Ошибка загрузки фото');
+            callback(data.url);
+        } catch(e) {
+            tg.showAlert('Ошибка загрузки фото: ' + e.message);
+        }
     }
 """
 
@@ -4165,22 +4187,28 @@ async def profile_fill_page():
         let profilePhotoData = null;
         let currentProfileData = {{}};
 
-        function onProfilePhotoSelect(input) {{
+        async function onProfilePhotoSelect(input) {{
             const file = input.files[0];
+            input.value = '';
             if (!file) return;
             if (file.size > 3 * 1024 * 1024) {{
                 tg.showAlert('Фото не больше 3 МБ');
                 return;
             }}
-            const reader = new FileReader();
-            reader.onload = e => {{
-                profilePhotoData = e.target.result;
+            try {{
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await fetch('/api/upload-photo', {{ method: 'POST', body: formData }});
+                const data = await res.json().catch(() => ({{}}));
+                if (!res.ok) throw new Error(data.detail || 'Ошибка загрузки фото');
+                profilePhotoData = data.url;
                 document.getElementById('profile-photo-placeholder').style.display = 'none';
                 const preview = document.getElementById('profile-photo-preview');
                 preview.src = profilePhotoData;
                 preview.style.display = 'block';
-            }};
-            reader.readAsDataURL(file);
+            }} catch(e) {{
+                tg.showAlert('Ошибка загрузки фото: ' + e.message);
+            }}
         }}
 
         async function loadProfileData() {{
@@ -6115,7 +6143,7 @@ async def connect_bot_page():
                             <span id="chat-icon" style="display: flex; align-items: center;"></span>
                         </div>
                     </div>
-                    <div class="connect-container">
+                    <div class="connect-container" id="connect-hint">
                         <div class="connect-title">🤖 Подключите бота</div>
                         <div class="connect-subtitle">
                             Добавьте бота <span class="bot-username" id="bot-username">@...</span> в вашу группу или канал,<br>
@@ -6133,20 +6161,21 @@ async def connect_bot_page():
                 const titleEl = document.getElementById('chat-title');
                 const iconEl = document.getElementById('chat-icon');
                 const el = document.getElementById('linked-chat-info');
+                const hintEl = document.getElementById('connect-hint');
                 if (!el || !tgUser) return;
-                
+
                 try {{
                     const res = await fetch(`/api/user/${{tgUser.id}}/channel`);
                     const data = await res.json();
-                    
+
                     if (data.linked) {{
                         const typeLabel = data.chat_type === 'channel' ? 'Канал' : 'Группа';
                         el.className = 'chat-status connected';
-                        
+
                         // Меняем только текст
                         titleEl.textContent = `${{typeLabel}}: ${{data.chat_title}}`;
                         titleEl.style.color = '#FFFFFF';
-                        
+
                         // Вставляем SVG
                         iconEl.innerHTML = `
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -6155,17 +6184,20 @@ async def connect_bot_page():
                                 <rect x="4.5" y="4.5" width="5" height="5" rx="2.5" fill="#00FF04" stroke="#00FF04"/>
                             </svg>
                         `;
+                        if (hintEl) hintEl.classList.add('hidden');
                     }} else {{
                         el.className = 'chat-status disconnected';
                         titleEl.textContent = 'Бот не подключён к группе или каналу';
                         titleEl.style.color = '#FFFFFF';
                         iconEl.innerHTML = '';
+                        if (hintEl) hintEl.classList.remove('hidden');
                     }}
                 }} catch(e) {{
                     el.className = 'chat-status disconnected';
                     titleEl.textContent = 'Ошибка проверки подключения';
                     titleEl.style.color = '#FFFFFF';
                     iconEl.innerHTML = '';
+                    if (hintEl) hintEl.classList.remove('hidden');
                 }}
             }}
             

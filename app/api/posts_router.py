@@ -44,14 +44,20 @@ POST_PHOTOS_CSS = """
         height: 100%;
         object-fit: cover;
     }
-    .post-photo-remove {
-        margin-top: 6px;
-        background: none;
-        border: none;
-        color: #FF8282;
+    .post-photo-replace {
+        display: block;
+        margin: 10px auto 0;
+        padding: 10px 20px;
+        background: #121918;
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        color: #FFFFFF;
         font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
-        padding: 0;
+    }
+    .post-photo-replace:hover {
+        background: rgba(0, 58, 129, 0.7);
     }
     .posts-secondary-btn {
         width: 110px;
@@ -196,9 +202,7 @@ POST_PHOTOS_CSS = """
     /* Стили для полей даты и времени */
     .schedule-fields {
         display: none;
-        gap: 12px;
-        margin-top: 28px;
-        border-radius: 12px;
+        margin-top: 20px;
     }
 
     .schedule-fields.visible {
@@ -207,88 +211,46 @@ POST_PHOTOS_CSS = """
 
     .schedule-field-group {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        flex: 1;
-    }
-
-    .schedule-field-group label {
-        display: block;
-        font-size: 12px;
-        width: 130px;
-        text-align: center;
-        padding: 8px 8px 8px 8px;
-        color: #ffffff;
-        margin-bottom: 4px;
-        background: #003A81;
-        border: 0.5px solid #0073FF;
-        border-radius: 10px;
-    }
-
-
-    .schedule-field-group input:focus {
-        border-color: #4a9eff;
-    }
-
-    .schedule-field-group input[type="date"]::-webkit-calendar-picker-indicator,
-    .schedule-field-group input[type="time"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        cursor: pointer;
-    }
-
-
-
-    /* Новые стили для полей даты и времени */
-    .schedule-fields {
-        display: none;
-        margin-top: 12px;
-        border-radius: 12px;
-    }
-
-    .schedule-fields.visible {
-        display: block;
-    }
-
-    .schedule-field-group {
         margin-bottom: 12px;
     }
 
     .schedule-field-group label {
+        flex-shrink: 0;
         display: block;
-        font-size: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        width: 110px;
+        text-align: center;
+        padding: 10px 8px;
         color: #FFFFFF;
-        margin-bottom: 4px;
+        background: #003A81;
+        border: 0.5px solid #0073FF;
+        border-radius: 10px;
+        box-sizing: border-box;
     }
 
     .schedule-field-group input {
-        width: 140px;
-        height: 38px;
-        margin-left: 39px;
-        padding: 0 12px;
-        background: rgba(0, 58, 129, 0.3);
-        border: 0.5px solid #0073FF;
-        border-radius: 10px;
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        text-align: right;
+        background: transparent;
+        border: none;
         color: #FFFFFF;
         font-size: 14px;
         outline: none;
-        box-sizing: border-box;
-        float: right;
-    }
-
-    .schedule-field-group input:focus {
-        border-color: #4a9eff;
+        padding: 0 4px;
     }
 
     .schedule-field-group input[type="date"]::-webkit-calendar-picker-indicator,
     .schedule-field-group input[type="time"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        width: 100%;
         cursor: pointer;
-    }
-
-    /* Очистка float */
-    .schedule-field-group::after {
-        content: "";
-        display: table;
-        clear: both;
     }
 """
 
@@ -306,14 +268,14 @@ POST_PHOTOS_JS = """
                     ? `<img src="${slot.url}" alt="">`
                     : `<img src="${slot.preview}" alt="">`)
                 : '➕';
-            const removeBtn = slot
-                ? `<button type="button" class="post-photo-remove" onclick="removePhotoSlot(${index})">Удалить фото ${index + 1}</button>`
+            const replaceBtn = slot
+                ? `<button type="button" class="post-photo-replace" onclick="pickPhoto(${index})">Загрузить новое</button>`
                 : '';
             return `
                 <div class="post-photo-slot">
                     <div class="slot-label">Фото ${index + 1}</div>
                     <div class="post-photo-box" onclick="pickPhoto(${index})">${preview}</div>
-                    ${removeBtn}
+                    ${replaceBtn}
                 </div>
             `;
         }).join('');
@@ -322,11 +284,6 @@ POST_PHOTOS_JS = """
     function pickPhoto(index) {
         window._photoPickIndex = index;
         document.getElementById('photo-file-input').click();
-    }
-
-    function removePhotoSlot(index) {
-        photoSlots[index] = null;
-        renderPhotoSlots();
     }
 
     function fileFingerprint(file) {
@@ -414,10 +371,17 @@ def _parse_hidden(value: str | bool) -> bool:
     return str(value).lower() in ("true", "1", "yes")
 
 
+MAX_PHOTO_SIZE = 3 * 1024 * 1024
+
+
 async def _save_upload_files(files: list[UploadFile]) -> list[str]:
     urls: list[str] = []
     for file in files:
         if file and file.filename:
+            content = await file.read()
+            if len(content) > MAX_PHOTO_SIZE:
+                raise HTTPException(status_code=400, detail=f"Фото «{file.filename}» больше 3 МБ")
+            await file.seek(0)
             urls.append(await save_file(file))
     return urls[:3]
 
@@ -447,21 +411,20 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    {render_back_header("window.location.href='/'", "Посты")}
+                    {render_back_header("window.location.href='/'", '<span id="posts-count">Посты: 0</span>')}
                     <div class="container-post">
                         <div class="ads-create-btn-wrapper">
                             <button class="ads-create-btn" onclick="window.location.href='/post/create'">Создать пост</button>
-                            
+
                         </div>
                     </div>
-                    
-                   
+
+
                     <div class="ads-filter-tabs" id="status-tabs">
                         <button class="ads-filter-tab active" id="filter-published" onclick="filterPosts('published')">Активные</button>
                         <button class="ads-filter-tab" id="filter-scheduled" onclick="filterPosts('scheduled')">Запланированные</button>
                         <button class="ads-filter-tab" id="filter-hidden" onclick="filterPosts('hidden')">Скрытые</button>
                     </div>
-                    <div class="ads-count" id="posts-count">Посты: 0</div>
                     <div class="ads-list-container" id="posts-list">
                         <div class="ads-empty">Список постов пуст</div>
                     </div>
@@ -517,16 +480,16 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                 container.innerHTML = filtered.map((post, index) => {{
                     const num = String(index + 1).padStart(3, '0');
                     const date = post.created_at
-                        ? new Date(post.created_at).toLocaleString('ru-RU')
+                        ? new Date(post.created_at).toLocaleDateString('ru-RU')
                         : '';
                     const scheduleInfo = post.scheduled_at
-                        ? `<br>Опубликуется: ${{new Date(post.scheduled_at).toLocaleString('ru-RU')}}`
+                        ? `<br>Опубликуется: ${{new Date(post.scheduled_at).toLocaleDateString('ru-RU')}}`
                         : '';
                     return `
                         <div class="add-item">
                             <div class="add-item-date-block">
                                 <div class="add-item-number">#${{num}}</div>
-                                <div class="add-item-date">Создано: ${{date.split(' ')[0]}}${{scheduleInfo}}</div>
+                                <div class="add-item-date">создано: ${{date}}${{scheduleInfo}}</div>
                             </div>
                             <div class="add-item-title-block">
                                     <div class="add-item-title">${{post.title}}</div>
@@ -614,7 +577,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                         </div>
 
                         <!-- Кнопка Опубликовать -->
-                        <button class="ad-btn-create" onclick="submitPost()">Опубликовать</button>
+                        <button class="ad-btn-create" id="submit-post-btn" onclick="submitPost()">Опубликовать сейчас</button>
                     </div>
                 </div>
             </div>
@@ -656,6 +619,7 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
                     fields.classList.remove('visible');
 
                 }}
+                document.getElementById('submit-post-btn').textContent = checked ? 'Сохранить' : 'Опубликовать сейчас';
             }}
 
             async function submitPost() {{
@@ -724,24 +688,24 @@ def register_post_pages(app, common_styles: str, webapp_init: str, render_back_h
         <body>
             <div class="app">
                 <div class="content" style="padding-top:0;">
-                    {render_back_header("window.location.href='/posts'", "Редактирование поста")}
+                    {render_back_header("window.location.href='/posts'", "Редактор постов")}
                     <div class="ad-create-main-block" style="margin-top:20px;">
                         <div id="loading" style="text-align:center;padding:40px 0;color:#8A9593;">Загрузка...</div>
                         <div id="form-container" class="hidden">
                             <div class="ad-field-group">
-                                <label class="ad-field-label">Заголовок</label>
+                                <label class="ad-field-label">Заголовок поста:</label>
                                 <input class="ad-field-input" id="post-title" maxlength="200">
                             </div>
                             <div class="ad-field-group">
-                                <label class="ad-field-label">Подзаголовок</label>
+                                <label class="ad-field-label">Подзаголовок поста:</label>
                                 <input class="ad-field-input" id="post-subtitle" maxlength="200">
                             </div>
                             <div class="ad-field-group">
-                                <label class="ad-field-label">Содержание</label>
+                                <label class="ad-field-label">Содержание поста:</label>
                                 <textarea class="ad-field-input" id="post-content" maxlength="2000"></textarea>
                             </div>
                             <div class="ad-field-group">
-                                <label class="ad-field-label">Фотографии</label>
+                                <label class="ad-field-label">Фото:</label>
                                 <div id="photo-slots"></div>
                                 <input type="file" id="photo-file-input" class="ad-input-file" accept="image/*" onchange="onPhotoFileSelected(this)">
                             </div>
